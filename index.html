@@ -3336,49 +3336,43 @@ document.addEventListener("DOMContentLoaded", () => {
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
-    const banner = document.querySelector(".hero-banner");
+    function applyGrid() {
+        const grids = document.querySelectorAll(".movie-grid, .grid, .section-grid");
 
-    if (!banner) return;
+        grids.forEach(grid => {
 
-    /* ============================== */
-    /*   DESATIVA TODOS AJUSTES ANTIGOS   */
-    /* ============================== */
-    banner.style.removeProperty("width");
-    banner.style.removeProperty("height");
-    banner.style.removeProperty("max-height");
-    banner.style.removeProperty("min-height");
-    banner.style.removeProperty("border-radius");
-    banner.style.removeProperty("margin");
-    banner.style.removeProperty("background-size");
-    banner.style.removeProperty("background-repeat");
-    banner.style.removeProperty("background-position");
+            // Remove qualquer estilo velho
+            grid.style.display = "";
+            grid.style.gridTemplateColumns = "";
+            grid.style.gap = "";
+            grid.style.overflowX = "";
 
-    /* ============================== */
-    /*   MODO TV (100% largura)       */
-    /* ============================== */
-    if (window.innerWidth > 768) {
-        banner.style.width = "100%";
-        banner.style.height = "520px";  // AJUSTE DO TAMANHO TV
-        banner.style.backgroundSize = "cover";   // PREENCHE TOTAL
-        banner.style.backgroundPosition = "center center";
-        banner.style.backgroundRepeat = "no-repeat";
-        banner.style.borderRadius = "0";
+            // Remove estilos nos itens para não forçar flex
+            grid.querySelectorAll(".movie-item").forEach(item => {
+                item.style.width = "";
+                item.style.minWidth = "";
+                item.style.maxWidth = "";
+                item.style.flex = "";
+            });
+
+            // MOBILE (2×2)
+            if (window.innerWidth <= 768) {
+                grid.style.display = "grid";
+                grid.style.gridTemplateColumns = "repeat(2, 1fr)";
+                grid.style.gap = "16px";
+            }
+
+            // TV / PC / SWITCH (3×3)
+            else {
+                grid.style.display = "grid";
+                grid.style.gridTemplateColumns = "repeat(3, 1fr)";
+                grid.style.gap = "22px";
+            }
+        });
     }
 
-    /* ============================== */
-    /*   MODO MOBILE (2x2)            */
-    /* ============================== */
-    if (window.innerWidth <= 768) {
-        banner.style.width = "90%";
-        banner.style.height = "38vh";
-        banner.style.maxHeight = "330px";
-        banner.style.minHeight = "220px";
-        banner.style.borderRadius = "12px";
-        banner.style.margin = "0 auto";
-        banner.style.backgroundSize = "contain"; 
-        banner.style.backgroundRepeat = "no-repeat";
-        banner.style.backgroundPosition = "center";
-    }
+    applyGrid();
+    window.addEventListener("resize", applyGrid);
 
 });
 </script>
