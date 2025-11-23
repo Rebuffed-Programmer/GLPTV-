@@ -3333,5 +3333,54 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("resize", applyTVGrid);
 });
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const banner = document.querySelector(".hero-banner");
+
+    if (!banner) return;
+
+    /* ============================== */
+    /*   DESATIVA TODOS AJUSTES ANTIGOS   */
+    /* ============================== */
+    banner.style.removeProperty("width");
+    banner.style.removeProperty("height");
+    banner.style.removeProperty("max-height");
+    banner.style.removeProperty("min-height");
+    banner.style.removeProperty("border-radius");
+    banner.style.removeProperty("margin");
+    banner.style.removeProperty("background-size");
+    banner.style.removeProperty("background-repeat");
+    banner.style.removeProperty("background-position");
+
+    /* ============================== */
+    /*   MODO TV (100% largura)       */
+    /* ============================== */
+    if (window.innerWidth > 768) {
+        banner.style.width = "100%";
+        banner.style.height = "520px";  // AJUSTE DO TAMANHO TV
+        banner.style.backgroundSize = "cover";   // PREENCHE TOTAL
+        banner.style.backgroundPosition = "center center";
+        banner.style.backgroundRepeat = "no-repeat";
+        banner.style.borderRadius = "0";
+    }
+
+    /* ============================== */
+    /*   MODO MOBILE (2x2)            */
+    /* ============================== */
+    if (window.innerWidth <= 768) {
+        banner.style.width = "90%";
+        banner.style.height = "38vh";
+        banner.style.maxHeight = "330px";
+        banner.style.minHeight = "220px";
+        banner.style.borderRadius = "12px";
+        banner.style.margin = "0 auto";
+        banner.style.backgroundSize = "contain"; 
+        banner.style.backgroundRepeat = "no-repeat";
+        banner.style.backgroundPosition = "center";
+    }
+
+});
+</script>
 </body>
 </html>
