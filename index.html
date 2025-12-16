@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Plus+</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
     <link rel="icon" type="image/png" sizes="16x16" href="https://i.postimg.cc/FzXbNpLT/favicon-16x16.png">
     <link rel="icon" type="image/png" sizes="32x32" href="https://i.postimg.cc/d3cRw6yH/favicon-32x32.png">
@@ -20,280 +20,165 @@
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+
 <style>
-/* ================== BASE ================== */
-*{margin:0;padding:0;box-sizing:border-box}
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
 body{
   background:#000;
   color:#fff;
-  font-family:Arial,sans-serif;
   overflow:hidden;
 }
 
-/* ================== LOGIN ================== */
-#login{
-  position:fixed;
-  inset:0;
-  background:#000;
+/* TOPO */
+#hero{
+  height:45vh;
+  padding:40px;
   display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:1000;
+  align-items:flex-end;
+  background-size:cover;
+  background-position:center;
+  transition:background .3s;
 }
-#login button{
-  padding:14px 28px;
-  font-size:18px;
+#heroInfo{
+  max-width:50%;
+}
+#heroInfo h1{font-size:42px;margin-bottom:10px}
+#heroInfo p{opacity:.8;font-size:16px;margin-bottom:20px}
+#playBtn{
+  padding:12px 28px;
+  background:#fff;
+  color:#000;
   border:none;
-  border-radius:6px;
+  font-size:16px;
   cursor:pointer;
 }
 
-/* ================== APP ================== */
-#app{
-  width:100vw;
-  height:100vh;
-  display:none;
-  align-items:center;
-}
-
-/* ================== CATÁLOGO ================== */
-#catalog{
+/* CARROSSEL */
+#row{
+  position:absolute;
+  bottom:40px;
+  left:0;
+  right:0;
+  padding-left:40px;
   display:flex;
   gap:18px;
-  padding:40px;
   overflow-x:auto;
   scroll-behavior:smooth;
 }
-#catalog::-webkit-scrollbar{display:none}
+#row::-webkit-scrollbar{display:none}
 
-/* ================== CARD ================== */
 .card{
-  width:160px;
-  height:240px;
-  flex-shrink:0;
-  border-radius:8px;
-  overflow:hidden;
-  background:#222;
+  min-width:180px;
+  height:260px;
+  background-size:cover;
+  background-position:center;
+  border-radius:6px;
+  transition:transform .2s, box-shadow .2s;
   cursor:pointer;
-  transition:.2s;
 }
-.card:hover{transform:scale(1.08)}
-.card img{width:100%;height:100%;object-fit:cover}
+.card.active{
+  transform:scale(1.12);
+  box-shadow:0 10px 30px rgba(0,0,0,.8);
+}
 
-/* ================== NAV ================== */
-.nav{
-  position:fixed;
-  top:50%;
-  transform:translateY(-50%);
-  font-size:44px;
-  opacity:.25;
+/* SETAS TOUCH */
+.arrow{
+  position:absolute;
+  top:55%;
+  font-size:40px;
+  opacity:.4;
   cursor:pointer;
   user-select:none;
-  z-index:10;
 }
-#left{left:18px}
-#right{right:18px}
-
-/* ================== PLAYER ================== */
-#player{
-  position:fixed;
-  inset:0;
-  background:#000;
-  display:none;
-  z-index:900;
-}
-#player video{
-  width:100%;
-  height:100%;
-}
+#left{left:10px}
+#right{right:10px}
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div id="login">
-  <button onclick="login()">Entrar</button>
+<!-- TOPO DINÂMICO -->
+<div id="hero">
+  <div id="heroInfo">
+    <h1 id="title">Selecione um filme</h1>
+    <p id="desc">Use o direcional ou toque para navegar</p>
+    <button id="playBtn" style="display:none">Assistir</button>
+  </div>
 </div>
 
-<!-- APP -->
-<div id="app">
-  <div id="catalog"></div>
+<!-- LINHA ÚNICA -->
+<div id="row">
+  <!-- COLE AQUI OS FILMES -->
 </div>
 
-<div id="left" class="nav">⬅️</div>
-<div id="right" class="nav">➡️</div>
-
-<!-- PLAYER -->
-<div id="player">
-  <video id="video" controls></video>
-</div>
+<div id="left" class="arrow">⬅️</div>
+<div id="right" class="arrow">➡️</div>
 
 <script>
-/* ================== PLUS+ ================== */
-function isPlus(){
-  return localStorage.getItem("PLUS") === "true";
-}
+/* ======= DADOS ======= */
+const movies = [
+  /* COLE AQUI OS FILMES */
+];
 
-/* ================== LOGIN ================== */
-function login(){
-  localStorage.setItem("USER","ok");
-  document.getElementById("login").style.display="none";
-  document.getElementById("app").style.display="flex";
-}
+/* ======= ESTADO ======= */
+let index = 0;
+const row = document.getElementById("row");
+const hero = document.getElementById("hero");
+const title = document.getElementById("title");
+const desc = document.getElementById("desc");
+const playBtn = document.getElementById("playBtn");
 
-/* ================== CONTEÚDOS ==================
-   👉 COLE AQUI OS FILMES
-================================================ */
-const movieData = [
-            { id: 2, title: "A Antiga e a Moderna", year: "1929", description: "O jovem Komarovskis volta do exílio para sua aldeia na Sibéria, onde se depara com grandes mudanças em andamento. Entre elas, a jovem Marfa, que se rebela contra os costumes de uma família patriarcal e está determinada a viver de acordo com suas próprias regras.", poster: "https://a.imagem.app/BCs9X0.jpeg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1D7tr9aDjLJ2gGrdoYXGrKYqnJRu8Exjo/preview" },
-            { id: 4, title: "A Greve", year: "1925", description: "Na Rússia czarista de 1912, operários de uma fábrica realizam uma greve após o suicídio de um colega. A polícia secreta do governo reprime o protesto com violência.", poster: "https://a.imagem.app/BCsLCP.jpeg", genres: ["Drama", "História"], videoUrl: "https://drive.google.com/file/d/1vZXJeW3TwQg1L_tEowv5tC4KR5yiYTZt/preview" },
-            { id: 6, title: "A Paixão de Andy", year: "1973", description: "Um grupo de pessoas busca um tesouro de Andy Warbol na cidade de Los Angeles.", poster: "https://a.imagem.app/BCsE2S.jpeg", genres: ["Aventura"], videoUrl: "https://drive.google.com/file/d/17MS17ey-U9ns72OXoWImmFMW__oP86aP/preview" },
-            { id: 8, title: "Abraham Lincoln", year: "1930", description: "O filme acompanha a vida de Abraham Lincoln, desde sua infância até o momento de sua morte, e conta a história de sua luta pela igualdade.", poster: "https://a.imagem.app/BCsZG3.jpeg", genres: ["Biografia", "História"], videoUrl: "https://drive.google.com/file/d/1-T7K5M-c-s4q4g-k-2r8t5u6p_7h6w3h/preview" },
-            { id: 9, title: "Aconteceu em Havana", year: "1941", description: "Uma estrela de cinema e o seu empresário fogem para Cuba após serem perseguidos por uma gangue de gângsteres.", poster: "https://a.imagem.app/BCsdXZ.jpeg", genres: ["Musical", "Comédia"], videoUrl: "https://drive.google.com/file/d/1DFt1T6CykFsB_dOAH0M8MeQTRAZ2PykP/preview" },
-            { id: 10, title: "Adorável Vagabundo", year: "1939", description: "Em uma comédia romântica clássica, uma jovem rica se apaixona por um homem que a ajuda a escapar de sua casa de campo. Eles vivem aventuras em Londres, mas são perseguidos pela família da garota.", poster: "https://a.imagem.app/BCsmRi.jpeg", genres: ["Comédia", "Romance"], videoUrl: "https://drive.google.com/file/d/1Wxc64BX-Q5ZibaXQ9zGOieLyAxIdhxLK/preview" },
-            { id: 11, title: "Algie, the miner", year: "1912", description: "O jovem Algie decide viajar para o oeste dos Estados Unidos em busca de ouro e se aventura em uma cidade do interior.", poster: "https://a.imagem.app/BCsv88.jpeg", genres: ["Comédia", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1WWEwf9JxJ0OLxIf15NH_FALPP5ubdUUe/preview" },
-            { id: 12, title: "As Viagens de Gulliver", year: "1939", description: "O filme de animação conta a história de Gulliver, um marinheiro que, após um naufrágio, acorda em uma ilha habitada por pessoas minúsculas e por gigantes.", poster: "https://a.imagem.app/BCsMeE.jpeg", genres: ["Animação", "Aventura"], videoUrl: "https://drive.google.com/file/d/1xt47Ti7ALA3QAIMtmm8y4UqoNDjhkhNd/preview" },
-            { id: 13, title: "Bancando o Águia", year: "1924", description: "Em um filme mudo, um homem se aventura em uma série de situações hilárias enquanto tenta conquistar o coração de uma mulher.", poster: "https://a.imagem.app/BCsVLe.webp", genres: ["Comédia", "Aventura"], videoUrl: "https://drive.google.com/file/d/11jx9NWCKqolocN77DoSxwePqPhgDsrrU/preview" },
-            { id: 14, title: "Beco sem Saída", year: "1937", description: "Em Nova York, a vida de um grupo de amigos de rua e uma jovem da alta sociedade se entrelaçam.", poster: "https://a.imagem.app/BCsU2C.jpeg", genres: ["Drama", "Crime"], videoUrl: "https://drive.google.com/file/d/1y5ka0vdAir6r5nS7sCbvMqmwdWOmmm5S/preview" },
-            { id: 15, title: "Beast at Bay", year: "1912", description: "Em um filme mudo, uma jovem é salva de um homem perigoso por um homem corajoso, mas o homem que a salvou se revela um criminoso.", poster: "https://a.imagem.app/BCs4fN.png", genres: ["Suspense", "Crime"], videoUrl: "https://drive.google.com/file/d/1i24gxpJzqeq3jMOnbHKBU6s2TQuV9kGC/preview" },
-            { id: 16, title: "Buster Three Ages", year: "1923", description: "Buster Keaton interpreta três homens diferentes em três épocas diferentes: a Idade da Pedra, a Roma Antiga e a Idade Média. Ele tenta conquistar o amor de uma mulher em cada época.", poster: "https://a.imagem.app/BCsa5Y.jpeg", genres: ["Comédia", "Aventura"], videoUrl: "https://drive.google.com/file/d/1D7tr9aDjLJ2gGrdoYXGrKYqnJRu8Exjo/preview" },
-            { id: 17, title: "Carlitos Repórter", year: "1914", description: "Em um curta-metragem, Carlitos tenta roubar um jornal de um repórter e se envolve em uma série de confusões.", poster: "https://a.imagem.app/BCsfMa.jpeg", genres: ["Comédia", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1ZclkViqF_n4jceU9iHLSDkIgO3cJO0xW/preview" },
-            { id: 18, title: "Carnival of Souls", year: "1962", description: "Uma jovem pianista, que é a única sobrevivente de um acidente de carro, é perseguida por um fantasma misterioso.", poster: "https://a.imagem.app/BCsDG9.jpeg", genres: ["Terror", "Mistério"], videoUrl: "https://drive.google.com/file/d/1BNcWGAYs9sbtb1gBzqZ7v8qgMqsDaN4G/preview" },
-            { id: 19, title: "Casamento às Pressas", year: "1913", description: "Em um curta-metragem, um casal de amantes decide se casar, mas o casamento é interrompido por um grupo de pessoas que tentam impedir a união.", poster: "https://a.imagem.app/BCsNxk.jpeg", genres: ["Comédia", "Romance"], videoUrl: "https://drive.google.com/file/d/1iJ-wnzeu4AflOA0WZC_VJGKLPgoWZwzz/preview" },
-            { id: 20, title: "Charada", year: "1963", description: "Em Paris, uma mulher descobre que seu marido foi assassinado e que ela está sendo perseguida por um grupo de pessoas que buscam uma fortuna que ele escondeu.", poster: "https://a.imagem.app/BCsORV.jpeg", genres: ["Mistério", "Romance"], videoUrl: "https://drive.google.com/file/d/1lCChujgBKH0FKvy8plS0hze7xG2LT8sy/preview" },
-            { id: 21, title: "Copacabana", year: "1947", description: "Em um show de talentos em Copacabana, um artista de cabaré finge ser um agente de talentos e se apaixona por uma dançarina.", poster: "https://a.imagem.app/BCsp8J.jpeg", genres: ["Musical", "Comédia"], videoUrl: "https://drive.google.com/file/d/1QMbWdltYAbumd1NbdWqUZCdBbUD_e7Oq/preview" },
-            { id: 22, title: "Coração de Aço", year: "1934", description: "Um grupo de trabalhadores de uma usina de aço tenta lutar por melhores condições de trabalho, mas a greve é reprimida pelo governo.", poster: "https://a.imagem.app/BC18sG.jpeg", genres: ["Drama", "História"], videoUrl: "https://drive.google.com/file/d/1mv9bhe2X_F1P9FBbpWbEhpcuBUQfBHuG/preview" },
-            { id: 23, title: "Corrida para Automóveis", year: "1914", description: "Em um curta-metragem, Carlitos se envolve em uma série de confusões em uma corrida de carros.", poster: "https://a.imagem.app/BC1ALm.jpeg", genres: ["Comédia", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1SLpIZGjTbQNK2JFOYHjYj96nPE9WbCsi/preview" },
-            { id: 25, title: "Felines Folines", year: "1919", description: "Uma animação de um gato que tenta roubar a comida de um cachorro.", poster: "https://a.imagem.app/BC137b.jpeg", genres: ["Animação", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1e2sx1dEACbHAbtwFxWFzy-tQR4ojCsFg/preview" },
-            { id: 26, title: "Frankenstein", year: "1910", description: "Um cientista obcecado por criar vida a partir de partes de cadáveres, cria um monstro que se torna uma ameaça para a sociedade.", poster: "https://i.postimg.cc/Bn2nRGNj/frankenstein-1910.jpg", genres: ["Terror", "Ficção Científica"], videoUrl: "https://drive.google.com/file/d/1EZ-hfMhchDfjC-n--oG8KEf9i7vhEwdv/preview" },
-            { id: 27, title: "High and Dizzy", year: "1920", description: "Em um curta-metragem, Harold Lloyd interpreta um homem que é obrigado a passar a noite em um hotel de luxo, mas se envolve em uma série de situações hilárias.", poster: "https://a.imagem.app/BC1GV1.jpeg", genres: ["Comédia", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1jAGoWsdsOCvYdjYpPhXj7fTCRyfoLnXT/preview" },
-            { id: 28, title: "Hitler: Dead or Alive", year: "1942", description: "Durante a Segunda Guerra Mundial, um grupo de agentes americanos é enviado para a Alemanha para assassinar Hitler.", poster: "https://a.imagem.app/BC1SGW.jpeg", genres: ["Guerra", "História"], videoUrl: "https://drive.google.com/file/d/1imyqOxI5mMsIe_oAZ3F39jigHT5F2qFg/preview" },
-            { id: 29, title: "Inspector General", year: "1949", description: "Um mendigo é confundido com um inspetor do governo e se envolve em uma série de situações hilárias.", poster: "https://a.imagem.app/BC1hxt.jpeg", genres: ["Musical", "Comédia"], videoUrl: "https://drive.google.com/file/d/14qw5b86-Zqly3jfTx3u4r7zF2vP3MgmO/preview" },
-            { id: 34, title: "Lassie nas Planícies", year: "1943", description: "Em um faroeste, um menino e seu cão de estimação, Lassie, vivem aventuras em uma pequena cidade do interior.", poster: "https://a.imagem.app/BC1nyP.jpeg", genres: ["Aventura", "Faroeste"], videoUrl: "https://drive.google.com/file/d/16tF5PKg-0P9KelKOtTGk-vtvt0SpAewd/preview" },
-            { id: 35, title: "Levada de Breca", year: "1938", description: "Um paleontólogo e uma jovem se envolvem em uma série de situações hilárias enquanto procuram um esqueleto de dinossauro.", poster: "https://a.imagem.app/BC1K7l.jpeg", genres: ["Comédia", "Romance"], videoUrl: "https://drive.google.com/file/d/1-bbbr2ADoHnsQsCvHLYuFZ9WY6zBemiR/preview" },
-            { id: 39, title: "Making an American Citizen", year: "1912", description: "O filme de propaganda, dirigido por Alice Guy Blaché, retrata a história de um casal de imigrantes que se mudam para os Estados Unidos.", poster: "https://a.imagem.app/BC1iT3.jpeg", genres: ["Propaganda"], videoUrl: "https://drive.google.com/file/d/1Y330oH_E04WyjzKEH5e8zVKekW74HZD9/preview" },
-            { id: 40, title: "Manhattan Tower", year: "1932", description: "A história de um grupo de pessoas que vivem em um prédio de apartamentos em Nova York, e seus relacionamentos se entrelaçam.", poster: "https://a.imagem.app/BC1FZZ.jpeg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1n3_FD_1QMYqylxIPuH6YWncmcWIu0SUX/preview" },
-            { id: 44, title: "Núpcias Reais", year: "1951", description: "Em um musical, um casal de dançarinos se apresenta em Londres e se envolve em uma série de situações hilárias.", poster: "https://a.imagem.app/BC1JDe.jpeg", genres: ["Musical", "Comédia"], videoUrl: "https://drive.google.com/file/d/1yg44i8OfR8Uc45qxPSGktOkZL3RdOGuH/preview" },
-            { id: 45, title: "O Cair das Folhas", year: "1912", description: "Em um curta-metragem, o filme retrata o amor entre um homem e uma mulher, mas a vida de ambos é abalada por uma tragédia.", poster: "https://a.imagem.app/BC1l7N.jpeg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1b6FgKAv2JuRB6gjlCUIXy4oT0dxiQARK/preview" },
-            { id: 46, title: "O Circo", year: "1928", description: "Em um circo, o Vagabundo se envolve em uma série de situações hilárias enquanto tenta se tornar um artista de circo.", poster: "https://a.imagem.app/BC159C.jpeg", genres: ["Comédia", "Drama"], videoUrl: "https://drive.google.com/file/d/1YQJ0o50grrOIBV9ynkCp87ibc-plv6La/preview" },
-            { id: 48, title: "O Érbio", year: "1946", description: "Um drama de suspense com cenas de ação, dirigido por Jean-Pierre Melville, sobre o submundo de Paris, onde um policial corrupto e um ladrão de joias se enfrentam.", poster: "https://a.imagem.app/BC1rHa.jpeg", genres: ["Drama", "Suspense"], videoUrl: "https://drive.google.com/file/d/1Zgk6Y-w4k6mF1-h2X2I26Rotw1-_OEwp/preview" },
-            { id: 52, title: "O Gabinete do Dr. Caligari", year: "1920", description: "O filme de terror mudo alemão conta a história de um hipnotizador que usa um sonâmbulo para cometer assassinatos.", poster: "https://a.imagem.app/BC1u1J.jpeg", genres: ["Terror", "Expressionismo"], videoUrl: "https://drive.google.com/file/d/1Y_JXeDJ1QAK8a5pDne7JxkppnQTCq7GP/preview" },
-            { id: 53, title: "O Gângster", year: "1929", description: "Em um filme de gângsteres, um criminoso se torna um dos mais procurados pela polícia.", poster: "https://a.imagem.app/BC1EuG.jpeg", genres: ["Crime", "Drama"], videoUrl: "https://drive.google.com/file/d/1aAzGOGlnGbWyfPQA9Cqp9eNRUmi5_YBy/preview" },
-            { id: 54, title: "O Garoto", year: "1921", description: "O Vagabundo adota um menino abandonado e o cria como seu filho, mas as autoridades tentam separá-los.", poster: "https://a.imagem.app/BC1IDm.jpeg", genres: ["Comédia", "Drama"], videoUrl: "https://drive.google.com/file/d/1At2Abc9wNehQAbdyxPr3jeHghe4qdoRj/preview" },
-            { id: 56, title: "O Homem que Ri", year: "1928", description: "Em um drama romântico, um jovem com o rosto desfigurado por um sorriso fixo se apaixona por uma jovem cega e tenta viver uma vida normal.", poster: "https://a.imagem.app/BC1Zcb.jpeg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1tCa1gdZHMeuKgC8jZOwv45xAdY8hCR4C/preview" },
-            { id: 57, title: "Popeye encontra o Marinheiro Sindbad", year: "1936", description: "Popeye é desafiado por Sinbad a passar por diversos desafios e provar que é o maior marinheiro dos sete mares. Antes de se tornar um fenômeno televisivo, Popeye foi dos quadrinhos para as telas do cinema nas mãos do visionário animador Max Fleischer, que o transformou em uma das séries de curtas animados mais populares nos anos 1930. O filme, parte da trilogia 'Popeye Color Feature', foi indicado ao Oscar de Melhor Curta-Metragem Animado.", poster: "https://i.postimg.cc/1tYK2drj/Popeye-encontra-o-Marinheiro-Sindbad-1936.png", genres: ["Animação"], videoUrl: "https://drive.google.com/file/d/15YOipU7kdIS7We73-WVHMJiNy2dJgENr/preview" },
-            { id: 58, title: "O Netinho do Papai", year: "1936", description: "Um jovem casal se muda para a casa dos pais dela, mas a vida de ambos se torna um inferno por causa da teimosia dos pais dela.", poster: "https://a.imagem.app/BC1gS1.jpeg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/16jNZS90WV7q13I8mLDD5o_hhjh1NDtCi/preview" },
-            { id: 59, title: "O Novo Governo Paranaense", year: "1928", description: "Um curta-metragem brasileiro que mostra a posse do novo governador do Paraná.", poster: "https://a.imagem.app/BC1vTW.jpeg", genres: ["Documentário"], videoUrl: "https://drive.google.com/file/d/1W3OYjRfY8fiKlXZELru8rJZeWcjxfRHE/preview" },
-            { id: 61, title: "Bonanza", year: "1960", description: "Bonanza é uma série de TV, do gênero western, exibida originalmente na emissora de televisão americana NBC, de 12 de setembro de 1959 a 16 de janeiro de 1973.", poster: "https://i.postimg.cc/YSrf97XP/Bonanza.jpg", genres: ["Ação", "Comédia", "Suspense"], videoUrl: "https://drive.google.com/file/d/1hEsNvBKDdhex3roYDCuaViu_ho_FquZl/preview" },
-            { id: 62, title: "O Vaqueiro", year: "1928", description: "Buster Keaton interpreta um vaqueiro que se apaixona por uma jovem e tenta conquistar seu coração.", poster: "https://a.imagem.app/BC14b0.jpeg", genres: ["Faroeste", "Comédia"], videoUrl: "https://drive.google.com/file/d/1n7NME31VGHkBgkjflftULveiMMTQbws2/preview" },
-            { id: 64, title: "Outubro", year: "1927", description: "O filme épico conta a história da Revolução de Outubro de 1917, na Rússia, e a ascensão do Partido Comunista.", poster: "https://a.imagem.app/BC1Uur.jpeg", genres: ["Drama", "História"], videoUrl: "https://drive.google.com/file/d/14zDQxGTA3wANW1Y8YM8IY0DbsyoV9m1d/preview" },
-            { id: 66, title: "Rain", year: "1932", description: "Em um drama, uma prostituta e um reverendo se envolvem em uma história de amor e redenção em uma ilha isolada.", poster: "https://a.imagem.app/BC1yYP.jpeg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1tDRBE2wBM-8Xf22gvDYLSpk_CfIAC4-H/preview" },
-            { id: 69, title: "Sorte de Verdade", year: "1934", description: "Em um romance, uma jovem herdeira se apaixona por um homem que ela conhece em um hotel de luxo, mas a família dela desaprova o relacionamento.", poster: "https://a.imagem.app/BC1WSv.jpeg", genres: ["Romance", "Comédia"], videoUrl: "https://drive.google.com/file/d/1RDGDdHn3MZCRtw7PkLj-GFTOb_6YlQRR/preview" },
-            { id: 76, title: "The Nazi Titanic", year: "1943", description: "O filme de propaganda nazista conta a história do navio Titanic, mas a história é manipulada para mostrar os nazistas como heróis.", poster: "https://a.imagem.app/BC6Hne.jpeg", genres: ["Propaganda"], videoUrl: "https://drive.google.com/file/d/1Z1B5HmoBzDWnGB1QuHnNbDYIf9ThlG_a/preview" },
-            { id: 77, title: "The Nazis Strike", year: "1943", description: "Em um filme de propaganda americana, a história da Segunda Guerra Mundial é contada para mostrar a crueldade dos nazistas.", poster: "https://a.imagem.app/BC6ScN.jpeg", genres: ["Propaganda"], videoUrl: "https://drive.google.com/file/d/1h9JzEld1DdXv0PRJpVcDFB7uOKvNHtbl/preview" },
-            { id: 78, title: "The Ocean Waif", year: "1916", description: "Em um drama romântico, uma jovem é salva de um afogamento por um homem misterioso, mas a vida de ambos é abalada quando ela descobre que o homem é um criminoso.", poster: "https://a.imagem.app/BC6hPC.jpeg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1QsFB3AoEY_nDnNbonfxQSj6WuL2bNuMe/preview" },
-            { id: 80, title: "Viagem à Lua", year: "1902", description: "Em um curta-metragem, um grupo de astrônomos viaja à lua e se depara com uma série de situações hilárias.", poster: "https://a.imagem.app/BC67m9.jpeg", genres: ["Ficção Científica", "Aventura"], videoUrl: "https://drive.google.com/file/d/1yhSWXhOWhg5qjVtfc8_opog4R1z1u2ve/preview" },
-            { id: 81, title: "Zaroff, o Caçador de Vidas", year: "1932", description: "Em um filme de suspense, um caçador se aventura em uma ilha isolada e se depara com um caçador russo que caça humanos.", poster: "https://a.imagem.app/BC6nok.jpeg", genres: ["Suspense", "Aventura"], videoUrl: "https://drive.google.com/file/d/1Zerrenw5iWZx_AS7UwdCbNjdQ4S9j7nC/preview" },
-            { id: 82, title: "3 Caras Maus", year: "1926", description: "Em um faroeste mudo, três bandidos de coração de ouro se envolvem em uma série de situações hilárias e salvam uma jovem de um vilão.", poster: "https://a.imagem.app/BCscQy.jpeg", genres: ["Faroeste", "Comédia"], videoUrl: "https://drive.google.com/file/d/13RZtxkztcGThvzDgnf5226SRcUwcI04E/preview" },
-            { id: 83, title: "A Caldeira do Diabo", year: "1924", description: "Um filme de suspense que narra a história de um grupo de pessoas que tentam sobreviver em uma ilha isolada, mas a vida de todos é colocada em risco por uma criatura misteriosa.", poster: "https://a.imagem.app/BCsrpr.png", genres: ["Suspense", "Terror"], videoUrl: "https://drive.google.com/file/d/1jNu8V8IBd9OkdqywBBtotmIj0SELKIJz/preview" },
-            { id: 84, title: "O Vapor Willie", year: "1928", description: "A primeira aparição de Mickey Mouse em um filme de animação, onde ele trabalha em um barco a vapor.", poster: "https://a.imagem.app/BC62qa.jpeg", genres: ["Animação", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1FjE_sFPaGW5Kb9ICii_g9aFZ0CWzWQSo/preview" },
-            { id: 86, title: "Cruel Desengano", year: "1952", description: "Um filme com reviravoltas emocionais sobre um casamento conturbado e as dolorosas verdades que vêm à tona após anos de segredos.", poster: "https://i.postimg.cc/L62WgRBV/The-lembre-of-the-widding.jpg", genres: ["Drama", "Suspense"], videoUrl: "https://drive.google.com/file/d/1QgILs-ZvUG31lRs2aJIfyiCe3vtwafeq/preview" },
-            { id: 87, title: "Heróis Esquecidos", year: "1931", description: "A emocionante história de um grupo de soldados ou heróis anônimos cujos feitos e sacrifícios foram apagados pelo tempo, mas que são essenciais para a história. (Ano 1931 é um palpite)", poster: "https://i.postimg.cc/V6jSJ2XV/Her-is-esquecidos.jpg", genres: ["Aventura", "Guerra"], videoUrl: "https://drive.google.com/file/d/1sOWtmJhXHC2Nm_6AkpzYIFo6ph8v0hNJ/preview" },
-            { id: 89, title: "Oswald Trolley Troubles", year: "1927", description: "O coelho Oswald, em seu primeiro curta, tenta dirigir um bonde cheio de passageiros em uma viagem caótica e cheia de obstáculos.", poster: "https://i.postimg.cc/d187hg8c/Oswald-troulley-troubles.webp", genres: ["Animação", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/197BdDueenm2RhEnkQZ0UzALKyxcKP9g7/preview" },
-            { id: 90, title: "Plane Crazy Mickey Mouse", year: "1928", description: "O primeiro curta do Mickey Mouse (ainda mudo), onde ele tenta construir um avião para impressionar Minnie.", poster: "https://i.postimg.cc/85hF7xh8/Plane-crase-mickey-mouse.jpg", genres: ["Animação", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1BQn_rHX3wPtZI_2TuOsYIl0fcassBlr/preview" },
-            { id: 91, title: "Rabo de Foguete", year: "1950", description: "Uma aventura cheia de ação com um foguete, explorando o espaço ou os perigos da alta velocidade. (Ano 1950 é um palpite)", poster: "https://i.postimg.cc/hjFzPKQ5/Rabo-de-foguete.jpg", genres: ["Aventura", "Ficção Científica"], videoUrl: "https://drive.google.com/file/d/1mksv3t0aBrWA7Mz6K2C3ouDeJRlZytJR/preview" },
-            { id: 92, title: "Sonhos Dourados", year: "1946", description: "Um clássico que explora o poder da esperança e a busca por uma vida melhor, mesmo diante das adversidades.", poster: "https://i.postimg.cc/tTh1s8Fm/Sonhos-dourados.jpg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1BmwZtm39svuev-NVWv5uFmYgQaiWXfpL/preview" },
-            { id: 97, title: "Pato Donald – O Espírito de 43", year: "1943", description: "Produzido durante a Segunda Guerra, mostra Donald Duck dividido entre gastar seu dinheiro ou apoiar o esforço de guerra.", poster: "https://i.postimg.cc/KYYp13MP/Esp-rito-de-43.jpg", genres: ["Curta-metragem", "Propaganda"], videoUrl: "https://drive.google.com/file/d/1IUIKWf1yNJcxoMdlMJJDDRDsfirsT9Mu/preview" },
-            { id: 101, title: "os desgraçados não choram (1950)", year: "1950", description: "O assassinato do gângster Nick Prenta (Steve Cochran) desencadeia uma investigação policial da misteriosa socialite Lorna Hansen Forbes (Joan Crawford), que parece não ter passado e agora está desaparecida. Em flashbacks, as raízes anônimas da mulher são mostradas; seu casamento infeliz e sua antiga vida na classe trabalhadora, e sua determinação em encontrar coisas melhores. Logo descobrindo que o apelo sexual é a única maneira de ascender socialmente, ela se aproveita de homem em homem até chegar ao centro de um sindicato criminoso.", poster: "https://i.postimg.cc/BQmL86sY/os-desgra-ados-n-o-choram.png", genres: ["Drama", "Noir"], videoUrl: "https://drive.google.com/file/d/1sYXnmYglhl6SH2POuJjuKV3BqtJukI0f/preview" },
-            { id: 102, title: "Passado Tenebroso", year: "1948", description: "O psiquiatra da polícia, Dr. Andrew Collins, diz a um detetive que acredita que pode ajudar a afastar um jovem suspeito do crime. Por meio de um flashback prolongado, ele ilustra sua afirmação com a história de como ele veio a trabalhar para a polícia.", poster: "https://i.postimg.cc/4y8MctW1/the-dark-past.png", genres: ["Crime", "Noir"], videoUrl: "https://drive.google.com/file/d/1cn2GTt8IhpMNMSnebzMMcnQx7Soh5Fts/preview" },
-            { id: 104, title: "um conto de natal", year: "1971", description: "O mais famoso e querido conto de natal de todos os tempos. É a história de um homem cuja fixação por dinheiro era sua única alegria na vida. Isto, até que o pequeno Tim e um sonho sobre os fantasmas de natais passados o transformaram. Da imortal obra de Charles Dickens, estes personagens fazem parte de nossas vidas tanto quanto Papai Noel.", poster: "https://i.postimg.cc/sXB9mN9Z/a-christmas-carol.png", genres: ["Animação", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1Ja2iNruC3XeThv_i2ngkK1b_lGNeiKv6/preview" },
-            { id: 105, title: "interludio", year: "1946", description: "Após seu pai alemão ser condenado como espião, uma jovem mulher (Ingrid Bergman) passa a se refugiar em bebida e homens. É assim que se aproxima de um agente do governo (Cary Grant), que pergunta se ela concorda em ser uma espiã americana no Rio de Janeiro, onde nazistas amigos do pai dela estão operando. Ela acaba se casando com um espião nazista, mas se apaixona pelo seu contato no governo americano.", poster: "https://i.postimg.cc/BbKrrNsP/interludio.jpg", genres: ["Suspense", "Crime", "Noir", "Drama"], videoUrl: "https://drive.google.com/file/d/1Mwg03ZMdqkis0m1gdJ5h2uiNSLRWWeFk/preview" },
-            { id: 107, title: "A Nave da Revolta", year: "1954", description: " Durante a 2ª Guerra Mundial Willie Keith, um jovem oficial, se incorpora à tripulação do Caine, um navio de menor porte que funciona como caça-minas. O imediato Steve Maryk e o tenente Tom Keefer também fazem parte do staff. Logo depois da chegada de Willie, o capitão DeVriess é substituído pelo capitão Philip Francis Queeg, que logo impõe sua autoridade e sua neurose acerca de limpeza, pois é de seu intento comandar um navio imaculado, onde até uma camisa fora de calça é motivo de séria advertência.", poster: "https://i.postimg.cc/d1YKhCh9/a-nave-da-revolta.jpg", genres: ["Guerra", "Ação"], videoUrl: "https://drive.google.com/file/d/170WaPyW_YiGzL9R4Z8VLhH_EojrWHST2/preview" },
-            { id: 113, title: "Rochedos da morte", year: "1953", description: "Mike e Tony Petrakis são uma equipa grega de pai e filho que mergulham à procura de esponjas na costa da Florida. Depois de serem roubados por bandidos, Arnold e os irmãos Rhys, Mike decide levar os seus homens para o perigoso recife de 12 milhas para mergulhar à procura de mais esponjas. Mike sofre um acidente fatal quando cai do recife, deixando Tony para continuar o negócio. Mas agora ele tem uma companheira, Gwyneth Rhys.", poster: "https://i.postimg.cc/25nrzYz2/rochedos-da-morte-1953.png", genres: ["Ação", "Aventura"], videoUrl: "https://drive.google.com/file/d/103wHhFtD5ZnmVJJySUnO1mKRoK8I21xp/preview" },
-            { id: 114, title: "o rio da navalha", year: "1946", description: "Veterano da Primeira Guerra Mundial descobre, ao voltar pra casa, que seu mundo não é mais o de classe privilegiada. Transtornado, abandona a carreira e viaja para a Índia em busca de sentido para sua vida, o que leva sua noiva a buscar segurança nos braços de outro homem", poster: "https://i.postimg.cc/767VsBnV/o-fio-da-navalha-1946.png", genres: ["Drama"], videoUrl: "https://drive.google.com/file/d/12tLW0YNqoeqGs3Om_V3t4oEbjlZiv0zQ/preview" },
-            { id: 117, title: "Sob o signo de capricórnio ", year: "1949", description: " Em 1831 o irlandês Charles Adare viaja à Austrália para começar uma nova vida. Logo ao chegar conhece o poderoso Sam Flusky e descobre que a esposa deste, Henrietta, foi sua colega de infância. Bela e instável, Henrietta é agora uma atormentada alcoólatra e sua reaproximação de Charles desperta ciúmes em Sam.", poster: "https://i.postimg.cc/wxcVCpsK/sob-o-signo-de-capric-rnio.png", genres: ["Suspense", "Romance", "Drama"], videoUrl: "https://drive.google.com/file/d/1T3Ocdh3JcU6g1qrM8ZSk0ijLxVQgQofJ/preview" },
-            { id: 118, title: "Terei o direito de te matar? ", year: "1964", description: "Thomas, desertor da Legião Francesa, resgata o refém Dominique dos terroristas. Ferido, ele mata o guarda. Dominique financia sua fuga para a França. Preso entre a Legião e terroristas vingativos.", poster: "https://i.postimg.cc/wMVQLXdc/terei-o-direito-de-matar.jpg", genres: ["Suspense", "Ação", "Drama"], videoUrl: "https://drive.google.com/file/d/1p1JkaIm-zRx3C9Pjb87b730FGAf-Inrj/preview" },
-            { id: 119, title: "O Pássaro Azul ", year: "1940", description: "A pequena Mytyl (Shirley Temple) e seu irmão recebem a notícia de que seu pai, um lenhador, irá para a guerra. A fada Berylune (Jessie Ralph) faz uma visita a eles, e junto com ela partem uma mágica viagem através do passado, presente e futuro para tentar encontrar o lendário Pássaro Azul da Felicidade. No passado eles reencontra os avós falecidos e no futuro eles conhecem a irmã que ainda terão.", poster: "https://i.postimg.cc/Zncxp8h9/o-passaro-azul.jpg", genres: ["Fantasia", "Aventura"], videoUrl: "https://drive.google.com/file/d/1s7jkuwV79ykVfYUnlM9tKVaC9A0C6KSf/preview" },
-            { id: 120, title: "As três faces de eva", year: "1955", description: "Sofrendo com fortes dores de cabeça e desmaios frequentes, Eva White (Joanne Woodward) decide conversar com o psiquiatra Dr. Luther. Durante o tratamento, ela é hipnotizada, e logo revela duas outras personalidades: a de uma mulher impulsiva e cheia de vida, e a de uma garota submissa à própria mãe. O drama é baseado na história real de Christine Costner Sizemore, diagnosticada com transtorno de múltiplas personalidades.", poster: "https://i.postimg.cc/tRt5KjVy/as-3-faces-de-eva.png", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1-52TkvOFSE2WkIeQmMEZlKqOBEvsVyxy/preview" },
-            { id: 122, title: "Amar foi uma ruína", year: "1945", description: "Um escritor se apaixona por uma jovem socialite e eles logo se casam. Mas seu amor obsessivo por ele ameaça destruí-los a ambos e a todos ao seu redor ", poster: "https://i.postimg.cc/Y03zY6wR/amar-foi-uma-ru-na.png", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1ubQeOK7w0Lr0vIDZz58lU7TAhmHCo51k/preview" },
-            { id: 123, title: "A sombra da morte", year: "1954", description: "Após assaltar o banco local, uma gangue liderada pelo cruel Sancho se refugia em uma fazenda tomando como reféns seus habitantes. Os homens do Xerife Ben, não podem atacar com medo de colocar em risco a vida dos reféns, então resolve enviar Ringo, que passa uns tempos na cadeia após exterminar uma outra gangue, para se infiltrar entre os assaltantes, libertar os prisioneiros e salvar os reféns. ", poster: "https://i.postimg.cc/zvjFKC1n/A-SOMBRA-DA-NOITE-1954.png", genres: ["Suspense", "Ação"], videoUrl: "https://drive.google.com/file/d/1ghJao_1Geqc-09ieZ24eSnnETilyNTn_/preview" },
-            { id: 124, title: "Nossa vida com papai", year: "1947", description: "Clarence, um executivo da bolsa de valores, luta para ser a autoridade máxima em casa, mas é a mulher Vinnie quem realmente mantém a ordem. Para ganhar mais respeito, Clarence faz mudanças que vão beneficiar a todos, incluindo seu próprio batismo.", poster: "https://i.postimg.cc/SRrfC6pN/Life-with-Father.png", genres: ["Suspense", "Drama"], videoUrl: "https://drive.google.com/file/d/1k11YB9-DsLRGxhQYmw1NqedWzv4BdizL/preview" },
-            { id: 125, title: "Mistério na Casa de Bambu", year: "1955", description: "Em Tóquio, uma gangue está roubando munição americana. A morte de um oficial americano durante o roubo faz com que Eddie Spanier, um investigador disfarçado, se infiltre na gangue, com a ajuda de Mariko, uma japonesa casada com um ex-membro da gangue que morreu em um dos assaltos.", poster: "https://i.postimg.cc/ryCJBktk/Mist-rio-na-Casa-de-Bambu-1955.png", genres: ["Suspense", "Ação"], videoUrl: "https://drive.google.com/file/d/1PkhW2vCjcMYx5UWx6gDZwjjgmbkf7Wd3/preview" },
-            { id: 126, title: "As Neves do Kilimanjaro", year: "1952", description: " O escritor Harry Street, ferido gravemente durante um safári na África, aguarda a chegada de ajuda médica aos pés da montanha de Kilimanjaro, na África. Enquanto o auxílio não vem, ele relembra à esposa Helen suas frustradas aventuras amorosas e seus fracassos como escritor. Em estado delirante, ele revive seu único romance verdadeiro, com Cynthia Green, cuja paixão ele deixou escapar devido à obsessão em viajar pelo mundo em busca de temas para seus livros.", poster: "https://i.postimg.cc/5y3SLBMv/As-Neves-do-Kilimanjaro-1952.jpg", genres: ["Aventura", "Ação"], videoUrl: "https://drive.google.com/file/d/1HfH4PtCBV4dcLveqNj-XhXwnsa9V8lTH/preview" },
-            { id: 127, title: "O Anjo e Bandido", year: "1947", description: "Após ser ferido em um tiroteio, o pistoleiro Quirt Evans (John Wayne) é acolhido por uma família de quacres. O modo de vida pacífico deles e o amor de Penelope o fazem repensar seu passado violento.", poster: "https://i.postimg.cc/SK3tjyVR/o-anjo-e-o-bandido.png", genres: ["Faroeste", "Ação"], videoUrl: "https://drive.google.com/file/d/1eRlXsd6LMvOKpiQCjBjnGZXSVdq1T3kY/preview" },
-            { id: 130, title: "O retrato de jennie", year: "1948", description: "Um pintor sem inspiração conhece uma garota misteriosa que parece envelhecer a cada encontro. Ele se apaixona por ela, sem saber que Jennie pertence a outro tempo.", poster: "https://i.postimg.cc/FRSCL2nm/o-retrato-de-jennie-1948.png", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1Kc4Isipv_3V_429UW_v04b5LE7iBVZYX/preview" },
-            { id: 133, title: "Missão Perigosa", year: "1948", description: "Durante o pós-guerra, um agente americano é enviado à América do Sul para investigar e eliminar uma rede de espiões nazistas fugitivos.", poster: "https://i.postimg.cc/CKX6dFJh/miss-o-perigosa.jpg", genres: ["Drama", "Suspense"], videoUrl: "https://drive.google.com/file/d/1ZKKOe022V9vW0QvG-Jk9qTD2QTEpGtS6/preview" },
-            { id: 134, title: "Mickey Mouse – The Barn Dance", year: "1929", description: "Mickey convida Minnie para um baile no celeiro, mas precisa enfrentar Pete, seu rival. A dança se transforma em uma disputa cômica pelo coração dela.", poster: "https://i.postimg.cc/R0ybqMGv/Mickey-Mouse-The-Barn-Dance-1929.jpg", genres: ["Animação", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1nq9nTzRHUpqBeIozbdPiYLiOywnazZ8L/preview" },
-            { id: 139, title: "O Gordo e o magro - era uma vez dois valentes", year: "1934", description: "Gordo e Magro são fabricantes de brinquedos que buscam ajudar a viúva Peep e sua filha Bo-Peep contra o malvado Silas Barnaby, que exige casamento com a moça para assim quitar a hipoteca da casa..", poster: "https://i.postimg.cc/zvtHwNNS/O-Gordo-e-o-Magro-Era-Uma-Vez-Dois-Valentes.png", genres: ["Comédia"], videoUrl: "https://drive.google.com/file/d/1lPtIs64r9jrb9Cdnri-_9tmlzrLP4Dzm/preview" },
-            { id: 140, title: "4 Famous studios Cartoons", year: "1920-1945", description: "As 4 melhores animações da Famous Studios em 1!.", poster: "https://i.postimg.cc/sxDZZXkX/Famous-Studios-Cartoon.jpg", genres: ["Curta-metragem", "Animação"], videoUrl: "https://drive.google.com/file/d/1x9xzBU4u04lWWi_LlNKCWZzd4WLPA8Yt/preview" },           
-    ];
-
-/* ================== RENDER ================== */
-const catalog=document.getElementById("catalog");
-
-CONTENT_DATA.forEach(movie=>{
-  if(movie.plus && !isPlus()) return;
-
-  const c=document.createElement("div");
-  c.className="card";
-
-  const i=document.createElement("img");
-  i.src=movie.poster;
-  c.appendChild(i);
-
-  c.onclick=()=>openMovie(movie);
-  catalog.appendChild(c);
+/* ======= RENDER ======= */
+movies.forEach((m,i)=>{
+  const d = document.createElement("div");
+  d.className="card";
+  d.style.backgroundImage=`url(${m.poster})`;
+  d.onclick=()=>select(i);
+  row.appendChild(d);
 });
 
-/* ================== PLAYER ================== */
-function openMovie(movie){
-  if(movie.plus && !isPlus()){
-    alert("Conteúdo exclusivo Plus+");
-    return;
-  }
-  const p=document.getElementById("player");
-  const v=document.getElementById("video");
-  v.src=movie.video;
-  p.style.display="block";
-  v.play();
+function select(i){
+  index=i;
+  document.querySelectorAll(".card").forEach((c,ci)=>{
+    c.classList.toggle("active",ci===i);
+  });
+
+  const m=movies[i];
+  hero.style.backgroundImage=`linear-gradient(to top,rgba(0,0,0,.8),transparent),url(${m.poster})`;
+  title.textContent=m.title;
+  desc.textContent=`${m.year} • ${m.genres.join(", ")}`;
+  playBtn.style.display="inline-block";
+
+  playBtn.onclick=()=>{
+    if(m.plus && !isPlus()){
+      openPlus();
+      return;
+    }
+    openPlayerAntigo(m.videoUrl);
+  };
+
+  row.children[i].scrollIntoView({inline:"center",behavior:"smooth"});
 }
 
+/* ======= CONTROLES ======= */
 document.addEventListener("keydown",e=>{
-  if(e.key==="Escape"){
-    document.getElementById("player").style.display="none";
-    document.getElementById("video").pause();
-  }
+  if(e.key==="ArrowRight") select(Math.min(index+1,movies.length-1));
+  if(e.key==="ArrowLeft") select(Math.max(index-1,0));
 });
 
-/* ================== NAV ================== */
-left.onclick=()=>catalog.scrollLeft-=320;
-right.onclick=()=>catalog.scrollLeft+=320;
+document.getElementById("left").onclick=()=>select(Math.max(index-1,0));
+document.getElementById("right").onclick=()=>select(Math.min(index+1,movies.length-1));
 
-/* ================== GAMEPAD ================== */
-let last=0;
-setInterval(()=>{
-  const g=navigator.getGamepads()[0];
-  if(!g)return;
-  const n=Date.now();
-  if(n-last<120)return;
-
-  if(g.axes[0]>0.5||g.buttons[15]?.pressed){
-    catalog.scrollLeft+=120;last=n;
-  }
-  if(g.axes[0]<-0.5||g.buttons[14]?.pressed){
-    catalog.scrollLeft-=120;last=n;
-  }
-  if(g.buttons[0]?.pressed){
-    const el=document.elementFromPoint(innerWidth/2,innerHeight/2);
-    if(el)el.click();
-  }
-},120);
-
-/* ================== AUTO LOGIN ================== */
-if(localStorage.getItem("USER")){
-  login();
+/* ======= PLACEHOLDERS DO TEU SISTEMA ======= */
+function isPlus(){ return localStorage.getItem("PLUS")==="true"; }
+function openPlus(){ alert("Conteúdo Plus+"); }
+function openPlayerAntigo(url){
+  /* AQUI VOCÊ CHAMA O PLAYER QUE JÁ EXISTE */
+  console.log("Abrir player:",url);
 }
+
+/* INIT */
+if(movies.length) select(0);
 </script>
 
 </body>
