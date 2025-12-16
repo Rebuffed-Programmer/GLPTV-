@@ -3546,11 +3546,35 @@ function handleLogin(res) {
         picture: payload.picture
     };
 
+    // Salva usuário
     localStorage.setItem("glplus_user", JSON.stringify(user));
 
+    // Aplica login visual
     applyUser(user);
-}
 
+    // ==========================
+    // 🔥 ATIVA PLUS+
+    // ==========================
+    const exp = new Date();
+    exp.setDate(exp.getDate() + 30);
+
+    localStorage.setItem("GLPLUS_PREMIUM", "true");
+    localStorage.setItem("GLPLUS_EXPIRA", exp.toISOString());
+
+    // ==========================
+    // 🔥 FECHA MODAL + ABRE CATÁLOGO
+    // ==========================
+    const modal = document.getElementById("plusAccessModal");
+    if (modal) modal.style.display = "none";
+
+    if (typeof hideAllMainSections === "function") {
+        hideAllMainSections();
+    }
+
+    if (typeof renderPlusCatalog === "function") {
+        renderPlusCatalog();
+    }
+}
 // ==============================
 //  APLICAR USUÁRIO
 // ==============================
