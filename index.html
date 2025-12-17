@@ -160,11 +160,6 @@ body{background:#000;color:#fff;overflow:hidden}
   <span>(+) Plus+</span>
 </div>
 
-<!-- ROW -->
-<div id="row"></div>
-<div id="left" class="arrow">⬅️</div>
-<div id="right" class="arrow">➡️</div>
-
 <!-- PLAYER -->
 <div id="playerOverlay">
   <iframe id="playerFrame" allowfullscreen></iframe>
@@ -262,10 +257,7 @@ body{background:#000;color:#fff;overflow:hidden}
 
 
         ];
-/* ====== BLOQUEIO PLUS+ (REAPROVEITÁVEL) ====== */
-function canPlay(){
-  return localStorage.getItem("GLPLUS_PREMIUM")==="true";
-}
+
 
 /* ====== ESTADO ====== */
 let currentIndex = 0;
