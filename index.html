@@ -34,68 +34,51 @@ body{background:#000;color:#fff;overflow:hidden}
   padding:40px;
   display:flex;
   align-items:flex-end;
-  background-size:cover;
-  background-position:center;
+  background-repeat:no-repeat;
+  background-position:right center;
+  background-size:contain; /* 🔴 IMAGEM INTEIRA */
 }
 #hero::after{
   content:"";
   position:absolute;
   inset:0;
-  background:linear-gradient(to top,rgba(0,0,0,.95),rgba(0,0,0,.25));
-}
-#heroContent{
-  position:relative;
-  max-width:55%;
-}
-#hero h1{font-size:42px;margin-bottom:10px}
-#meta{opacity:.7;font-size:14px}
-#desc{margin-top:12px;font-size:15px;opacity:.85}
-#playBtn{
-  margin-top:20px;
-  padding:12px 34px;
-  font-size:16px;
-  border:none;
-  border-radius:4px;
-  background:#fff;
-  color:#000;
-  cursor:pointer;
+  background:linear-gradient(to right,rgba(0,0,0,.95),rgba(0,0,0,.35),transparent);
 }
 
-/* ===== ROW ===== */
+/* ===== ROW FIXA ===== */
 #row{
   position:absolute;
   bottom:32px;
   left:0;
   right:0;
   display:flex;
+  align-items:flex-end; /* 🔴 NÃO DEIXA DANÇAR */
   gap:18px;
   padding-left:48px;
   overflow-x:auto;
-  scroll-behavior:smooth;
 }
 #row::-webkit-scrollbar{display:none}
 
-/* ===== CARD (POSTER) ===== */
+/* ===== CARD ===== */
 .card{
   min-width:300px;
-  height:168px;           /* 16:9 menor */
+  height:168px; /* 16:9 */
   background-size:contain;
   background-repeat:no-repeat;
   background-position:center;
   background-color:#111;
   border-radius:8px;
-  transition:transform .25s, box-shadow .25s, filter .25s;
   cursor:pointer;
+  transition:filter .2s, box-shadow .2s;
   filter:brightness(.55);
 }
 
-/* Destaque do selecionado */
+/* destaque SEM scale */
 .card.active{
-  transform:scale(1.18);
   filter:brightness(1);
   box-shadow:
-    0 0 0 3px rgba(255,255,255,.15),
-    0 18px 40px rgba(0,0,0,.9);
+    0 0 0 3px rgba(255,255,255,.18),
+    0 14px 32px rgba(0,0,0,.9);
 }
 
 /* ===== ARROWS ===== */
