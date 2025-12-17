@@ -73,20 +73,26 @@ body{background:#000;color:#fff;overflow:hidden}
 }
 #row::-webkit-scrollbar{display:none}
   
+/* ===== CARD ===== */
 .card{
-  min-width:420px;
-  height:236px;           /* 16:9 */
-  background-size:contain; /* MOSTRA IMAGEM INTEIRA */
+  min-width:300px;
+  height:168px; /* 16:9 */
+  background-size:contain;
   background-repeat:no-repeat;
   background-position:center;
-  border-radius:10px;
   background-color:#111;
-  transition:.3s;
+  border-radius:8px;
   cursor:pointer;
+  transition:filter .2s, box-shadow .2s;
+  filter:brightness(.55);
 }
+
+/* destaque SEM scale */
 .card.active{
-  transform:scale(1.12);
-  box-shadow:0 25px 60px rgba(0,0,0,.9);
+  filter:brightness(1);
+  box-shadow:
+    0 0 0 3px rgba(255,255,255,.18),
+    0 14px 32px rgba(0,0,0,.9);
 }
 
 /* ===== ARROWS ===== */
