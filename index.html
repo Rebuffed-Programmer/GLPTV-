@@ -34,9 +34,12 @@ body{background:#000;color:#fff;overflow:hidden}
   padding:40px;
   display:flex;
   align-items:flex-end;
+
   background-repeat:no-repeat;
   background-position:right center;
-  background-size:contain; /* 🔴 IMAGEM INTEIRA */
+
+  /* 🔥 chave do ajuste */
+  background-size:auto 95%;  /* cresce na vertical */
 }
 #hero::after{
   content:"";
