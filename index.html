@@ -10,10 +10,15 @@
 body{background:#000;color:#fff;overflow:hidden}
 
 /* Conteúdo do hero sempre acima do overlay */
-#heroContent{
+#hero{
   position:relative;
-  z-index:2;
-}
+  height:48vh;
+  padding:40px;
+  display:flex;
+  align-items:flex-end;
+  background-repeat:no-repeat;
+  background-position:right center;
+  background-size:contain; /* 🔴 IMAGEM INTEIRA */
 
 /* Overlay NÃO escurece texto */
 #hero::after{
