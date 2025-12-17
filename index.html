@@ -30,17 +30,18 @@ body{background:#000;color:#fff;overflow:hidden}
 /* ===== HERO ===== */
 #hero{
   position:relative;
-  height:48vh;
+  height:58vh;              /* 🔥 MAIS ALTO */
   padding:40px;
   display:flex;
   align-items:flex-end;
 
   background-repeat:no-repeat;
-  background-position:right center;
+  background-position:right bottom;
 
-  /* 🔥 chave do ajuste */
-  background-size:auto 95%;  /* cresce na vertical */
+  /* 🔥 cresce para cima mantendo proporção */
+  background-size:auto 115%;
 }
+    
 #hero::after{
   content:"";
   position:absolute;
