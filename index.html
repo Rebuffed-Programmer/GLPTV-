@@ -62,7 +62,7 @@ body{background:#000;color:#fff;overflow:hidden}
 /* ===== CARD ===== */
 .card{
   min-width:300px;
-  height:168px; /* 16:9 */
+  height:214px; /* 16:9 */
   background-size:contain;
   background-repeat:no-repeat;
   background-position:center;
@@ -349,6 +349,66 @@ selectMovie(0);
     frame.src = url;
     overlay.style.display = "block";
   };
+
+})();
+</script>
+
+<script>
+/* ===============================
+   FIX ASSISTIR + DOUBLE TAP
+   =============================== */
+
+(function(){
+
+  const overlay = document.getElementById("playerOverlay");
+  const frame   = document.getElementById("playerFrame");
+  const playBtn = document.getElementById("playBtn");
+  const cards   = document.querySelectorAll(".card");
+
+  if(!overlay || !frame) return;
+
+  let lastTapIndex = null;
+  let lastTapTime  = 0;
+
+  // Reforça abertura do player
+  window.openPlayer = function(url){
+    if(typeof canPlay === "function" && !canPlay()){
+      alert("Conteúdo exclusivo Plus+");
+      return;
+    }
+    frame.src = url;
+    overlay.style.display = "block";
+  };
+
+  // Botão Assistir sempre funcional
+  playBtn.onclick = () => {
+    const movie = movieData[currentIndex];
+    if(movie && movie.videoUrl){
+      openPlayer(movie.videoUrl);
+    }
+  };
+
+  // Double tap / double click no card
+  cards.forEach((card, index) => {
+    card.addEventListener("click", () => {
+      const now = Date.now();
+
+      if(lastTapIndex === index && now - lastTapTime < 400){
+        openPlayer(movieData[index].videoUrl);
+      }
+
+      lastTapIndex = index;
+      lastTapTime = now;
+    });
+  });
+
+  // Fecha player clicando fora
+  overlay.onclick = () => {
+    frame.src = "";
+    overlay.style.display = "none";
+  };
+
+  frame.onclick = e => e.stopPropagation();
 
 })();
 </script>
