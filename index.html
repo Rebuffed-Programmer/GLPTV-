@@ -2,8 +2,9 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Plus+</title>
+
 
     <link rel="icon" type="image/png" sizes="16x16" href="https://i.postimg.cc/FzXbNpLT/favicon-16x16.png">
     <link rel="icon" type="image/png" sizes="32x32" href="https://i.postimg.cc/d3cRw6yH/favicon-32x32.png">
@@ -21,47 +22,54 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
-body{
-  background:#000;
-  color:#fff;
-  overflow:hidden;
-}
 
-/* TOPO */
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto}
+body{background:#000;color:#fff;overflow:hidden}
+
+/* ===== HERO ===== */
 #hero{
-  height:45vh;
+  position:relative;
+  height:48vh;
   padding:40px;
   display:flex;
   align-items:flex-end;
   background-size:cover;
   background-position:center;
-  transition:background .3s;
 }
-#heroInfo{
-  max-width:50%;
+#hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,.95),rgba(0,0,0,.25));
 }
-#heroInfo h1{font-size:42px;margin-bottom:10px}
-#heroInfo p{opacity:.8;font-size:16px;margin-bottom:20px}
+#heroContent{
+  position:relative;
+  max-width:55%;
+}
+#hero h1{font-size:42px;margin-bottom:10px}
+#meta{opacity:.7;font-size:14px}
+#desc{margin-top:12px;font-size:15px;opacity:.85}
 #playBtn{
-  padding:12px 28px;
+  margin-top:20px;
+  padding:12px 34px;
+  font-size:16px;
+  border:none;
+  border-radius:4px;
   background:#fff;
   color:#000;
-  border:none;
-  font-size:16px;
   cursor:pointer;
 }
 
-/* CARROSSEL */
+/* ===== ROW ===== */
 #row{
   position:absolute;
-  bottom:40px;
+  bottom:26px;
   left:0;
   right:0;
-  padding-left:40px;
   display:flex;
   gap:18px;
+  padding-left:40px;
   overflow-x:auto;
   scroll-behavior:smooth;
 }
@@ -73,51 +81,88 @@ body{
   background-size:cover;
   background-position:center;
   border-radius:6px;
-  transition:transform .2s, box-shadow .2s;
+  transition:.25s;
   cursor:pointer;
 }
 .card.active{
-  transform:scale(1.12);
-  box-shadow:0 10px 30px rgba(0,0,0,.8);
+  transform:scale(1.15);
+  box-shadow:0 18px 40px rgba(0,0,0,.85);
 }
 
-/* SETAS TOUCH */
+/* ===== ARROWS ===== */
 .arrow{
   position:absolute;
-  top:55%;
-  font-size:40px;
-  opacity:.4;
+  top:65%;
+  font-size:42px;
+  opacity:.35;
   cursor:pointer;
   user-select:none;
 }
-#left{left:10px}
-#right{right:10px}
+#left{left:14px}
+#right{right:14px}
+
+/* ===== PLAYER (ANTIGO / IFRAME) ===== */
+#playerOverlay{
+  position:fixed;
+  inset:0;
+  background:#000;
+  display:none;
+  z-index:9999;
+}
+#playerOverlay iframe{
+  width:100%;
+  height:100%;
+  border:none;
+}
+
+/* ===== COMMANDS ===== */
+#commands{
+  position:absolute;
+  top:20px;
+  right:30px;
+  font-size:13px;
+  opacity:.7;
+}
+#commands span{margin-left:14px}
 </style>
 </head>
 
 <body>
 
-<!-- TOPO DINÂMICO -->
+<!-- HERO -->
 <div id="hero">
-  <div id="heroInfo">
-    <h1 id="title">Selecione um filme</h1>
-    <p id="desc">Use o direcional ou toque para navegar</p>
-    <button id="playBtn" style="display:none">Assistir</button>
+  <div id="heroContent">
+    <h1 id="title"></h1>
+    <div id="meta"></div>
+    <p id="desc"></p>
+    <button id="playBtn">▶ Assistir</button>
   </div>
 </div>
 
-<!-- LINHA ÚNICA -->
-<div id="row">
-  <!-- COLE AQUI OS FILMES -->
+<!-- COMMANDS -->
+<div id="commands">
+  <span>(Y) Filmes</span>
+  <span>(X) Conta</span>
+  <span>(+) Plus+</span>
 </div>
 
+<!-- ROW -->
+<div id="row"></div>
 <div id="left" class="arrow">⬅️</div>
 <div id="right" class="arrow">➡️</div>
 
-<script>
-/* ======= DADOS ======= */
+<!-- PLAYER -->
+<div id="playerOverlay">
+  <iframe id="playerFrame" allowfullscreen></iframe>
+</div>
 
-const movieData = [
+<script>
+/* =====================================================
+   👇 AQUI FICA O movieData
+   Depois é só substituir pelos seus filmes reais
+   ===================================================== */
+
+        const movieData = [
             { id: 2, title: "A Antiga e a Moderna", year: "1929", description: "O jovem Komarovskis volta do exílio para sua aldeia na Sibéria, onde se depara com grandes mudanças em andamento. Entre elas, a jovem Marfa, que se rebela contra os costumes de uma família patriarcal e está determinada a viver de acordo com suas próprias regras.", poster: "https://a.imagem.app/BCs9X0.jpeg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1D7tr9aDjLJ2gGrdoYXGrKYqnJRu8Exjo/preview" },
             { id: 4, title: "A Greve", year: "1925", description: "Na Rússia czarista de 1912, operários de uma fábrica realizam uma greve após o suicídio de um colega. A polícia secreta do governo reprime o protesto com violência.", poster: "https://a.imagem.app/BCsLCP.jpeg", genres: ["Drama", "História"], videoUrl: "https://drive.google.com/file/d/1vZXJeW3TwQg1L_tEowv5tC4KR5yiYTZt/preview" },
             { id: 6, title: "A Paixão de Andy", year: "1973", description: "Um grupo de pessoas busca um tesouro de Andy Warbol na cidade de Los Angeles.", poster: "https://a.imagem.app/BCsE2S.jpeg", genres: ["Aventura"], videoUrl: "https://drive.google.com/file/d/17MS17ey-U9ns72OXoWImmFMW__oP86aP/preview" },
@@ -200,67 +245,83 @@ const movieData = [
             { id: 139, title: "O Gordo e o magro - era uma vez dois valentes", year: "1934", description: "Gordo e Magro são fabricantes de brinquedos que buscam ajudar a viúva Peep e sua filha Bo-Peep contra o malvado Silas Barnaby, que exige casamento com a moça para assim quitar a hipoteca da casa..", poster: "https://i.postimg.cc/zvtHwNNS/O-Gordo-e-o-Magro-Era-Uma-Vez-Dois-Valentes.png", genres: ["Comédia"], videoUrl: "https://drive.google.com/file/d/1lPtIs64r9jrb9Cdnri-_9tmlzrLP4Dzm/preview" },
             { id: 140, title: "4 Famous studios Cartoons", year: "1920-1945", description: "As 4 melhores animações da Famous Studios em 1!.", poster: "https://i.postimg.cc/sxDZZXkX/Famous-Studios-Cartoon.jpg", genres: ["Curta-metragem", "Animação"], videoUrl: "https://drive.google.com/file/d/1x9xzBU4u04lWWi_LlNKCWZzd4WLPA8Yt/preview" },            
 
-];
 
-/* ======= ESTADO ======= */
-let index = 0;
-const row = document.getElementById("row");
+
+        ];
+/* ====== BLOQUEIO PLUS+ (REAPROVEITÁVEL) ====== */
+function canPlay(){
+  return localStorage.getItem("GLPLUS_PREMIUM")==="true";
+}
+
+/* ====== ESTADO ====== */
+let currentIndex = 0;
+
+/* ====== ELEMENTOS ====== */
 const hero = document.getElementById("hero");
-const title = document.getElementById("title");
-const desc = document.getElementById("desc");
+const titleEl = document.getElementById("title");
+const metaEl = document.getElementById("meta");
+const descEl = document.getElementById("desc");
 const playBtn = document.getElementById("playBtn");
+const row = document.getElementById("row");
+const overlay = document.getElementById("playerOverlay");
+const frame = document.getElementById("playerFrame");
 
-/* ======= RENDER ======= */
-movies.forEach((m,i)=>{
-  const d = document.createElement("div");
-  d.className="card";
-  d.style.backgroundImage=`url(${m.poster})`;
-  d.onclick=()=>select(i);
-  row.appendChild(d);
+/* ====== RENDER ====== */
+movieData.forEach((m,i)=>{
+  const c=document.createElement("div");
+  c.className="card";
+  c.style.backgroundImage=`url(${m.poster})`;
+  c.onclick=()=>selectMovie(i);
+  row.appendChild(c);
 });
 
-function select(i){
-  index=i;
+function selectMovie(i){
+  currentIndex=i;
   document.querySelectorAll(".card").forEach((c,ci)=>{
     c.classList.toggle("active",ci===i);
   });
 
-  const m=movies[i];
-  hero.style.backgroundImage=`linear-gradient(to top,rgba(0,0,0,.8),transparent),url(${m.poster})`;
-  title.textContent=m.title;
-  desc.textContent=`${m.year} • ${m.genres.join(", ")}`;
-  playBtn.style.display="inline-block";
+  const m=movieData[i];
+  hero.style.backgroundImage=
+    `linear-gradient(to top,rgba(0,0,0,.9),transparent),url(${m.poster})`;
+  titleEl.textContent=m.title;
+  metaEl.textContent=`${m.year} • ${m.genres.join(" / ")}`;
+  descEl.textContent=m.description;
 
-  playBtn.onclick=()=>{
-    if(m.plus && !isPlus()){
-      openPlus();
-      return;
-    }
-    openPlayerAntigo(m.videoUrl);
-  };
+  playBtn.onclick=()=>openPlayer(m.videoUrl);
 
   row.children[i].scrollIntoView({inline:"center",behavior:"smooth"});
 }
 
-/* ======= CONTROLES ======= */
-document.addEventListener("keydown",e=>{
-  if(e.key==="ArrowRight") select(Math.min(index+1,movies.length-1));
-  if(e.key==="ArrowLeft") select(Math.max(index-1,0));
-});
-
-document.getElementById("left").onclick=()=>select(Math.max(index-1,0));
-document.getElementById("right").onclick=()=>select(Math.min(index+1,movies.length-1));
-
-/* ======= PLACEHOLDERS DO TEU SISTEMA ======= */
-function isPlus(){ return localStorage.getItem("PLUS")==="true"; }
-function openPlus(){ alert("Conteúdo Plus+"); }
-function openPlayerAntigo(url){
-  /* AQUI VOCÊ CHAMA O PLAYER QUE JÁ EXISTE */
-  console.log("Abrir player:",url);
+/* ====== PLAYER ====== */
+function openPlayer(url){
+  if(!canPlay()){
+    alert("Conteúdo exclusivo Plus+");
+    return;
+  }
+  frame.src=url;
+  overlay.style.display="block";
 }
 
-/* INIT */
-if(movies.length) select(0);
+function closePlayer(){
+  frame.src="";
+  overlay.style.display="none";
+}
+
+/* ====== CONTROLES ====== */
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowRight") selectMovie(Math.min(currentIndex+1,movieData.length-1));
+  if(e.key==="ArrowLeft") selectMovie(Math.max(currentIndex-1,0));
+  if(e.key==="Escape") closePlayer();
+});
+
+document.getElementById("left").onclick=()=>selectMovie(Math.max(currentIndex-1,0));
+document.getElementById("right").onclick=()=>selectMovie(Math.min(currentIndex+1,movieData.length-1));
+
+overlay.onclick=closePlayer;
+
+/* ====== INIT ====== */
+selectMovie(0);
 </script>
 
 </body>
