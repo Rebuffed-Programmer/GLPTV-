@@ -308,20 +308,7 @@ function selectMovie(i){
   row.children[i].scrollIntoView({inline:"center",behavior:"smooth"});
 }
 
-/* ====== PLAYER ====== */
-function openPlayer(url){
-  if(!canPlay()){
-    alert("Conteúdo exclusivo Plus+");
-    return;
-  }
-  frame.src=url;
-  overlay.style.display="block";
-}
 
-function closePlayer(){
-  frame.src="";
-  overlay.style.display="none";
-}
 
 /* ====== CONTROLES ====== */
 document.addEventListener("keydown",e=>{
@@ -684,6 +671,55 @@ selectMovie(0);
   document.addEventListener('keydown',e=>{
     if(e.key==='Escape' && overlay.style.display==='flex'){
       restoreAll();
+    }
+  });
+
+})();
+</script>
+
+<script>
+/* =========================================
+   PLAYER ÚNICO DEFINITIVO — PLUS+
+   ========================================= */
+
+(function(){
+
+  const overlay = document.getElementById("playerOverlay");
+  const frame   = document.getElementById("playerFrame");
+
+  if(!overlay || !frame) return;
+
+  function toDrivePreview(url){
+    if(!url) return url;
+    if(url.includes("drive.google.com") && !url.includes("/preview")){
+      const m = url.match(/\/d\/(.*?)\//);
+      if(m && m[1]) return `https://drive.google.com/file/d/${m[1]}/preview`;
+    }
+    return url;
+  }
+
+  // ===== ABRIR PLAYER (SEM PERGUNTA) =====
+  window.openPlayer = function(url){
+    frame.src = toDrivePreview(url);
+    overlay.style.display = "block";
+  };
+
+  // ===== FECHAR PLAYER =====
+  window.closePlayer = function(){
+    frame.src = "";
+    overlay.style.display = "none";
+  };
+
+  // Fecha clicando fora do vídeo
+  overlay.addEventListener("click", closePlayer);
+
+  // Impede fechar ao clicar no vídeo
+  frame.addEventListener("click", e => e.stopPropagation());
+
+  // ESC fecha
+  document.addEventListener("keydown", e=>{
+    if(e.key === "Escape" && overlay.style.display === "block"){
+      closePlayer();
     }
   });
 
