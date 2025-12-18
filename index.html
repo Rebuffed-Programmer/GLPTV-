@@ -2,145 +2,139 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Plus+</title>
+<title>Plus+ Cinema</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="icon" type="image/png" sizes="16x16" href="https://i.postimg.cc/FzXbNpLT/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://i.postimg.cc/d3cRw6yH/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="https://i.postimg.cc/FzXbNpS5/apple-touch-icon-96x96.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="https://i.postimg.cc/fyQ7DC9q/android-icon-192x192.png">
-
-    <link rel="apple-touch-icon" sizes="57x57" href="https://i.postimg.cc/rs2GMjrH/apple-touch-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="https://i.postimg.cc/L5Fk2D17/apple-touch-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="https://i.postimg.cc/D03Qn6X9/apple-touch-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="https://i.postimg.cc/fyQ7DCdQ/apple-touch-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="https://i.postimg.cc/MHJ0q5BS/apple-touch-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="https://i.postimg.cc/Kjh7xfTm/apple-touch-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://i.postimg.cc/5yW5bgzb/apple-touch-icon-180x180.png">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-  
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto}
-body{background:#000;color:#fff;overflow:hidden}
-
-/* ===== HERO ===== */
-#hero{
-  position:relative;
-  height:48vh;
-  padding:40px;
-  display:flex;
-  align-items:flex-end;
-  background-size:cover;
-  background-position:center;
+/* ===== RESET ===== */
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#000;
+  color:#fff;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
+  overflow:hidden;
 }
+
+/* ===== HERO (TOPO) ===== */
+#hero{
+  height:68vh;
+  width:100%;
+  position:relative;
+  background-repeat:no-repeat;
+  background-position:center top;
+  background-size:contain;
+}
+
 #hero::after{
   content:"";
   position:absolute;
   inset:0;
-  background:linear-gradient(to top,rgba(0,0,0,.95),rgba(0,0,0,.25));
-}
-#heroContent{
-  position:relative;
-  max-width:55%;
-}
-#hero h1{font-size:42px;margin-bottom:10px}
-#meta{opacity:.7;font-size:14px}
-#desc{margin-top:12px;font-size:15px;opacity:.85}
-#playBtn{
-  margin-top:20px;
-  padding:12px 34px;
-  font-size:16px;
-  border:none;
-  border-radius:4px;
-  background:#fff;
-  color:#000;
-  cursor:pointer;
+  background:linear-gradient(to top, rgba(0,0,0,.95), transparent 60%);
 }
 
-/* ===== ROW FIXA ===== */
-#row{
+#heroInfo{
   position:absolute;
-  bottom:32px;
-  left:0;
-  right:0;
-  display:flex;
-  align-items:flex-end; /* 🔴 NÃO DEIXA DANÇAR */
-  gap:18px;
-  padding-left:48px;
-  overflow-x:auto;
+  bottom:40px;
+  left:40px;
+  max-width:45%;
+  z-index:2;
 }
-#row::-webkit-scrollbar{display:none}
-  
-/* ===== CARD ===== */
-.card{
-  min-width:300px;
-  height:168px; /* 16:9 */
-  background-size:contain;
-  background-repeat:no-repeat;
-  background-position:center;
-  background-color:#111;
+
+#title{font-size:36px;font-weight:700}
+#meta{opacity:.85;margin:8px 0}
+#desc{opacity:.9;font-size:15px;line-height:1.4;margin-bottom:16px}
+
+#playBtn{
+  padding:12px 22px;
+  font-size:16px;
+  background:#fff;
+  color:#000;
+  border:none;
   border-radius:8px;
   cursor:pointer;
-  transition:filter .2s, box-shadow .2s;
-  filter:brightness(.55);
 }
 
-/* destaque SEM scale */
-.card.active{
-  filter:brightness(1);
-  box-shadow:
-    0 0 0 3px rgba(255,255,255,.18),
-    0 14px 32px rgba(0,0,0,.9);
-}
-
-/* ===== ARROWS ===== */
-.arrow{
+/* ===== ROW ===== */
+#rowWrap{
   position:absolute;
-  top:64%;
-  font-size:52px;
-  opacity:.35;
-  cursor:pointer;
-  user-select:none;
+  bottom:0;
+  width:100%;
+  padding:20px 0 30px;
+  background:linear-gradient(to top,#000,transparent);
 }
 
-#playBtn{
-  margin-top:20px;
-  padding:16px 48px;      /* 🔥 maior */
-  font-size:18px;
-  font-weight:700;
-  border-radius:6px;
-  background:#fff;
-  color:#000;
-  border:none;
-  cursor:pointer;
+#row{
+  display:flex;
+  gap:14px;
+  padding:0 40px;
+  overflow-x:auto;
+  scroll-behavior:smooth;
+}
+#row::-webkit-scrollbar{display:none}
+
+/* ===== CARD ===== */
+.card{
+  width:120px;
+  height:180px;
+  flex:0 0 auto;
+  background-size:cover;
+  background-position:center;
+  border-radius:8px;
+  opacity:.6;
+  transition:.2s;
+}
+.card.active{
+  transform:scale(1.15);
+  opacity:1;
+  outline:3px solid #fff;
 }
 
-    
-/* ===== PLAYER (ANTIGO / IFRAME) ===== */
+/* ===== PLAYER ===== */
 #playerOverlay{
   position:fixed;
   inset:0;
   background:#000;
   display:none;
+  align-items:center;
+  justify-content:center;
   z-index:9999;
 }
-#playerOverlay iframe{
+
+#playerFrame{
   width:100%;
   height:100%;
   border:none;
 }
 
-/* ===== COMMANDS ===== */
-#commands{
+/* ===== VOLTAR ===== */
+#backBtn{
   position:absolute;
   top:20px;
-  right:30px;
-  font-size:13px;
-  opacity:.7;
+  left:20px;
+  z-index:10000;
+  padding:10px 18px;
+  font-size:16px;
+  background:rgba(0,0,0,.7);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
 }
-#commands span{margin-left:14px}
+
+/* ===== PLUS BLOQUEIO ===== */
+#plusBlocked{
+  position:fixed;
+  top:20px;
+  right:20px;
+  background:rgba(0,0,0,.85);
+  padding:12px 18px;
+  border-radius:8px;
+  opacity:0;
+  pointer-events:none;
+  transition:.3s;
+  z-index:10001;
+}
+#plusBlocked.show{opacity:1}
 </style>
 </head>
 
@@ -148,38 +142,32 @@ body{background:#000;color:#fff;overflow:hidden}
 
 <!-- HERO -->
 <div id="hero">
-  <div id="heroContent">
-    <h1 id="title"></h1>
+  <div id="heroInfo">
+    <div id="title"></div>
     <div id="meta"></div>
-    <p id="desc"></p>
-    <button id="playBtn">▶ Assistir</button>
+    <div id="desc"></div>
+    <button id="playBtn">▶ Assistir já</button>
   </div>
 </div>
 
-<!-- COMMANDS -->
-<div id="commands">
-  <span>(Y) Filmes</span>
-  <span>(X) Conta</span>
-  <span>(+) Plus+</span>
-</div>
-
 <!-- ROW -->
-<div id="row"></div>
-<div id="left" class="arrow"></div>
-<div id="right" class="arrow"></div>
+<div id="rowWrap">
+  <div id="row"></div>
+</div>
 
 <!-- PLAYER -->
 <div id="playerOverlay">
+  <button id="backBtn">← Voltar</button>
   <iframe id="playerFrame" allowfullscreen></iframe>
 </div>
 
-<script>
-/* =====================================================
-   👇 AQUI FICA O movieData
-   Depois é só substituir pelos seus filmes reais
-   ===================================================== */
 
-const movieData = [
+
+<script>
+/* ===================================================
+   MOVIEDATA — COLE SEUS FILMES AQUI
+   =================================================== */
+        const movieData = [
             { id: 2, title: "A Antiga e a Moderna", year: "1929", description: "O jovem Komarovskis volta do exílio para sua aldeia na Sibéria, onde se depara com grandes mudanças em andamento. Entre elas, a jovem Marfa, que se rebela contra os costumes de uma família patriarcal e está determinada a viver de acordo com suas próprias regras.", poster: "https://a.imagem.app/BCs9X0.jpeg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1D7tr9aDjLJ2gGrdoYXGrKYqnJRu8Exjo/preview" },
             { id: 4, title: "A Greve", year: "1925", description: "Na Rússia czarista de 1912, operários de uma fábrica realizam uma greve após o suicídio de um colega. A polícia secreta do governo reprime o protesto com violência.", poster: "https://a.imagem.app/BCsLCP.jpeg", genres: ["Drama", "História"], videoUrl: "https://drive.google.com/file/d/1vZXJeW3TwQg1L_tEowv5tC4KR5yiYTZt/preview" },
             { id: 6, title: "A Paixão de Andy", year: "1973", description: "Um grupo de pessoas busca um tesouro de Andy Warbol na cidade de Los Angeles.", poster: "https://a.imagem.app/BCsE2S.jpeg", genres: ["Aventura"], videoUrl: "https://drive.google.com/file/d/17MS17ey-U9ns72OXoWImmFMW__oP86aP/preview" },
@@ -266,22 +254,54 @@ const movieData = [
 
         ];
 
+/* ===================================================
+   ESTADO
+   =================================================== */
+let currentIndex=0;
 
+/* ===================================================
+   ELEMENTOS
+   =================================================== */
+const hero=document.getElementById("hero");
+const titleEl=document.getElementById("title");
+const metaEl=document.getElementById("meta");
+const descEl=document.getElementById("desc");
+const playBtn=document.getElementById("playBtn");
+const row=document.getElementById("row");
+const overlay=document.getElementById("playerOverlay");
+const frame=document.getElementById("playerFrame");
+const backBtn=document.getElementById("backBtn");
+const plusBlocked=document.getElementById("plusBlocked");
 
-/* ====== ESTADO ====== */
-let currentIndex = 0;
+/* ===================================================
+   FUNÇÕES
+   =================================================== */
+function showBlocked(){
+  plusBlocked.classList.add("show");
+  setTimeout(()=>plusBlocked.classList.remove("show"),1500);
+}
 
-/* ====== ELEMENTOS ====== */
-const hero = document.getElementById("hero");
-const titleEl = document.getElementById("title");
-const metaEl = document.getElementById("meta");
-const descEl = document.getElementById("desc");
-const playBtn = document.getElementById("playBtn");
-const row = document.getElementById("row");
-const overlay = document.getElementById("playerOverlay");
-const frame = document.getElementById("playerFrame");
+function canOpen(movie){
+  if(movie.isFree) return true;
+  if(typeof canPlay==="function") return canPlay();
+  return false;
+}
 
-/* ====== RENDER ====== */
+function openMovie(index){
+  const m=movieData[index];
+  if(!canOpen(m)){ showBlocked(); return; }
+  frame.src=m.videoUrl;
+  overlay.style.display="flex";
+}
+
+function closePlayer(){
+  frame.src="";
+  overlay.style.display="none";
+}
+
+/* ===================================================
+   RENDER
+   =================================================== */
 movieData.forEach((m,i)=>{
   const c=document.createElement("div");
   c.className="card";
@@ -295,505 +315,37 @@ function selectMovie(i){
   document.querySelectorAll(".card").forEach((c,ci)=>{
     c.classList.toggle("active",ci===i);
   });
-
   const m=movieData[i];
-  hero.style.backgroundImage=
-    `linear-gradient(to top,rgba(0,0,0,.9),transparent),url(${m.poster})`;
+  hero.style.backgroundImage=`url(${m.poster})`;
   titleEl.textContent=m.title;
   metaEl.textContent=`${m.year} • ${m.genres.join(" / ")}`;
   descEl.textContent=m.description;
-
-  playBtn.onclick=()=>openPlayer(m.videoUrl);
-
   row.children[i].scrollIntoView({inline:"center",behavior:"smooth"});
 }
 
+/* ===================================================
+   CONTROLES
+   =================================================== */
+playBtn.onclick=()=>openMovie(currentIndex);
+backBtn.onclick=closePlayer;
 
+let lastIndex=null,lastTime=0;
+document.querySelectorAll(".card").forEach((card,i)=>{
+  card.addEventListener("click",()=>{
+    const now=Date.now();
+    if(lastIndex===i && now-lastTime<400) openMovie(i);
+    lastIndex=i; lastTime=now;
+  });
+});
 
-/* ====== CONTROLES ====== */
 document.addEventListener("keydown",e=>{
   if(e.key==="ArrowRight") selectMovie(Math.min(currentIndex+1,movieData.length-1));
   if(e.key==="ArrowLeft") selectMovie(Math.max(currentIndex-1,0));
   if(e.key==="Escape") closePlayer();
 });
 
-document.getElementById("left").onclick=()=>selectMovie(Math.max(currentIndex-1,0));
-document.getElementById("right").onclick=()=>selectMovie(Math.min(currentIndex+1,movieData.length-1));
-
-overlay.onclick=closePlayer;
-
-/* ====== INIT ====== */
+/* INIT */
 selectMovie(0);
-</script>
-
-<script>
-/* ===============================
-   FIX PLAYER PLUS+ (ASSISTIR)
-   =============================== */
-
-(function(){
-
-  const overlay = document.getElementById("playerOverlay");
-  const frame   = document.getElementById("playerFrame");
-
-  if(!overlay || !frame) return;
-
-  // Remove qualquer onclick antigo
-  overlay.onclick = null;
-
-  // Fecha SOMENTE se clicar fora do iframe
-  overlay.addEventListener("click", () => {
-    frame.src = "";
-    overlay.style.display = "none";
-  });
-
-  // Impede propagação de clique no vídeo
-  frame.addEventListener("click", e => {
-    e.stopPropagation();
-  });
-
-  // Reforça abertura correta do player
-  window.openPlayer = function(url){
-    if(typeof canPlay === "function" && !canPlay()){
-      alert("Conteúdo exclusivo Plus+");
-      return;
-    }
-    frame.src = url;
-    overlay.style.display = "block";
-  };
-
-})();
-</script>
-
-<script>
-/* ===============================
-   FIX ASSISTIR + DOUBLE TAP
-   =============================== */
-
-(function(){
-
-  const overlay = document.getElementById("playerOverlay");
-  const frame   = document.getElementById("playerFrame");
-  const playBtn = document.getElementById("playBtn");
-  const cards   = document.querySelectorAll(".card");
-
-  if(!overlay || !frame) return;
-
-  let lastTapIndex = null;
-  let lastTapTime  = 0;
-
-  // Reforça abertura do player
-  window.openPlayer = function(url){
-    if(typeof canPlay === "function" && !canPlay()){
-      alert("Conteúdo exclusivo Plus+");
-      return;
-    }
-    frame.src = url;
-    overlay.style.display = "block";
-  };
-
-  // Botão Assistir sempre funcional
-  playBtn.onclick = () => {
-    const movie = movieData[currentIndex];
-    if(movie && movie.videoUrl){
-      openPlayer(movie.videoUrl);
-    }
-  };
-
-  // Double tap / double click no card
-  cards.forEach((card, index) => {
-    card.addEventListener("click", () => {
-      const now = Date.now();
-
-      if(lastTapIndex === index && now - lastTapTime < 400){
-        openPlayer(movieData[index].videoUrl);
-      }
-
-      lastTapIndex = index;
-      lastTapTime = now;
-    });
-  });
-
-  // Fecha player clicando fora
-  overlay.onclick = () => {
-    frame.src = "";
-    overlay.style.display = "none";
-  };
-
-  frame.onclick = e => e.stopPropagation();
-
-})();
-</script>
-
-<script>
-/* =========================================
-   FIX FREE / PLUS+ + DOUBLE TAP DEFINITIVO
-   ========================================= */
-
-(function(){
-
-  const overlay = document.getElementById("playerOverlay");
-  const frame   = document.getElementById("playerFrame");
-  const playBtn = document.getElementById("playBtn");
-  const cards   = document.querySelectorAll(".card");
-
-  let lastTapIndex = null;
-  let lastTapTime  = 0;
-
-  function canOpen(movie){
-    // Filme FREE sempre abre
-    if(movie.isFree) return true;
-
-    // Filme Plus+ precisa assinatura
-    if(typeof canPlay === "function"){
-      return canPlay();
-    }
-    return false;
-  }
-
-  window.openMovie = function(index){
-    const movie = movieData[index];
-    if(!movie) return;
-
-    if(!canOpen(movie)){
-      alert("Conteúdo exclusivo Plus+");
-      return;
-    }
-
-    frame.src = movie.videoUrl;
-    overlay.style.display = "block";
-  };
-
-  // Botão Assistir
-  playBtn.onclick = () => openMovie(currentIndex);
-
-  // Double-tap / double-click
-  cards.forEach((card, index) => {
-    card.addEventListener("click", () => {
-      const now = Date.now();
-
-      if(lastTapIndex === index && now - lastTapTime < 400){
-        openMovie(index);
-      }
-
-      lastTapIndex = index;
-      lastTapTime  = now;
-    });
-  });
-
-  // Fechar player
-  overlay.onclick = () => {
-    frame.src = "";
-    overlay.style.display = "none";
-  };
-
-  frame.onclick = e => e.stopPropagation();
-
-})();
-</script>
-
-<script>
-/* =========================================
-   ASSISTIR DIRETO — SEM PERGUNTAR
-   ========================================= */
-
-(function(){
-
-  const overlay = document.getElementById("playerOverlay");
-  const frame   = document.getElementById("playerFrame");
-  const playBtn = document.getElementById("playBtn");
-  const cards   = document.querySelectorAll(".card");
-
-  let lastTapIndex = null;
-  let lastTapTime  = 0;
-
-  function playMovie(index){
-    const movie = movieData[index];
-    if(!movie || !movie.videoUrl) return;
-
-    frame.src = movie.videoUrl;
-    overlay.style.display = "block";
-  }
-
-  /* Botão do topo */
-  playBtn.onclick = () => playMovie(currentIndex);
-
-  /* Clique / Double-tap no card */
-  cards.forEach((card, index) => {
-    card.addEventListener("click", () => {
-      const now = Date.now();
-
-      if(lastTapIndex === index && now - lastTapTime < 400){
-        playMovie(index);
-      }
-
-      lastTapIndex = index;
-      lastTapTime  = now;
-    });
-  });
-
-  /* Fechar player */
-  overlay.onclick = () => {
-    frame.src = "";
-    overlay.style.display = "none";
-  };
-
-  frame.onclick = e => e.stopPropagation();
-
-})();
-</script>
-
-<script>
-/* ======================================================
-   PLUS+ CINEMA — SCRIPT FINAL (SWITCH / TV)
-   ====================================================== */
-
-(function(){
-
-  const overlay = document.getElementById('plusCinemaOverlay') || document.getElementById('playerOverlay');
-  const iframe  = document.getElementById('plusCinemaFrame')  || document.getElementById('playerFrame');
-  const backBtn = document.getElementById('plusBackToCatalogBtn');
-  const playBtn = document.getElementById('playBtn');
-  const cards   = document.querySelectorAll('.card');
-
-  if(!overlay || !iframe) return;
-
-  /* ---------- NORMALIZA DRIVE ---------- */
-  function toDrivePreview(src){
-    if(!src) return src;
-    if(src.includes('drive.google.com') && !src.includes('/preview')){
-      const m = src.match(/\/d\/(.*?)\//);
-      if(m && m[1]) return 'https://drive.google.com/file/d/' + m[1] + '/preview';
-    }
-    return src;
-  }
-
-  /* ---------- BLOQUEIO EXTERNO ---------- */
-  function showBlockedMessage(){
-    const msg = document.getElementById('plusBlockedMessage');
-    if(!msg) return;
-    msg.style.visibility='visible';
-    msg.style.opacity='1';
-    setTimeout(()=>{
-      msg.style.opacity='0';
-      msg.style.visibility='hidden';
-    },1500);
-  }
-
-  function attachPlusBlocker(wrapper){
-    if(wrapper.querySelector('.plus-block-newtab-btn')) return;
-
-    const btn = document.createElement('button');
-    btn.className = 'plus-block-newtab-btn';
-    btn.innerHTML = '🔒';
-    btn.style.cssText = `
-      position:absolute;
-      top:30px;
-      right:15px;
-      width:44px;
-      height:44px;
-      z-index:99999;
-      background:rgba(0,0,0,.6);
-      color:#fff;
-      border:none;
-      border-radius:50%;
-      font-size:18px;
-      cursor:pointer;
-    `;
-    btn.onclick = e => {
-      e.stopPropagation();
-      e.preventDefault();
-      showBlockedMessage();
-    };
-    wrapper.appendChild(btn);
-  }
-
-  /* ---------- CINEMA MODE ---------- */
-  function hideAllButOverlay(){
-    [...document.body.children].forEach(el=>{
-      if(el===overlay) return;
-      el.dataset.__prev = el.style.display || '';
-      el.style.display='none';
-    });
-    overlay.style.display='flex';
-    attachPlusBlocker(overlay);
-    if(backBtn) backBtn.style.display='';
-  }
-
-  function restoreAll(){
-    [...document.body.children].forEach(el=>{
-      if(el===overlay) return;
-      if(el.dataset.__prev!==undefined){
-        el.style.display = el.dataset.__prev;
-        delete el.dataset.__prev;
-      }
-    });
-    iframe.src='';
-    overlay.style.display='none';
-    const blocker = overlay.querySelector('.plus-block-newtab-btn');
-    if(blocker) blocker.remove();
-  }
-
-  /* ---------- ABRIR FILME (SEM PERGUNTA) ---------- */
-  function playMovie(index){
-    const movie = movieData[index];
-    if(!movie || !movie.videoUrl) return;
-    iframe.src = toDrivePreview(movie.videoUrl);
-    hideAllButOverlay();
-  }
-
-  /* ---------- BOTÃO ASSISTIR ---------- */
-  if(playBtn){
-    playBtn.onclick = ()=> playMovie(currentIndex);
-  }
-
-  /* ---------- DOUBLE TAP ---------- */
-  let lastIndex=null, lastTime=0;
-  cards.forEach((card,i)=>{
-    card.addEventListener('click',()=>{
-      const now=Date.now();
-      if(lastIndex===i && now-lastTime<400){
-        playMovie(i);
-      }
-      lastIndex=i;
-      lastTime=now;
-    });
-  });
-
-  /* ---------- VOLTAR ---------- */
-  if(backBtn){
-    backBtn.onclick = e=>{
-      e.stopPropagation();
-      restoreAll();
-    };
-  }
-
-  document.addEventListener('keydown',e=>{
-    if(e.key==='Escape' && overlay.style.display==='flex'){
-      restoreAll();
-    }
-  });
-
-})();
-</script>
-
-<script>
-/* =========================================
-   PLAYER ÚNICO DEFINITIVO — PLUS+
-   ========================================= */
-
-(function(){
-
-  const overlay = document.getElementById("playerOverlay");
-  const frame   = document.getElementById("playerFrame");
-
-  if(!overlay || !frame) return;
-
-  function toDrivePreview(url){
-    if(!url) return url;
-    if(url.includes("drive.google.com") && !url.includes("/preview")){
-      const m = url.match(/\/d\/(.*?)\//);
-      if(m && m[1]) return `https://drive.google.com/file/d/${m[1]}/preview`;
-    }
-    return url;
-  }
-
-  // ===== ABRIR PLAYER (SEM PERGUNTA) =====
-  window.openPlayer = function(url){
-    frame.src = toDrivePreview(url);
-    overlay.style.display = "block";
-  };
-
-  // ===== FECHAR PLAYER =====
-  window.closePlayer = function(){
-    frame.src = "";
-    overlay.style.display = "none";
-  };
-
-  // Fecha clicando fora do vídeo
-  overlay.addEventListener("click", closePlayer);
-
-  // Impede fechar ao clicar no vídeo
-  frame.addEventListener("click", e => e.stopPropagation());
-
-  // ESC fecha
-  document.addEventListener("keydown", e=>{
-    if(e.key === "Escape" && overlay.style.display === "block"){
-      closePlayer();
-    }
-  });
-
-})();
-</script>
-
-<script>
-/* ===============================
-   PLAYER ÚNICO DEFINITIVO
-   =============================== */
-
-let currentIndex = 0;
-
-const overlay = document.getElementById("playerOverlay");
-const frame   = document.getElementById("playerFrame");
-const playBtn = document.getElementById("playBtn");
-const cards   = document.querySelectorAll(".card");
-
-/* ---- Normaliza Google Drive ---- */
-function toDrivePreview(url){
-  if(!url) return url;
-  if(url.includes("drive.google.com") && !url.includes("/preview")){
-    const m = url.match(/\/d\/(.*?)\//);
-    if(m && m[1]){
-      return `https://drive.google.com/file/d/${m[1]}/preview`;
-    }
-  }
-  return url;
-}
-
-/* ---- Abrir filme (SEM PERGUNTA) ---- */
-function playMovie(index){
-  const movie = movieData[index];
-  if(!movie || !movie.videoUrl) return;
-
-  frame.src = toDrivePreview(movie.videoUrl);
-  overlay.style.display = "block";
-}
-
-/* ---- Botão Assistir do topo ---- */
-playBtn.onclick = () => playMovie(currentIndex);
-
-/* ---- Double-tap / Double-click ---- */
-let lastIndex = null;
-let lastTime  = 0;
-
-cards.forEach((card, index)=>{
-  card.addEventListener("click", ()=>{
-    const now = Date.now();
-
-    if(lastIndex === index && now - lastTime < 400){
-      playMovie(index);
-    }
-
-    lastIndex = index;
-    lastTime  = now;
-  });
-});
-
-/* ---- Fechar player ---- */
-function closePlayer(){
-  frame.src = "";
-  overlay.style.display = "none";
-}
-
-overlay.onclick = closePlayer;
-frame.onclick   = e => e.stopPropagation();
-
-/* ---- ESC fecha ---- */
-document.addEventListener("keydown", e=>{
-  if(e.key === "Escape"){
-    closePlayer();
-  }
-});
 </script>
 
 </body>
