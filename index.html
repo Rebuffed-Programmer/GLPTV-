@@ -726,5 +726,75 @@ selectMovie(0);
 })();
 </script>
 
+<script>
+/* ===============================
+   PLAYER ÚNICO DEFINITIVO
+   =============================== */
+
+let currentIndex = 0;
+
+const overlay = document.getElementById("playerOverlay");
+const frame   = document.getElementById("playerFrame");
+const playBtn = document.getElementById("playBtn");
+const cards   = document.querySelectorAll(".card");
+
+/* ---- Normaliza Google Drive ---- */
+function toDrivePreview(url){
+  if(!url) return url;
+  if(url.includes("drive.google.com") && !url.includes("/preview")){
+    const m = url.match(/\/d\/(.*?)\//);
+    if(m && m[1]){
+      return `https://drive.google.com/file/d/${m[1]}/preview`;
+    }
+  }
+  return url;
+}
+
+/* ---- Abrir filme (SEM PERGUNTA) ---- */
+function playMovie(index){
+  const movie = movieData[index];
+  if(!movie || !movie.videoUrl) return;
+
+  frame.src = toDrivePreview(movie.videoUrl);
+  overlay.style.display = "block";
+}
+
+/* ---- Botão Assistir do topo ---- */
+playBtn.onclick = () => playMovie(currentIndex);
+
+/* ---- Double-tap / Double-click ---- */
+let lastIndex = null;
+let lastTime  = 0;
+
+cards.forEach((card, index)=>{
+  card.addEventListener("click", ()=>{
+    const now = Date.now();
+
+    if(lastIndex === index && now - lastTime < 400){
+      playMovie(index);
+    }
+
+    lastIndex = index;
+    lastTime  = now;
+  });
+});
+
+/* ---- Fechar player ---- */
+function closePlayer(){
+  frame.src = "";
+  overlay.style.display = "none";
+}
+
+overlay.onclick = closePlayer;
+frame.onclick   = e => e.stopPropagation();
+
+/* ---- ESC fecha ---- */
+document.addEventListener("keydown", e=>{
+  if(e.key === "Escape"){
+    closePlayer();
+  }
+});
+</script>
+
 </body>
 </html>
