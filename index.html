@@ -76,9 +76,10 @@ body{
   margin-bottom:30px;
 }
 
-.section h3{
-  margin:0 0 10px 40px;
-  font-size:20px;
+.section h3,
+.section-title,
+.catalog-title{
+  display:none !important;
 }
 
 .row{
@@ -98,12 +99,14 @@ body{
   background-position:center;
   border-radius:8px;
   cursor:pointer;
-  transition:.25s;
+  transition:outline .2s, box-shadow .2s;
 }
 
-.card:hover{
-  transform:scale(1.05);
+.card:hover,
+.card:focus,
+.card:active{
   outline:3px solid #fff;
+  box-shadow:0 0 0 3px rgba(255,255,255,.6);
 }
 
 /* ================= PLAYER ================= */
@@ -281,36 +284,39 @@ setHero(0);
 /* ================= CATALOG ================= */
 const catalog = document.getElementById("catalog");
 
-for(let i=0;i<movieData.length;i+=10){
-  const section = document.createElement("div");
-  section.className="section";
+for(let i = 0; i < movieData.length; i += 10){
 
-  const title = document.createElement("h3");
-  title.textContent = "Sessão " + (i/10+1);
+  const section = document.createElement("div");
+  section.className = "section";
 
   const row = document.createElement("div");
-  row.className="row";
+  row.className = "row";
 
-  movieData.slice(i,i+10).forEach((m,idx)=>{
+  movieData.slice(i, i + 10).forEach((movie, idx)=>{
+
     const card = document.createElement("div");
-    card.className="card";
-    card.style.backgroundImage = `url(${m.poster})`;
+    card.className = "card";
+    card.style.backgroundImage = `url(${movie.poster})`;
 
-    const realIndex = i+idx;
+    const realIndex = i + idx;
 
     card.onclick = ()=>{
-      setHero(realIndex);
       currentIndex = realIndex;
+      setHero(realIndex);
     };
 
-    card.ondblclick = ()=>{
-      openPlayer(m.videoUrl);
-    };
+    let lastTap = 0;
+    card.addEventListener("click", ()=>{
+      const now = Date.now();
+      if(now - lastTap < 350){
+        openPlayer(movie.videoUrl);
+      }
+      lastTap = now;
+    });
 
     row.appendChild(card);
   });
 
-  section.appendChild(title);
   section.appendChild(row);
   catalog.appendChild(section);
 }
