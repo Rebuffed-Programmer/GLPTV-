@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Plus+ TV</title>
+<title>Plus+</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 /* ================= RESET ================= */
@@ -63,8 +63,14 @@ body{
   overflow-y:auto;
   padding:20px 0 40px;
   background:linear-gradient(to top,#000 80%,transparent);
+  overscroll-behavior: contain;
+  touch-action: pan-x;
+
 }
 
+
+
+  
 /* ================= ROW ================= */
 .section{
   margin-bottom:30px;
@@ -162,7 +168,7 @@ body{
 <!-- PLAYER -->
 <div id="playerOverlay">
   <button id="backBtn">← Voltar</button>
-  <button class="plus-block-newtab-btn">🔒</button>
+  <button class="plus-block-newtab-btn">  </button>
   <iframe id="playerFrame" allowfullscreen></iframe>
 </div>
 
@@ -334,6 +340,80 @@ function closePlayer(){
 document.getElementById("backBtn").onclick = closePlayer;
 overlay.onclick = closePlayer;
 frame.onclick = e=>e.stopPropagation();
+</script>
+
+<script>
+/* ======================================================
+   CATÁLOGO FINAL — SESSÕES 10x10 + SCROLL TRAVADO
+   ====================================================== */
+
+/* ===== ELEMENTOS ===== */
+const catalog = document.getElementById("catalog");
+
+/* ===== TRAVA TOTAL DE SCROLL VERTICAL ===== */
+catalog.style.overscrollBehavior = "contain";
+catalog.style.touchAction = "pan-x";
+
+/* mouse */
+catalog.addEventListener("wheel", e=>{
+  if(Math.abs(e.deltaY) > Math.abs(e.deltaX)){
+    e.preventDefault();
+  }
+},{ passive:false });
+
+/* touch */
+catalog.addEventListener("touchmove", e=>{
+  e.preventDefault();
+},{ passive:false });
+
+/* ===== LIMPA CATÁLOGO ===== */
+catalog.innerHTML = "";
+
+/* ===== SESSÕES AUTOMÁTICAS (10 EM 10) ===== */
+for(let i = 0; i < movieData.length; i += 10){
+
+  const section = document.createElement("div");
+  section.className = "section";
+
+  const row = document.createElement("div");
+  row.className = "row";
+
+  movieData.slice(i, i + 10).forEach((movie, idx)=>{
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.backgroundImage = `url(${movie.poster})`;
+
+    const realIndex = i + idx;
+
+    /* clique simples → atualiza banner */
+    card.addEventListener("click", ()=>{
+      currentIndex = realIndex;
+      setHero(realIndex);
+    });
+
+    /* double click / double tap → abre player */
+    let lastTap = 0;
+    card.addEventListener("click", ()=>{
+      const now = Date.now();
+      if(now - lastTap < 350){
+        openPlayer(movie.videoUrl);
+      }
+      lastTap = now;
+    });
+
+    row.appendChild(card);
+  });
+
+  section.appendChild(row);
+  catalog.appendChild(section);
+}
+
+/* ===== GARANTE BANNER INICIAL ===== */
+if(movieData.length > 0){
+  currentIndex = 0;
+  setHero(0);
+}
 </script>
 
 </body>
