@@ -294,6 +294,12 @@ for(let i = 0; i < movieData.length; i += 10){
   const section = document.createElement("div");
   section.className = "section";
 
+  /* ===== TÍTULO DA SESSÃO ===== */
+  const title = document.createElement("h3");
+  title.className = "session-title";
+  title.textContent = sessionNames[i / 10] || "Catálogo";
+  section.appendChild(title);
+
   const row = document.createElement("div");
   row.className = "row";
 
@@ -305,11 +311,13 @@ for(let i = 0; i < movieData.length; i += 10){
 
     const realIndex = i + idx;
 
-    card.onclick = ()=>{
+    /* clique simples → muda o banner */
+    card.addEventListener("click", ()=>{
       currentIndex = realIndex;
       setHero(realIndex);
-    };
+    });
 
+    /* double tap → abre player */
     let lastTap = 0;
     card.addEventListener("click", ()=>{
       const now = Date.now();
