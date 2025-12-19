@@ -78,11 +78,14 @@ body{
 }
 
 .section-title{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  height:auto !important;
   color:#fff;
   font-size:20px;
   font-weight:600;
   margin:20px 0 10px 40px;
-  opacity:.9;
 }
 
 .row{
@@ -499,7 +502,99 @@ for(let i = 0; i < movieData.length; i += 10){
   catalog.appendChild(section);
 }
 </script>
+<script>
+/* =====================================================
+   FORÇAR TÍTULOS DAS SESSÕES — DEFINITIVO
+   ===================================================== */
 
+(function(){
+
+  const catalog = document.getElementById("catalog");
+  if(!catalog || typeof movieData === "undefined") return;
+
+  catalog.innerHTML = "";
+
+  /* NOMES DAS 9 SESSÕES */
+  const sessionNames = [
+    "Destaques",
+    "Clássicos",
+    "Cinema Mundial",
+    "Drama",
+    "Suspense",
+    "Cult",
+    "Históricos",
+    "Independentes",
+    "Seleção Especial"
+  ];
+
+  /* ===== CRIA SESSÕES ===== */
+  for(let i = 0; i < movieData.length; i += 10){
+
+    const sectionIndex = Math.floor(i / 10);
+
+    const section = document.createElement("div");
+    section.className = "section";
+
+    /* ===== TÍTULO (FORÇADO) ===== */
+    const title = document.createElement("div");
+    title.className = "section-title";
+    title.textContent = sessionNames[sectionIndex] || "Catálogo";
+
+    /* FORÇA VISIBILIDADE */
+    title.style.display = "block";
+    title.style.visibility = "visible";
+    title.style.opacity = "1";
+    title.style.height = "auto";
+    title.style.pointerEvents = "auto";
+
+    /* ROW */
+    const row = document.createElement("div");
+    row.className = "row";
+
+    movieData.slice(i, i + 10).forEach((movie, idx)=>{
+
+      const realIndex = i + idx;
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.style.backgroundImage = `url(${movie.poster})`;
+
+      /* SELECIONA */
+      card.addEventListener("click", ()=>{
+        currentIndex = realIndex;
+        selectMovie(realIndex);
+      });
+
+      /* DOUBLE TAP PLAY */
+      let lastTap = 0;
+      card.addEventListener("click", ()=>{
+        const now = Date.now();
+        if(now - lastTap < 350){
+          openPlayer(movie.videoUrl);
+        }
+        lastTap = now;
+      });
+
+      row.appendChild(card);
+    });
+
+    section.appendChild(title);
+    section.appendChild(row);
+    catalog.appendChild(section);
+  }
+
+  /* ===== GARANTIA FINAL (ANTI SCRIPT ANTIGO) ===== */
+  setTimeout(()=>{
+    document.querySelectorAll(".section-title").forEach(t=>{
+      t.style.display = "block";
+      t.style.visibility = "visible";
+      t.style.opacity = "1";
+      t.style.height = "auto";
+    });
+  }, 100);
+
+})();
+</script>
   
 </body>
 </html>
