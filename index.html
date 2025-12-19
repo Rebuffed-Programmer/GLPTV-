@@ -420,6 +420,80 @@ if(movieData.length > 0){
   setHero(0);
 }
 </script>
+<script>
+/* =========================================
+   CATALOGO COM SESSÕES (10 EM 10)
+   USA movieData EXISTENTE
+   ========================================= */
 
+const catalog = document.getElementById("catalog");
+catalog.innerHTML = "";
+
+/* NOMES DAS SESSÕES */
+const sessionNames = [
+  "Destaques",
+  "Clássicos",
+  "Cinema Mundial",
+  "Drama",
+  "Suspense",
+  "Cult",
+  "Históricos",
+  "Independentes",
+  "Seleção Especial"
+];
+
+/* ===== CRIA SESSÕES ===== */
+for(let i = 0; i < movieData.length; i += 10){
+
+  const sectionIndex = Math.floor(i / 10);
+
+  /* CONTAINER DA SESSÃO */
+  const section = document.createElement("div");
+  section.className = "section";
+
+  /* TÍTULO DA SESSÃO */
+  const title = document.createElement("div");
+  title.className = "section-title";
+  title.textContent = sessionNames[sectionIndex] || "Catálogo";
+
+  /* FILEIRA */
+  const row = document.createElement("div");
+  row.className = "row";
+
+  /* FILMES DA SESSÃO */
+  movieData.slice(i, i + 10).forEach((movie, idx)=>{
+
+    const realIndex = i + idx;
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.backgroundImage = `url(${movie.poster})`;
+
+    /* CLIQUE NORMAL → SELECIONA */
+    card.addEventListener("click", ()=>{
+      currentIndex = realIndex;
+      selectMovie(realIndex);
+    });
+
+    /* DOUBLE TAP → PLAY */
+    let lastTap = 0;
+    card.addEventListener("click", ()=>{
+      const now = Date.now();
+      if(now - lastTap < 350){
+        openPlayer(movie.videoUrl);
+      }
+      lastTap = now;
+    });
+
+    row.appendChild(card);
+  });
+
+  section.appendChild(title);
+  section.appendChild(row);
+  catalog.appendChild(section);
+}
+</script>
+
+  
 </body>
 </html>
