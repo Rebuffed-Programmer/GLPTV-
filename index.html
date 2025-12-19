@@ -424,5 +424,76 @@ if(movieData.length > 0){
 }
 </script>
 
+<script>
+/* ================= SESSÕES COM TÍTULOS ================= */
+
+const sectionTitles = [
+  "Destaques",
+  "Clássicos Essenciais",
+  "Cinema Mundial",
+  "Obras Restauradas",
+  "Grandes Diretores",
+  "Drama & Romance",
+  "Suspense & Mistério",
+  "Comédia & Musicais",
+  "Raridades"
+];
+
+const catalog = document.getElementById("catalog");
+catalog.innerHTML = "";
+
+for(let i = 0; i < movieData.length; i += 10){
+
+  const sectionIndex = Math.floor(i / 10);
+
+  const section = document.createElement("div");
+  section.className = "section";
+
+  /* título da sessão */
+  if(sectionTitles[sectionIndex]){
+    const title = document.createElement("h3");
+    title.textContent = sectionTitles[sectionIndex];
+    title.style.margin = "0 0 12px 40px";
+    title.style.fontSize = "18px";
+    title.style.fontWeight = "600";
+    title.style.opacity = ".85";
+    section.appendChild(title);
+  }
+
+  const row = document.createElement("div");
+  row.className = "row";
+
+  movieData.slice(i, i + 10).forEach((movie, idx)=>{
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.backgroundImage = `url(${movie.poster})`;
+
+    const realIndex = i + idx;
+
+    /* clique simples → muda banner */
+    card.addEventListener("click", ()=>{
+      currentIndex = realIndex;
+      setHero(realIndex);
+    });
+
+    /* double tap → abre player direto */
+    let lastTap = 0;
+    card.addEventListener("click", ()=>{
+      const now = Date.now();
+      if(now - lastTap < 350){
+        openPlayer(movie.videoUrl);
+      }
+      lastTap = now;
+    });
+
+    row.appendChild(card);
+  });
+
+  section.appendChild(row);
+  catalog.appendChild(section);
+}
+</script>
+
 </body>
 </html>
