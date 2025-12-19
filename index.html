@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -72,16 +73,14 @@ body{
 
   
 /* ================= ROW ================= */
-.section h3{
-  display:none;
+.section{
+  margin-bottom:30px;
 }
 
-.session-title{
-  display:block !important;
-  margin:0 0 12px 40px;
-  font-size:18px;
-  font-weight:600;
-  opacity:.85;
+.section h3,
+.section-title,
+.catalog-title{
+  display:none !important;
 }
 
 .row{
@@ -425,7 +424,6 @@ if(movieData.length > 0){
   setHero(0);
 }
 </script>
-
 <script>
 /* ================= SESSÕES COM TÍTULOS ================= */
 
@@ -453,7 +451,7 @@ for(let i = 0; i < movieData.length; i += 10){
 
   /* título da sessão */
   if(sectionTitles[sectionIndex]){
-    const title = document.createElement("h3");
+const title = document.createElement("h3");
 title.className = "session-title";
     title.textContent = sectionTitles[sectionIndex];
     title.style.margin = "0 0 12px 40px";
@@ -497,6 +495,5 @@ title.className = "session-title";
   catalog.appendChild(section);
 }
 </script>
-
 </body>
 </html>
