@@ -831,6 +831,100 @@ const inicializarApp = () => {
 // GARANTIA: Só roda quando tudo (incluindo a lista) estiver pronto
 window.onload = inicializarApp;
 </script>
+
+<script>
+/* ================= GERADOR DE SESSÕES PERSONALIZADAS ================= */
+
+const inicializarApp = () => {
+    if (typeof movieData === 'undefined' || movieData.length === 0) return;
+
+    const hero = document.getElementById("hero");
+    const titleEl = document.getElementById("title");
+    const metaEl = document.getElementById("meta");
+    const descEl = document.getElementById("desc");
+    const playBtn = document.getElementById("playBtn");
+    const catalog = document.getElementById("catalog");
+    const playerOverlay = document.getElementById("playerOverlay");
+    const playerFrame = document.getElementById("playerFrame");
+    const backBtn = document.getElementById("backBtn");
+
+    function updateHero(movie) {
+        hero.style.backgroundImage = `url('${movie.poster}')`;
+        titleEl.textContent = movie.title;
+        metaEl.textContent = `${movie.year} • ${movie.genres.join(" • ")}`;
+        descEl.textContent = movie.description;
+        playBtn.onclick = () => {
+            playerFrame.src = movie.videoUrl;
+            playerOverlay.style.display = "block";
+        };
+    }
+
+    // Função auxiliar para criar a estrutura de uma fileira
+    function criarLinha(titulo, listaFilmes) {
+        if (listaFilmes.length === 0) return;
+
+        const section = document.createElement("div");
+        section.className = "section";
+        
+        const h2 = document.createElement("h2");
+        h2.className = "section-title";
+        h2.textContent = titulo;
+        section.appendChild(h2);
+
+        const row = document.createElement("div");
+        row.className = "row";
+
+        listaFilmes.forEach(movie => {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.style.backgroundImage = `url('${movie.poster}')`;
+            card.onclick = () => {
+                updateHero(movie);
+                catalog.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+            row.appendChild(card);
+        });
+
+        section.appendChild(row);
+        catalog.appendChild(section);
+    }
+
+    function montarCatalogo() {
+        catalog.innerHTML = ""; 
+
+        // 1. SESSÕES ESPECIAIS (Lógica de Filtro)
+        const random = [...movieData].sort(() => Math.random() - 0.5);
+        const top10 = [...movieData].slice(0, 10);
+        const bemAvaliados = movieData.filter(m => parseInt(m.year) > 1940); // Filmes mais "recentes" como bem avaliados
+        const sucessos = movieData.filter(m => m.genres.includes("Aventura") || m.genres.includes("Drama")).slice(0, 8);
+
+        criarLinha("Sugestões para você", random.slice(0, 8));
+        criarLinha("Nossa recomendação", random.slice(8, 16));
+        criarLinha("Os 10 melhores", top10);
+        criarLinha("Filmes bem avaliados", bemAvaliados);
+        criarLinha("Talvez você irá gostar", random.slice(16, 24));
+        criarLinha("Sucessos imperdíveis", sucessos);
+        criarLinha("Os 10 melhores do cinema", [...top10].reverse());
+
+        // 2. SESSÕES POR GÊNERO (Automático)
+        const generos = [...new Set(movieData.flatMap(m => m.genres))].sort();
+        generos.forEach(g => {
+            const filmesDoGenero = movieData.filter(m => m.genres.includes(g));
+            criarLinha(g, filmesDoGenero);
+        });
+    }
+
+    backBtn.onclick = () => {
+        playerOverlay.style.display = "none";
+        playerFrame.src = "";
+    };
+
+    montarCatalogo();
+    updateHero(movieData[0]);
+};
+
+window.onload = inicializarApp;
+</script>
   
 </body>
 </html>
