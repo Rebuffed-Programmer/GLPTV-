@@ -452,9 +452,9 @@ const sessionNames = [
 ];
 
 /* ===== CRIA SESSÕES ===== */
-for(let i = 0; i < movieData.length; i += 10){
+for(let i = 0; i < movieData.length; i += 20){
 
-  const sectionIndex = Math.floor(i / 10);
+  const sectionIndex = Math.floor(i / 20);
 
   /* CONTAINER DA SESSÃO */
   const section = document.createElement("div");
@@ -470,7 +470,7 @@ for(let i = 0; i < movieData.length; i += 10){
   row.className = "row";
 
   /* FILMES DA SESSÃO */
-  movieData.slice(i, i + 10).forEach((movie, idx)=>{
+  movieData.slice(i, i + 20).forEach((movie, idx)=>{
 
     const realIndex = i + idx;
 
@@ -528,9 +528,9 @@ for(let i = 0; i < movieData.length; i += 10){
   ];
 
   /* ===== CRIA SESSÕES ===== */
-  for(let i = 0; i < movieData.length; i += 10){
+  for(let i = 0; i < movieData.length; i += 20){
 
-    const sectionIndex = Math.floor(i / 10);
+    const sectionIndex = Math.floor(i / 20);
 
     const section = document.createElement("div");
     section.className = "section";
@@ -551,7 +551,7 @@ for(let i = 0; i < movieData.length; i += 10){
     const row = document.createElement("div");
     row.className = "row";
 
-    movieData.slice(i, i + 10).forEach((movie, idx)=>{
+    movieData.slice(i, i + 20).forEach((movie, idx)=>{
 
       const realIndex = i + idx;
 
