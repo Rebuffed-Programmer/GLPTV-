@@ -361,7 +361,7 @@ setHero(0);
 /* ================= CATALOG ================= */
 const catalog = document.getElementById("catalog");
 
-for(let i = 0; i < movieData.length; i += 10){
+for(let i = 0; i < movieData.length; i += 30){
 
   const section = document.createElement("div");
   section.className = "section";
@@ -369,7 +369,7 @@ for(let i = 0; i < movieData.length; i += 10){
   const row = document.createElement("div");
   row.className = "row";
 
-  movieData.slice(i, i + 10).forEach((movie, idx)=>{
+  movieData.slice(i, i + 30).forEach((movie, idx)=>{
 
     const card = document.createElement("div");
     card.className = "card";
