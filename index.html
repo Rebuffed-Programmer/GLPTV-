@@ -744,6 +744,98 @@ if (document.readyState === "loading") {
     setupApp();
 }
 </script>
+
+<script>
+/* ================= GERADOR AUTOMÁTICO DE SESSÕES E PÔSTER ================= */
+
+(function() {
+    // Elementos principais
+    const hero = document.getElementById("hero");
+    const titleEl = document.getElementById("title");
+    const metaEl = document.getElementById("meta");
+    const descEl = document.getElementById("desc");
+    const playBtn = document.getElementById("playBtn");
+    const catalog = document.getElementById("catalog");
+    const playerOverlay = document.getElementById("playerOverlay");
+    const playerFrame = document.getElementById("playerFrame");
+    const backBtn = document.getElementById("backBtn");
+
+    // 1. FUNÇÃO QUE TROCA O PÔSTER NO TOPO (HERO)
+    function updateHero(movie) {
+        if (!movie) return;
+        
+        // Atualiza imagem, textos e metadados
+        hero.style.backgroundImage = `url('${movie.poster}')`;
+        titleEl.textContent = movie.title;
+        metaEl.textContent = `${movie.year} • ${movie.genres.join(" • ")}`;
+        descEl.textContent = movie.description;
+
+        // Configura o botão assistir
+        playBtn.onclick = () => {
+            playerFrame.src = movie.videoUrl;
+            playerOverlay.style.display = "block";
+        };
+    }
+
+    // 2. FUNÇÃO QUE CRIA AS SESSÕES POR GÊNERO AUTOMATICAMENTE
+    function buildAutoCatalog() {
+        catalog.innerHTML = ""; // Limpa o catálogo
+
+        // Extrai todos os gêneros únicos da sua movieData
+        const genresSet = new Set();
+        movieData.forEach(m => m.genres.forEach(g => genresSet.add(g)));
+        const uniqueGenres = Array.from(genresSet).sort();
+
+        // Para cada gênero encontrado, cria uma prateleira
+        uniqueGenres.forEach(genre => {
+            const section = document.createElement("div");
+            section.className = "section";
+
+            const h2 = document.createElement("h2");
+            h2.className = "section-title";
+            h2.textContent = genre; // O nome da sessão é o gênero
+            section.appendChild(h2);
+
+            const row = document.createElement("div");
+            row.className = "row";
+
+            // Filtra os filmes que pertencem a este gênero
+            const moviesInGenre = movieData.filter(m => m.genres.includes(genre));
+
+            moviesInGenre.forEach(movie => {
+                const card = document.createElement("div");
+                card.className = "card";
+                card.style.backgroundImage = `url('${movie.poster}')`;
+                
+                // Evento de clique para trocar o pôster
+                card.onclick = () => {
+                    updateHero(movie);
+                    // Opcional: faz o scroll suave para o topo do catálogo para ver o hero
+                    catalog.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+
+                row.appendChild(card);
+            });
+
+            section.appendChild(row);
+            catalog.appendChild(section);
+        });
+    }
+
+    // 3. CONTROLE DO PLAYER
+    backBtn.onclick = () => {
+        playerOverlay.style.display = "none";
+        playerFrame.src = ""; // Para o vídeo imediatamente
+    };
+
+    // INICIALIZAÇÃO
+    if (typeof movieData !== 'undefined' && movieData.length > 0) {
+        buildAutoCatalog(); // Cria as sessões
+        updateHero(movieData[0]); // Define o primeiro filme como destaque inicial
+    }
+
+})();
+</script>
   
 </body>
 </html>
