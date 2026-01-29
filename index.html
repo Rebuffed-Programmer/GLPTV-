@@ -666,88 +666,83 @@ for(let i = 0; i < movieData.length; i += 30){
 </script>
 
 <script>
-/* ================= LÓGICA DE RENDERIZAÇÃO E ATUALIZAÇÃO ================= */
+/* ================= CORREÇÃO DEFINITIVA ================= */
 
-// Elementos da Interface
-const hero = document.getElementById("hero");
-const titleEl = document.getElementById("title");
-const metaEl = document.getElementById("meta");
-const descEl = document.getElementById("desc");
-const playBtn = document.getElementById("playBtn");
-const catalog = document.getElementById("catalog");
-const playerOverlay = document.getElementById("playerOverlay");
-const playerFrame = document.getElementById("playerFrame");
-const backBtn = document.getElementById("backBtn");
+// 1. Desativar códigos antigos e limpar referências que estavam "congeladas"
+window.updateHero = null;
+window.FORCE_HERO = null;
 
-/**
- * Atualiza a seção de destaque (Hero) com as informações do filme selecionado
- */
-function updateHero(movie) {
-    if (!movie) return;
+const setupApp = () => {
+    const hero = document.getElementById("hero");
+    const titleEl = document.getElementById("title");
+    const metaEl = document.getElementById("meta");
+    const descEl = document.getElementById("desc");
+    const playBtn = document.getElementById("playBtn");
+    const catalog = document.getElementById("catalog");
+    const playerOverlay = document.getElementById("playerOverlay");
+    const playerFrame = document.getElementById("playerFrame");
+    const backBtn = document.getElementById("backBtn");
 
-    // Atualiza Visual e Textos
-    hero.style.backgroundImage = `url('${movie.poster}')`;
-    titleEl.textContent = movie.title;
-    metaEl.textContent = `${movie.year} • ${movie.genres.join(" • ")}`;
-    descEl.textContent = movie.description;
+    // Função que faz a troca do Pôster e das informações
+    function aplicarTroca(filme) {
+        if (!filme) return;
+        
+        // Troca o fundo, título e descrição
+        hero.style.backgroundImage = `url('${filme.poster}')`;
+        titleEl.textContent = filme.title;
+        metaEl.textContent = `${filme.year} • ${filme.genres.join(" • ")}`;
+        descEl.textContent = filme.description;
 
-    // Configura o botão de Play para carregar o vídeo deste filme
-    playBtn.onclick = () => {
-        playerFrame.src = movie.videoUrl;
-        playerOverlay.style.display = "block";
-    };
-}
-
-/**
- * Cria a lista de filmes no catálogo e adiciona os eventos de clique
- */
-function renderCatalog() {
-    // Criamos uma seção única para os filmes
-    const section = document.createElement("div");
-    section.className = "section";
-    
-    const h2 = document.createElement("h2");
-    h2.className = "section-title";
-    h2.textContent = "Recomendados para Você";
-    section.appendChild(h2);
-
-    const row = document.createElement("div");
-    row.className = "row";
-
-    // Loop para criar cada card baseado no array movieData
-    movieData.forEach(movie => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.style.backgroundImage = `url('${movie.poster}')`;
-        card.tabIndex = 0; // Permite navegação por teclado
-
-        // O SEGREDO: Ao clicar, chama a função updateHero passando ESTE filme
-        card.onclick = () => {
-            updateHero(movie);
-            // Opcional: faz o scroll para o topo para ver a mudança
-            document.getElementById('hero').scrollIntoView({ behavior: 'smooth' });
+        // Atualiza o link do vídeo para o botão de play
+        playBtn.onclick = () => {
+            playerFrame.src = filme.videoUrl;
+            playerOverlay.style.display = "block";
         };
+    }
 
-        row.appendChild(card);
-    });
+    // Função que limpa e reconstrói os cards do zero para evitar cliques "mortos"
+    function gerarCatalogo() {
+        catalog.innerHTML = ""; // Limpa o catálogo atual
+        
+        const row = document.createElement("div");
+        row.className = "row";
+        row.style.paddingTop = "20px";
 
-    section.appendChild(row);
-    catalog.appendChild(section);
-}
+        movieData.forEach(movie => {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.style.backgroundImage = `url('${movie.poster}')`;
+            card.tabIndex = 0;
 
-// Evento para fechar o player e parar o vídeo
-backBtn.onclick = () => {
-    playerOverlay.style.display = "none";
-    playerFrame.src = ""; // Importante: limpa o link para o vídeo parar de tocar ao fundo
+            // O EVENTO QUE FAZ MUDAR:
+            card.onclick = (e) => {
+                e.preventDefault();
+                aplicarTroca(movie);
+            };
+
+            row.appendChild(card);
+        });
+
+        catalog.appendChild(row);
+    }
+
+    // Lógica do botão voltar
+    backBtn.onclick = () => {
+        playerOverlay.style.display = "none";
+        playerFrame.src = "";
+    };
+
+    // Inicia o sistema
+    gerarCatalogo();
+    aplicarTroca(movieData[0]); // Carrega o primeiro filme por padrão
 };
 
-// Inicializa o sistema assim que a página carrega
-document.addEventListener("DOMContentLoaded", () => {
-    if (movieData && movieData.length > 0) {
-        renderCatalog();
-        updateHero(movieData[0]); // Carrega o primeiro filme como destaque inicial
-    }
-});
+// Executa assim que o DOM estiver pronto
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupApp);
+} else {
+    setupApp();
+}
 </script>
   
 </body>
