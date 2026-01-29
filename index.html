@@ -453,7 +453,7 @@ catalog.addEventListener("touchmove", e=>{
 catalog.innerHTML = "";
 
 /* ===== SESSÕES AUTOMÁTICAS (10 EM 10) ===== */
-for(let i = 0; i < movieData.length; i += 10){
+for(let i = 0; i < movieData.length; i += 30){
 
   const section = document.createElement("div");
   section.className = "section";
@@ -461,7 +461,7 @@ for(let i = 0; i < movieData.length; i += 10){
   const row = document.createElement("div");
   row.className = "row";
 
-  movieData.slice(i, i + 10).forEach((movie, idx)=>{
+  movieData.slice(i, i + 30).forEach((movie, idx)=>{
 
     const card = document.createElement("div");
     card.className = "card";
@@ -521,9 +521,9 @@ const sessionNames = [
 ];
 
 /* ===== CRIA SESSÕES ===== */
-for(let i = 0; i < movieData.length; i += 20){
+for(let i = 0; i < movieData.length; i += 30){
 
-  const sectionIndex = Math.floor(i / 20);
+  const sectionIndex = Math.floor(i / 30);
 
   /* CONTAINER DA SESSÃO */
   const section = document.createElement("div");
@@ -539,7 +539,7 @@ for(let i = 0; i < movieData.length; i += 20){
   row.className = "row";
 
   /* FILMES DA SESSÃO */
-  movieData.slice(i, i + 20).forEach((movie, idx)=>{
+  movieData.slice(i, i + 30).forEach((movie, idx)=>{
 
     const realIndex = i + idx;
 
@@ -597,9 +597,9 @@ for(let i = 0; i < movieData.length; i += 20){
   ];
 
   /* ===== CRIA SESSÕES ===== */
-  for(let i = 0; i < movieData.length; i += 20){
+  for(let i = 0; i < movieData.length; i += 30){
 
-    const sectionIndex = Math.floor(i / 20);
+    const sectionIndex = Math.floor(i / 30);
 
     const section = document.createElement("div");
     section.className = "section";
@@ -620,7 +620,7 @@ for(let i = 0; i < movieData.length; i += 20){
     const row = document.createElement("div");
     row.className = "row";
 
-    movieData.slice(i, i + 20).forEach((movie, idx)=>{
+    movieData.slice(i, i + 30).forEach((movie, idx)=>{
 
       const realIndex = i + idx;
 
