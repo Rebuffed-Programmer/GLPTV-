@@ -666,65 +666,88 @@ for(let i = 0; i < movieData.length; i += 30){
 </script>
 
 <script>
-/* ================= HARD OVERRIDE HERO ================= */
+/* ================= LÓGICA DE RENDERIZAÇÃO E ATUALIZAÇÃO ================= */
 
-/* mata qualquer referência antiga */
-window.updateHero = null;
-window.setHero = null;
-window.currentMovie = null;
-
-/* elementos */
+// Elementos da Interface
 const hero = document.getElementById("hero");
 const titleEl = document.getElementById("title");
 const metaEl = document.getElementById("meta");
 const descEl = document.getElementById("desc");
 const playBtn = document.getElementById("playBtn");
+const catalog = document.getElementById("catalog");
+const playerOverlay = document.getElementById("playerOverlay");
+const playerFrame = document.getElementById("playerFrame");
+const backBtn = document.getElementById("backBtn");
 
-let ACTIVE_MOVIE = null;
+/**
+ * Atualiza a seção de destaque (Hero) com as informações do filme selecionado
+ */
+function updateHero(movie) {
+    if (!movie) return;
 
-/* função única e soberana */
-function FORCE_HERO(movie){
-  if(!movie) return;
+    // Atualiza Visual e Textos
+    hero.style.backgroundImage = `url('${movie.poster}')`;
+    titleEl.textContent = movie.title;
+    metaEl.textContent = `${movie.year} • ${movie.genres.join(" • ")}`;
+    descEl.textContent = movie.description;
 
-  ACTIVE_MOVIE = movie;
-
-  hero.style.backgroundImage = `url('${movie.poster}')`;
-  titleEl.textContent = movie.title;
-  metaEl.textContent = `${movie.year} • ${movie.genres.join(" • ")}`;
-  descEl.textContent = movie.description;
-
-  playBtn.onclick = () => {
-    const overlay = document.getElementById("playerOverlay");
-    const frame = document.getElementById("playerFrame");
-    frame.src = movie.videoUrl;
-    overlay.style.display = "block";
-  };
+    // Configura o botão de Play para carregar o vídeo deste filme
+    playBtn.onclick = () => {
+        playerFrame.src = movie.videoUrl;
+        playerOverlay.style.display = "block";
+    };
 }
 
-/* reaplica eventos nos cards (anula eventos antigos) */
-function OVERRIDE_CARDS(){
-  const cards = document.querySelectorAll(".card");
+/**
+ * Cria a lista de filmes no catálogo e adiciona os eventos de clique
+ */
+function renderCatalog() {
+    // Criamos uma seção única para os filmes
+    const section = document.createElement("div");
+    section.className = "section";
+    
+    const h2 = document.createElement("h2");
+    h2.className = "section-title";
+    h2.textContent = "Recomendados para Você";
+    section.appendChild(h2);
 
-  cards.forEach((card, index) => {
-    card.replaceWith(card.cloneNode(true));
-  });
+    const row = document.createElement("div");
+    row.className = "row";
 
-  const newCards = document.querySelectorAll(".card");
+    // Loop para criar cada card baseado no array movieData
+    movieData.forEach(movie => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.style.backgroundImage = `url('${movie.poster}')`;
+        card.tabIndex = 0; // Permite navegação por teclado
 
-  newCards.forEach((card, index) => {
-    const movie = movieData[index];
-    if(!movie) return;
+        // O SEGREDO: Ao clicar, chama a função updateHero passando ESTE filme
+        card.onclick = () => {
+            updateHero(movie);
+            // Opcional: faz o scroll para o topo para ver a mudança
+            document.getElementById('hero').scrollIntoView({ behavior: 'smooth' });
+        };
 
-    card.addEventListener("click", () => FORCE_HERO(movie));
-    card.addEventListener("focus", () => FORCE_HERO(movie));
-  });
+        row.appendChild(card);
+    });
+
+    section.appendChild(row);
+    catalog.appendChild(section);
 }
 
-/* init forçado */
-setTimeout(() => {
-  FORCE_HERO(movieData[0]);
-  OVERRIDE_CARDS();
-}, 0);
+// Evento para fechar o player e parar o vídeo
+backBtn.onclick = () => {
+    playerOverlay.style.display = "none";
+    playerFrame.src = ""; // Importante: limpa o link para o vídeo parar de tocar ao fundo
+};
+
+// Inicializa o sistema assim que a página carrega
+document.addEventListener("DOMContentLoaded", () => {
+    if (movieData && movieData.length > 0) {
+        renderCatalog();
+        updateHero(movieData[0]); // Carrega o primeiro filme como destaque inicial
+    }
+});
 </script>
   
 </body>
