@@ -929,6 +929,107 @@ const inicializarApp = () => {
 
 window.onload = inicializarApp;
 </script>
+  <script>
+/* ================= FIX TOTAL: BLOQUEIO DE AUTO-SCROLL ================= */
+
+const inicializarApp = () => {
+    if (typeof movieData === 'undefined' || movieData.length === 0) return;
+
+    const hero = document.getElementById("hero");
+    const titleEl = document.getElementById("title");
+    const metaEl = document.getElementById("meta");
+    const descEl = document.getElementById("desc");
+    const playBtn = document.getElementById("playBtn");
+    const catalog = document.getElementById("catalog");
+    const playerOverlay = document.getElementById("playerOverlay");
+    const playerFrame = document.getElementById("playerFrame");
+    const backBtn = document.getElementById("backBtn");
+
+    function updateHero(movie) {
+        if (!movie) return;
+        
+        // 1. Salva a posição exata do scroll antes da troca
+        const currentScroll = catalog.scrollTop;
+
+        // 2. Troca os dados
+        hero.style.backgroundImage = `url('${movie.poster}')`;
+        titleEl.textContent = movie.title;
+        metaEl.textContent = `${movie.year} • ${movie.genres.join(" • ")}`;
+        descEl.textContent = movie.description;
+
+        playBtn.onclick = (e) => {
+            e.preventDefault();
+            playerFrame.src = movie.videoUrl;
+            playerOverlay.style.display = "block";
+        };
+
+        // 3. Força o scroll a ficar parado no mesmo pixel de antes
+        // Isso anula qualquer tentativa do navegador de subir a tela
+        requestAnimationFrame(() => {
+            catalog.scrollTop = currentScroll;
+        });
+    }
+
+    function criarLinha(titulo, listaFilmes) {
+        if (listaFilmes.length === 0) return;
+
+        const section = document.createElement("div");
+        section.className = "section";
+        section.innerHTML = `<h2 class="section-title">${titulo}</h2>`;
+
+        const row = document.createElement("div");
+        row.className = "row";
+
+        listaFilmes.forEach(movie => {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.style.backgroundImage = `url('${movie.poster}')`;
+            
+            // Usamos mousedown em vez de click em alguns casos para evitar o foco automático
+            card.addEventListener('click', (e) => {
+                e.preventDefault(); // Impede comportamento padrão
+                updateHero(movie);
+            });
+
+            row.appendChild(card);
+        });
+
+        section.appendChild(row);
+        catalog.appendChild(section);
+    }
+
+    function montarCatalogo() {
+        catalog.innerHTML = ""; 
+        
+        // SESSÕES (Curadoria)
+        const random = [...movieData].sort(() => Math.random() - 0.5);
+        const top10 = movieData.slice(0, 10);
+        
+        criarLinha("Sugestões para você", random.slice(0, 8));
+        criarLinha("Nossa recomendação", random.slice(8, 16));
+        criarLinha("Os 10 melhores", top10);
+        criarLinha("Filmes bem avaliados", movieData.filter(m => parseInt(m.year) > 1940).slice(0,8));
+        criarLinha("Talvez você irá gostar", random.slice(16, 24));
+        criarLinha("Sucessos imperdíveis", movieData.filter(m => m.genres.includes("Drama")).slice(0, 8));
+        criarLinha("Os 10 melhores do cinema", [...top10].reverse());
+
+        // GÊNEROS
+        const generos = [...new Set(movieData.flatMap(m => m.genres))].sort();
+        generos.forEach(g => criarLinha(g, movieData.filter(m => m.genres.includes(g))));
+    }
+
+    backBtn.onclick = () => {
+        playerOverlay.style.display = "none";
+        playerFrame.src = "";
+    };
+
+    montarCatalogo();
+    updateHero(movieData[0]);
+};
+
+window.onload = inicializarApp;
+</script>
+
   
 </body>
 </html>
