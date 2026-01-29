@@ -746,10 +746,15 @@ if (document.readyState === "loading") {
 </script>
 
 <script>
-/* ================= GERADOR AUTOMÁTICO DE SESSÕES E PÔSTER ================= */
+/* ================= GERADOR DE SESSÕES (CORREÇÃO DE CARREGAMENTO) ================= */
 
-(function() {
-    // Elementos principais
+const inicializarApp = () => {
+    // 1. Verificar se a lista existe
+    if (typeof movieData === 'undefined' || movieData.length === 0) {
+        console.error("Erro: A lista movieData não foi encontrada ou está vazia.");
+        return;
+    }
+
     const hero = document.getElementById("hero");
     const titleEl = document.getElementById("title");
     const metaEl = document.getElementById("meta");
@@ -760,57 +765,47 @@ if (document.readyState === "loading") {
     const playerFrame = document.getElementById("playerFrame");
     const backBtn = document.getElementById("backBtn");
 
-    // 1. FUNÇÃO QUE TROCA O PÔSTER NO TOPO (HERO)
+    // Função para trocar o Hero
     function updateHero(movie) {
-        if (!movie) return;
-        
-        // Atualiza imagem, textos e metadados
         hero.style.backgroundImage = `url('${movie.poster}')`;
         titleEl.textContent = movie.title;
         metaEl.textContent = `${movie.year} • ${movie.genres.join(" • ")}`;
         descEl.textContent = movie.description;
 
-        // Configura o botão assistir
         playBtn.onclick = () => {
             playerFrame.src = movie.videoUrl;
             playerOverlay.style.display = "block";
         };
     }
 
-    // 2. FUNÇÃO QUE CRIA AS SESSÕES POR GÊNERO AUTOMATICAMENTE
-    function buildAutoCatalog() {
-        catalog.innerHTML = ""; // Limpa o catálogo
+    // Função para criar as sessões
+    function criarSessoes() {
+        catalog.innerHTML = ""; // Limpa o "nada" que está aparecendo
 
-        // Extrai todos os gêneros únicos da sua movieData
-        const genresSet = new Set();
-        movieData.forEach(m => m.genres.forEach(g => genresSet.add(g)));
-        const uniqueGenres = Array.from(genresSet).sort();
+        // Pega os gêneros e organiza
+        const generos = [...new Set(movieData.flatMap(m => m.genres))].sort();
 
-        // Para cada gênero encontrado, cria uma prateleira
-        uniqueGenres.forEach(genre => {
+        generos.forEach(genero => {
+            // Criar a Estrutura da Sessão
             const section = document.createElement("div");
             section.className = "section";
-
+            
             const h2 = document.createElement("h2");
             h2.className = "section-title";
-            h2.textContent = genre; // O nome da sessão é o gênero
+            h2.textContent = genero;
             section.appendChild(h2);
 
             const row = document.createElement("div");
             row.className = "row";
 
-            // Filtra os filmes que pertencem a este gênero
-            const moviesInGenre = movieData.filter(m => m.genres.includes(genre));
-
-            moviesInGenre.forEach(movie => {
+            // Filtrar e criar os cards deste gênero
+            movieData.filter(m => m.genres.includes(genero)).forEach(movie => {
                 const card = document.createElement("div");
                 card.className = "card";
                 card.style.backgroundImage = `url('${movie.poster}')`;
                 
-                // Evento de clique para trocar o pôster
                 card.onclick = () => {
                     updateHero(movie);
-                    // Opcional: faz o scroll suave para o topo do catálogo para ver o hero
                     catalog.scrollTo({ top: 0, behavior: 'smooth' });
                 };
 
@@ -822,19 +817,19 @@ if (document.readyState === "loading") {
         });
     }
 
-    // 3. CONTROLE DO PLAYER
+    // Botão Voltar
     backBtn.onclick = () => {
         playerOverlay.style.display = "none";
-        playerFrame.src = ""; // Para o vídeo imediatamente
+        playerFrame.src = "";
     };
 
-    // INICIALIZAÇÃO
-    if (typeof movieData !== 'undefined' && movieData.length > 0) {
-        buildAutoCatalog(); // Cria as sessões
-        updateHero(movieData[0]); // Define o primeiro filme como destaque inicial
-    }
+    // Executar
+    criarSessoes();
+    updateHero(movieData[0]);
+};
 
-})();
+// GARANTIA: Só roda quando tudo (incluindo a lista) estiver pronto
+window.onload = inicializarApp;
 </script>
   
 </body>
