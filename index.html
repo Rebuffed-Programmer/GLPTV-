@@ -664,6 +664,68 @@ for(let i = 0; i < movieData.length; i += 30){
 
 })();
 </script>
+
+<script>
+/* ================= HARD OVERRIDE HERO ================= */
+
+/* mata qualquer referência antiga */
+window.updateHero = null;
+window.setHero = null;
+window.currentMovie = null;
+
+/* elementos */
+const hero = document.getElementById("hero");
+const titleEl = document.getElementById("title");
+const metaEl = document.getElementById("meta");
+const descEl = document.getElementById("desc");
+const playBtn = document.getElementById("playBtn");
+
+let ACTIVE_MOVIE = null;
+
+/* função única e soberana */
+function FORCE_HERO(movie){
+  if(!movie) return;
+
+  ACTIVE_MOVIE = movie;
+
+  hero.style.backgroundImage = `url('${movie.poster}')`;
+  titleEl.textContent = movie.title;
+  metaEl.textContent = `${movie.year} • ${movie.genres.join(" • ")}`;
+  descEl.textContent = movie.description;
+
+  playBtn.onclick = () => {
+    const overlay = document.getElementById("playerOverlay");
+    const frame = document.getElementById("playerFrame");
+    frame.src = movie.videoUrl;
+    overlay.style.display = "block";
+  };
+}
+
+/* reaplica eventos nos cards (anula eventos antigos) */
+function OVERRIDE_CARDS(){
+  const cards = document.querySelectorAll(".card");
+
+  cards.forEach((card, index) => {
+    card.replaceWith(card.cloneNode(true));
+  });
+
+  const newCards = document.querySelectorAll(".card");
+
+  newCards.forEach((card, index) => {
+    const movie = movieData[index];
+    if(!movie) return;
+
+    card.addEventListener("click", () => FORCE_HERO(movie));
+    card.addEventListener("focus", () => FORCE_HERO(movie));
+  });
+}
+
+/* init forçado */
+setTimeout(() => {
+  FORCE_HERO(movieData[0]);
+  OVERRIDE_CARDS();
+}, 0);
+</script>
   
 </body>
 </html>
