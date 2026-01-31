@@ -16,6 +16,63 @@ body{
   overflow:hidden;
 }
 
+/* ================= CATALOGO TV SAFE ================= */
+#catalog {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 45vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 60px;
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.section-title {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 10px 40px;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+  padding-left: 40px;
+  overflow-x: auto;
+}
+
+.row::-webkit-scrollbar {
+  display: none;
+}
+
+/* ================= CARD ================= */
+.card {
+  min-width: 260px;
+  height: 145px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.card:focus {
+  outline: 3px solid #fff;
+}
+
+/* ================= ADS ================= */
+.ads-card {
+  min-width: 320px;
+  height: 180px;
+  background: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+  
 /* ===== SESSÃO DE ANÚNCIOS (TV SAFE) ===== */
 .ads-card {
   min-width: 320px;
@@ -1109,6 +1166,134 @@ function inserirAdsTV() {
 
 // Chamada segura
 setTimeout(inserirAdsTV, 1500);
+</script>
+  <script>
+/* ================= PLUS+ TV / SWITCH — SCRIPT FINAL ================= */
+
+(function () {
+
+  if (typeof movieData === "undefined" || !movieData.length) {
+    console.error("movieData não encontrado");
+    return;
+  }
+
+  const hero = document.getElementById("hero");
+  const titleEl = document.getElementById("title");
+  const metaEl  = document.getElementById("meta");
+  const descEl  = document.getElementById("desc");
+  const playBtn = document.getElementById("playBtn");
+  const catalog = document.getElementById("catalog");
+
+  /* ===== HERO ===== */
+  function updateHero(movie) {
+    hero.style.backgroundImage = `url('${movie.poster}')`;
+    titleEl.textContent = movie.title;
+    metaEl.textContent = `${movie.year} • ${movie.genres.join(" • ")}`;
+    descEl.textContent = movie.description;
+    playBtn.onclick = () => openPlayer(movie.videoUrl);
+  }
+
+  /* ===== PLAYER ===== */
+  function openPlayer(url) {
+    document.getElementById("playerFrame").src = url;
+    document.getElementById("playerOverlay").style.display = "block";
+  }
+
+  document.getElementById("backBtn").onclick = () => {
+    document.getElementById("playerOverlay").style.display = "none";
+    document.getElementById("playerFrame").src = "";
+  };
+
+  /* ===== CRIADOR DE SESSÃO ===== */
+  function criarSessao(titulo, filmes) {
+    if (!filmes.length) return;
+
+    const section = document.createElement("div");
+    section.className = "section";
+
+    const h2 = document.createElement("h2");
+    h2.className = "section-title";
+    h2.textContent = titulo;
+
+    const row = document.createElement("div");
+    row.className = "row";
+
+    filmes.forEach(movie => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.style.backgroundImage = `url('${movie.poster}')`;
+      card.tabIndex = 0;
+      card.onclick = () => updateHero(movie);
+      row.appendChild(card);
+    });
+
+    section.appendChild(h2);
+    section.appendChild(row);
+    catalog.appendChild(section);
+  }
+
+  /* ===== SESSÃO DE ANÚNCIOS ===== */
+  function criarSessaoAds() {
+    const section = document.createElement("div");
+    section.className = "section";
+
+    const h2 = document.createElement("h2");
+    h2.className = "section-title";
+    h2.textContent = "📢 Parceiros Plus+";
+
+    const row = document.createElement("div");
+    row.className = "row";
+
+    const adCard = document.createElement("div");
+    adCard.className = "card ads-card";
+
+    const adContainer = document.createElement("div");
+    adContainer.id = "container-3e2880f7981a86aaf28b11c47b965045";
+
+    adCard.appendChild(adContainer);
+    row.appendChild(adCard);
+    section.appendChild(h2);
+    section.appendChild(row);
+    catalog.appendChild(section);
+
+    setTimeout(() => {
+      const s1 = document.createElement("script");
+      s1.src = "https://pl28614854.effectivegatecpm.com/3e2880f7981a86aaf28b11c47b965045/invoke.js";
+      s1.async = true;
+      s1.setAttribute("data-cfasync", "false");
+      document.body.appendChild(s1);
+
+      const s2 = document.createElement("script");
+      s2.src = "https://pl28615349.effectivegatecpm.com/b9/b6/83/b9b68319b769547b0c7f803fac9b47a6.js";
+      s2.async = true;
+      document.body.appendChild(s2);
+    }, 2500);
+  }
+
+  /* ===== MONTA TUDO ===== */
+  function init() {
+    catalog.innerHTML = ""; // LIMPA UMA ÚNICA VEZ
+
+    const random = [...movieData].sort(() => Math.random() - 0.5);
+    const top10 = movieData.slice(0, 10);
+
+    criarSessao("Sugestões para você", random.slice(0, 8));
+    criarSessao("Nossa recomendação", random.slice(8, 16));
+    criarSessao("Os 10 melhores", top10);
+
+    criarSessaoAds(); // anúncios entram como sessão
+
+    const generos = [...new Set(movieData.flatMap(m => m.genres))];
+    generos.forEach(g =>
+      criarSessao(g, movieData.filter(m => m.genres.includes(g)))
+    );
+
+    updateHero(movieData[0]);
+  }
+
+  window.addEventListener("load", init);
+
+})();
 </script>
   
 </body>
