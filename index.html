@@ -1059,13 +1059,15 @@ const inicializarApp = () => {
 
 window.onload = inicializarApp;
 </script>
-<script>
-/* ================= SESSÃO DE ANÚNCIOS (TV SAFE) ================= */
 
-function inserirSessaoAds() {
+<script>
+/* ================= ADS TV / SWITCH — OTIMIZADO ================= */
+
+function inserirAdsTV() {
   const catalog = document.getElementById("catalog");
   if (!catalog) return;
 
+  // ===== CRIA SESSÃO =====
   const section = document.createElement("div");
   section.className = "section";
 
@@ -1074,23 +1076,22 @@ function inserirSessaoAds() {
   title.textContent = "📢 Parceiros Plus+";
 
   const row = document.createElement("div");
-  row.className = "row ads-row";
+  row.className = "row";
 
   const adCard = document.createElement("div");
-  adCard.className = "ads-card";
+  adCard.className = "card ads-card";
   adCard.tabIndex = 0;
 
   const adContainer = document.createElement("div");
   adContainer.className = "ads-container";
-  adContainer.id = "plus-ad-container";
+  adContainer.id = "container-3e2880f7981a86aaf28b11c47b965045";
 
   adCard.appendChild(adContainer);
   row.appendChild(adCard);
-
   section.appendChild(title);
   section.appendChild(row);
 
-  // INSERE APÓS A 2ª SESSÃO (estilo Netflix)
+  // ===== INSERE COMO SE FOSSE UM GÊNERO =====
   const sections = catalog.querySelectorAll(".section");
   if (sections.length >= 2) {
     catalog.insertBefore(section, sections[2]);
@@ -1098,20 +1099,28 @@ function inserirSessaoAds() {
     catalog.appendChild(section);
   }
 
-  // Lazy load do script (TV performance)
+  // ===== CARREGAMENTO SEGURO (TV BOX FRIENDLY) =====
   setTimeout(() => {
-    const s = document.createElement("script");
-    s.src = "https://pl28614854.effectivegatecpm.com/3e2880f7981a86aaf28b11c47b965045/invoke.js";
-    s.async = true;
-    s.setAttribute("data-cfasync", "false");
-    adContainer.appendChild(s);
-  }, 2500);
+
+    // Script 1
+    const s1 = document.createElement("script");
+    s1.src = "https://pl28614854.effectivegatecpm.com/3e2880f7981a86aaf28b11c47b965045/invoke.js";
+    s1.async = true;
+    s1.setAttribute("data-cfasync", "false");
+    document.body.appendChild(s1);
+
+    // Script 2
+    const s2 = document.createElement("script");
+    s2.src = "https://pl28615349.effectivegatecpm.com/b9/b6/83/b9b68319b769547b0c7f803fac9b47a6.js";
+    s2.async = true;
+    document.body.appendChild(s2);
+
+  }, 2500); // delay proposital pra TV
 }
 
-// chama depois que o app montar
-setTimeout(inserirSessaoAds, 1500);
+// Chamada segura
+setTimeout(inserirAdsTV, 1500);
 </script>
-
   
 </body>
 </html>
