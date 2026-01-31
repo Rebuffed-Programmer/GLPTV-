@@ -1030,18 +1030,144 @@ const inicializarApp = () => {
 window.onload = inicializarApp;
 </script>
 
-  <main>
-    <section class="movie-section">
+<style>
+  /* OTIMIZAÇÃO PARA TV: FOCO E SELEÇÃO */
+  .card:focus, .play-btn:focus, .ad-card:focus {
+    outline: 4px solid #0f8 !important; /* Cor vibrante para ver na TV */
+    transform: scale(1.05);
+    z-index: 10;
+  }
+
+  /* Ajuste no catálogo para TV */
+  #catalog {
+    padding-bottom: 100px; /* Espaço para não esconder o último filme */
+  }
+
+  /* Estilo do Card de Anúncio para parecer um Filme */
+  .ad-card {
+    min-width: 300px;
+    height: 145px;
+    background: #111;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+</style>
+
+<body>
+
+<div id="hero">
+  <div id="heroContent">
+    <div id="title"></div>
+    <div id="meta"></div>
+    <div id="desc"></div>
+    <button id="playBtn" tabindex="0">▶ Assistir</button>
+  </div>
+</div>
+
+<div id="catalog">
+    <section class="section" id="ads-tv-section">
         <h2 class="section-title">📢 Parceiros Plus+</h2>
-        <div style="padding: 10px; display: flex; justify-content: center;">
-            
-            <script async="async" data-cfasync="false" src="https://pl28614854.effectivegatecpm.com/3e2880f7981a86aaf28b11c47b965045/invoke.js"></script>
-            <div id="container-3e2880f7981a86aaf28b11c47b965045"></div>
-            
+        <div class="row">
+            <div class="ad-card" tabindex="0">
+                <script async="async" data-cfasync="false" src="https://pl28614854.effectivegatecpm.com/3e2880f7981a86aaf28b11c47b965045/invoke.js"></script>
+                <div id="container-3e2880f7981a86aaf28b11c47b965045"></div>
+            </div>
+            <div class="ad-card" tabindex="0">
+                <script src="https://pl28614956.effectivegatecpm.com/ca/30/b5/ca30b538e0a020e71edfc5ff9b33a6a7.js"></script>
+                <p style="color:#222; font-size:10px;">Publicidade Ativa</p>
+            </div>
         </div>
     </section>
+</div>
 
-    </main>
+<div id="playerOverlay">
+  <button id="backBtn" tabindex="0">← Voltar</button>
+  <iframe id="playerFrame" allowfullscreen></iframe>
+</div>
+
+<script>
+// =====================================================
+// LÓGICA OTIMIZADA PARA TV E NAVEGAÇÃO
+// =====================================================
+
+const inicializarApp = () => {
+    if (typeof movieData === 'undefined' || movieData.length === 0) return;
+
+    const hero = document.getElementById("hero");
+    const titleEl = document.getElementById("title");
+    const metaEl = document.getElementById("meta");
+    const descEl = document.getElementById("desc");
+    const playBtn = document.getElementById("playBtn");
+    const catalog = document.getElementById("catalog");
+    const playerOverlay = document.getElementById("playerOverlay");
+    const playerFrame = document.getElementById("playerFrame");
+
+    function updateHero(movie) {
+        hero.style.backgroundImage = `url('${movie.poster}')`;
+        titleEl.textContent = movie.title;
+        metaEl.textContent = `${movie.year} • ${movie.genres.join(" • ")}`;
+        descEl.textContent = movie.description;
+        
+        playBtn.onclick = () => {
+            playerFrame.src = movie.videoUrl;
+            playerOverlay.style.display = "block";
+            document.getElementById("backBtn").focus(); // Joga o foco no voltar ao abrir
+        };
+    }
+
+    function criarLinha(titulo, listaFilmes) {
+        if (listaFilmes.length === 0) return;
+        const section = document.createElement("div");
+        section.className = "section";
+        section.innerHTML = `<h2 class="section-title">${titulo}</h2>`;
+        const row = document.createElement("div");
+        row.className = "row";
+
+        listaFilmes.forEach(movie => {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.tabIndex = 0; // FUNDAMENTAL PARA TV BOX
+            card.style.backgroundImage = `url('${movie.poster}')`;
+            
+            // Navegação de TV: clique ou Enter
+            const selecionar = () => {
+                updateHero(movie);
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            };
+
+            card.onclick = selecionar;
+            card.onkeydown = (e) => { if(e.key === "Enter") selecionar(); };
+
+            row.appendChild(card);
+        });
+
+        section.appendChild(row);
+        catalog.appendChild(section);
+    }
+
+    function montarCatalogo() {
+        // Mantém a seção de anúncios no topo e adiciona os filmes abaixo
+        const generos = [...new Set(movieData.flatMap(m => m.genres))].sort();
+        generos.forEach(g => criarLinha(g, movieData.filter(m => m.genres.includes(g))));
+    }
+
+    document.getElementById("backBtn").onclick = () => {
+        playerOverlay.style.display = "none";
+        playerFrame.src = "";
+    };
+
+    montarCatalogo();
+    updateHero(movieData[0]);
+};
+
+window.onload = inicializarApp;
+</script>
+
+</body>
+</html>
   
 </body>
 </html>
