@@ -2146,5 +2146,72 @@ window.onload = () => {
     observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
 })();
 </script>
+  <script>
+  (function () {
+  'use strict';
+
+  function corrigirFilmes क्लासicosYT() {
+    // 1. Corrige o título da seção/aba "filmes clássicos (YouTube direto)" para apenas "Clássicos" ou "Filmes Clássicos"
+    document.querySelectorAll('h1, h2, h3, h4, h5, span, a, div, p').forEach((el) => {
+      if (el.children.length === 0 && el.textContent) {
+        let txt = el.textContent.trim();
+        // Verifica se contém "filmes clássicos" e "youtube" no mesmo texto
+        if (/filmes\s*clássicos/i.test(txt) && /youtube/i.test(txt)) {
+          el.textContent = 'Filmes Clássicos';
+        } else if (txt === 'Clássicos YT') {
+          el.textContent = 'Clássicos';
+        }
+      }
+    });
+
+    // 2. Remove especificamente as logos/badges do YouTube que aparecem nos pôsteres/cards
+    const selectors = [
+      'img[src*="youtube"]',
+      'img[alt*="YouTube"]',
+      'svg[class*="youtube"]',
+      '[class*="yt-logo"]',
+      '[class*="youtube-badge"]',
+      '[class*="youtube-icon"]',
+      // Se houver algum elemento flutuante de marca d'água do YouTube nos cards
+      '.card img[src*="youtube"]',
+      '.movie-card img[src*="youtube"]'
+    ];
+
+    document.querySelectorAll(selectors.join(', ')).forEach((el) => {
+      // Garante que é realmente uma logo/badge e não o pôster do filme em si
+      if (el.naturalWidth < 100 || el.classList.contains('yt') || el.classList.contains('youtube') || el.closest('.badge, .watermark, .icon')) {
+        el.style.display = 'none';
+      }
+    });
+
+    // Varredura extra em imagens que tenham "youtube" na URL para sumir com os selos indesejados nos cards
+    document.querySelectorAll('img').forEach((img) => {
+      if (img.src && (img.src.includes('youtube.com/img') || img.src.includes('yt3.ggpht') || img.src.includes('youtube_logo'))) {
+        // Se a imagem for pequena (badge/selo), remove
+        if (img.width < 80 || img.height < 80 || img.classList.contains('badge')) {
+          img.style.display = 'none';
+        }
+      }
+    });
+  }
+
+  // Executa ao carregar
+  corrigirFilmesलासicosYT();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', corrigirFilmesलासicosYT);
+  }
+
+  // Observador para pegar conteúdos que carregam dinamicamente (Ajax / API)
+  const observer = new MutationObserver(() => {
+    observer.disconnect();
+    corrigirFilmesलासicosYT();
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
+
+  if (document.body) {
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+})();
+</script>
 </body>
 </html>
