@@ -1,0 +1,2151 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plus+ TV</title>
+<link rel="icon" type="image/png" sizes="32x32" href="https://i.postimg.cc/d3cRw6yH/favicon-32x32.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<style>
+:root {
+  --bg-primary: #000000;
+  --bg-secondary: #121517;
+  --bg-elevated: #1c2124;
+  --accent-green: #48c948;
+  --accent-green-hover: #3b9f3b;
+  --text-main: #ffffff;
+  --text-muted: #9aa0a6;
+  --border-subtle: rgba(255, 255, 255, 0.12);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: none;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* FOCO TV (D-PAD / CONTROLE REMOTO) */
+.tv-focusable:focus,
+button:focus,
+input:focus,
+a:focus {
+  outline: 4px solid var(--accent-green) !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 24px rgba(72, 201, 72, 0.55) !important;
+  transform: scale(1.03);
+  z-index: 20;
+}
+
+/* ================= BARRA LATERAL TV (SIDE RAIL) ================= */
+#tvSidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 84px;
+  height: 100vh;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.96) 0%, rgba(0, 0, 0, 0.85) 100%);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 22px 0;
+  z-index: 1500;
+  transition: width 0.25s ease;
+}
+
+#tvSidebar:hover,
+#tvSidebar:focus-within {
+  width: 230px;
+  align-items: flex-start;
+  padding-left: 18px;
+  background: rgba(10, 12, 14, 0.98);
+}
+
+.tv-logo {
+  height: 36px;
+  margin-bottom: 24px;
+  object-fit: contain;
+}
+
+.tv-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding-right: 14px;
+}
+
+.tv-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 13px 14px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: var(--text-muted);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.tv-nav-btn i {
+  font-size: 20px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.tv-nav-btn span {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+#tvSidebar:hover .tv-nav-btn span,
+#tvSidebar:focus-within .tv-nav-btn span {
+  opacity: 1;
+}
+
+.tv-nav-btn.active,
+.tv-nav-btn:hover,
+.tv-nav-btn:focus {
+  background: rgba(72, 201, 72, 0.16);
+  color: var(--accent-green);
+  border-color: rgba(72, 201, 72, 0.4);
+}
+
+.tv-sidebar-footer {
+  margin-top: auto;
+  width: 100%;
+  padding-right: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tv-avatar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.tv-avatar-wrap img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-green);
+  object-fit: cover;
+}
+
+#hiddenGoogleBtn {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  z-index: 5;
+}
+
+.kids-pill-tv {
+  display: none;
+  background: var(--accent-green);
+  color: #000;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+.kids-pill-tv.active { display: inline-block; }
+
+/* ================= ÁREA PRINCIPAL TV ================= */
+#tvMain {
+  margin-left: 84px;
+  width: calc(100vw - 84px);
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ================= HERO SHOWCASE + ROLETA 4 SLOTS ================= */
+#hero {
+  height: 54vh;
+  width: 100%;
+  background-size: cover;
+  background-position: center 20%;
+  background-repeat: no-repeat;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 48px 34px 48px;
+  transition: background-image 0.5s ease;
+}
+
+#hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.96) 0%, rgba(0, 0, 0, 0.65) 48%, rgba(0, 0, 0, 0.15) 100%),
+    linear-gradient(to top, #000000 4%, rgba(0, 0, 0, 0.35) 55%, rgba(0, 0, 0, 0.5) 100%);
+  pointer-events: none;
+}
+
+#heroContent {
+  position: relative;
+  z-index: 5;
+  max-width: 680px;
+}
+
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(72, 201, 72, 0.18);
+  color: var(--accent-green);
+  border: 1px solid rgba(72, 201, 72, 0.45);
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+#title {
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.12;
+  margin-bottom: 8px;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.9);
+}
+
+#meta {
+  font-size: 15px;
+  color: var(--accent-green);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+#desc {
+  font-size: 16px;
+  color: #d0d5da;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.btn-tv-primary {
+  padding: 13px 28px;
+  font-size: 17px;
+  font-weight: 800;
+  background: var(--accent-green);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-tv-secondary {
+  padding: 13px 22px;
+  font-size: 16px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Controles da Roleta no Hero */
+.roleta-controls {
+  position: absolute;
+  bottom: 34px;
+  right: 48px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.roleta-arrow {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(18, 21, 23, 0.85);
+  border: 1px solid var(--border-subtle);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.roleta-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.roleta-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* ================= CATALOGO TV SAFE (SCROLL VERTICAL DE FILEIRAS) ================= */
+#catalog {
+  position: relative;
+  width: 100%;
+  height: 46vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px 0 80px 0;
+  background: linear-gradient(to top, #000 88%, transparent);
+  scroll-behavior: smooth;
+}
+
+#catalog.full-height {
+  height: 100vh;
+  padding-top: 32px;
+}
+
+#catalog::-webkit-scrollbar {
+  width: 6px;
+}
+#catalog::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+/* Barra rápida de gêneros */
+.tv-genre-bar {
+  display: flex;
+  gap: 12px;
+  padding: 4px 48px 18px 48px;
+  overflow-x: auto;
+}
+.tv-genre-bar::-webkit-scrollbar { display: none; }
+
+.genre-pill {
+  background: var(--bg-secondary);
+  color: #fff;
+  border: 1px solid var(--border-subtle);
+  padding: 9px 18px;
+  border-radius: 22px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.genre-pill.active {
+  background: var(--accent-green);
+  color: #000;
+  border-color: var(--accent-green);
+}
+
+.section {
+  margin-bottom: 28px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px 12px 48px;
+}
+
+.section-title {
+  color: #fff;
+  font-size: 21px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title::before {
+  content: "";
+  width: 4px;
+  height: 20px;
+  background: var(--accent-green);
+  border-radius: 4px;
+}
+
+.row {
+  display: flex;
+  gap: 18px;
+  padding: 8px 48px 14px 48px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+}
+
+.row::-webkit-scrollbar {
+  display: none;
+}
+
+.row.grid-mode {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  overflow-x: visible;
+}
+
+/* ================= CARDS 16:9 TV ================= */
+.card {
+  position: relative;
+  min-width: 265px;
+  width: 265px;
+  height: 150px;
+  background-color: var(--bg-secondary);
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+  border: 2px solid var(--border-subtle);
+  cursor: pointer;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.row.grid-mode .card {
+  width: 100%;
+  min-width: unset;
+}
+
+.card-overlay {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 26px 12px 10px 12px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.96) 25%, transparent 100%);
+  pointer-events: none;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.badge-live {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: var(--accent-green);
+  color: #000;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 3px 9px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.badge-price {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.88);
+  border: 1px solid var(--accent-green);
+  color: var(--accent-green);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 6px;
+}
+
+.badge-list {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+.badge-list.active {
+  background: var(--accent-green);
+  color: #000;
+}
+
+/* ================= MODAIS TV ================= */
+.tv-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(12px);
+  z-index: 25000;
+  justify-content: center;
+  align-items: center;
+  padding: 32px;
+}
+
+.tv-modal-box {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  width: 100%;
+  max-width: 820px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 28px;
+  position: relative;
+}
+
+.modal-flex {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.modal-poster-tv {
+  width: 320px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.rec-grid-tv {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.rec-card-tv {
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid var(--border-subtle);
+  cursor: pointer;
+}
+.rec-card-tv img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ================= PLAYER FULLSCREEN UNIFICADO ================= */
+#playerOverlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  display: none;
+  z-index: 99999;
+}
+
+#playerFrame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+#backBtn {
+  position: absolute;
+  top: 22px;
+  left: 24px;
+  z-index: 100000;
+  padding: 12px 22px;
+  background: rgba(18, 21, 23, 0.88);
+  color: #fff;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.plus-block-newtab-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(18, 21, 23, 0.55);
+  color: #fff;
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ================= PESQUISA TV ================= */
+#searchOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.96);
+  z-index: 30000;
+  flex-direction: column;
+  padding: 36px 56px;
+}
+
+.search-top-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.search-input-tv {
+  flex: 1;
+  padding: 16px 22px;
+  border-radius: 12px;
+  border: 2px solid var(--accent-green);
+  background: var(--bg-secondary);
+  color: #fff;
+  font-size: 20px;
+}
+
+.search-grid-tv {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 18px;
+  overflow-y: auto;
+  padding: 8px 4px 40px 4px;
+}
+</style>
+</head>
+<body>
+
+<!-- BARRA LATERAL TV -->
+<aside id="tvSidebar" aria-label="Menu Principal TV">
+  <img src="https://i.postimg.cc/fbm60y7Q/logo.png" alt="Plus+" class="tv-logo">
+  <span id="kidsBadgeTv" class="kids-pill-tv">KIDS</span>
+
+  <nav class="tv-nav-list">
+    <button class="tv-nav-btn tv-focusable active" data-nav="home"><i class="fas fa-home"></i><span>Início</span></button>
+    <button class="tv-nav-btn tv-focusable" data-nav="search"><i class="fas fa-search"></i><span>Pesquisar</span></button>
+    <button class="tv-nav-btn tv-focusable" data-nav="live"><i class="fas fa-broadcast-tower"></i><span>Ao Vivo</span></button>
+    <button class="tv-nav-btn tv-focusable" data-nav="list"><i class="fas fa-bookmark"></i><span>Minha Lista</span></button>
+    <button class="tv-nav-btn tv-focusable" data-nav="classix"><i class="fas fa-film"></i><span>Clássicos YT</span></button>
+    <button class="tv-nav-btn tv-focusable" data-nav="plus"><i class="fas fa-gem"></i><span>Plus+ VIP</span></button>
+    <button class="tv-nav-btn tv-focusable" data-nav="kids"><i class="fas fa-child"></i><span id="kidsNavLabel">Modo Kids</span></button>
+  </nav>
+
+  <div class="tv-sidebar-footer">
+    <div class="tv-avatar-wrap tv-focusable" tabindex="0" id="tvProfileTrigger">
+      <img id="tvAvatarImg" src="https://i.postimg.cc/mrQ0R1LV/Plus-Avatar-icon.jpg" alt="Perfil">
+      <div style="overflow:hidden;">
+        <div id="tvUserName" style="font-size:13px; font-weight:700; white-space:nowrap;">Visitante Plus+</div>
+        <div id="tvUserStatus" style="font-size:11px; color:var(--accent-green);">Conta Gratuita</div>
+      </div>
+      <div id="hiddenGoogleBtn"></div>
+    </div>
+  </div>
+</aside>
+
+<!-- CONTEÚDO PRINCIPAL -->
+<main id="tvMain">
+  <!-- HERO SHOWCASE (ROLETA 4 SLOTS) -->
+  <section id="hero">
+    <div id="heroContent">
+      <div class="hero-tag" id="heroTag"><i class="fas fa-bolt"></i> DESTAQUE PLUS+</div>
+      <div id="title">Carregando...</div>
+      <div id="meta"></div>
+      <div id="desc"></div>
+      <div class="hero-actions">
+        <button id="playBtn" class="btn-tv-primary tv-focusable"><i class="fas fa-play"></i> Assistir Agora</button>
+        <button id="heroListBtn" class="btn-tv-secondary tv-focusable"><i class="fas fa-plus"></i> Minha Lista</button>
+      </div>
+    </div>
+
+    <div class="roleta-controls">
+      <button class="roleta-arrow tv-focusable" id="roletaPrev" aria-label="Anterior"><i class="fas fa-chevron-left"></i></button>
+      <div class="roleta-dots" id="roletaDots"></div>
+      <button class="roleta-arrow tv-focusable" id="roletaNext" aria-label="Próximo"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  </section>
+
+  <!-- FILEIRAS DO CATÁLOGO -->
+  <div id="catalog"></div>
+</main>
+
+<!-- MODAL DE DETALHES -->
+<div id="detailModal" class="tv-modal">
+  <div class="tv-modal-box">
+    <div class="modal-flex">
+      <img id="modalPoster" class="modal-poster-tv" src="" alt="Poster">
+      <div style="flex:1;">
+        <h2 id="modalTitle" style="font-size:28px; margin-bottom:8px;"></h2>
+        <div id="modalMeta" style="color:var(--accent-green); font-weight:700; margin-bottom:12px;"></div>
+        <p id="modalDesc" style="color:#ccc; font-size:15px; line-height:1.5; margin-bottom:20px;"></p>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <button id="modalWatchBtn" class="btn-tv-primary tv-focusable"><i class="fas fa-play"></i> Assistir Agora</button>
+          <button id="modalListBtn" class="btn-tv-secondary tv-focusable"><i class="fas fa-plus"></i> Minha Lista</button>
+          <button id="modalCloseBtn" class="btn-tv-secondary tv-focusable"><i class="fas fa-times"></i> Fechar</button>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:24px; border-top:1px solid var(--border-subtle); padding-top:18px;">
+      <h3 style="font-size:16px; color:#fff;">Títulos Relacionados</h3>
+      <div class="rec-grid-tv" id="modalRecGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE COMPRA -->
+<div id="buyModal" class="tv-modal">
+  <div class="tv-modal-box" style="max-width:520px; text-align:center;">
+    <img id="buyPoster" style="width:100%; aspect-ratio:16/9; object-fit:cover; border-radius:12px; margin-bottom:16px;" src="" alt="">
+    <h2 id="buyTitle" style="margin-bottom:8px;"></h2>
+    <p id="buyMeta" style="color:var(--text-muted); margin-bottom:14px;"></p>
+    <p id="buyQuestion" style="color:#ddd; margin-bottom:20px;"></p>
+    <div style="display:flex; gap:12px; justify-content:center;">
+      <a id="buyLinkBtn" href="#" target="_blank" class="btn-tv-primary tv-focusable" style="text-decoration:none;"><i class="fas fa-shopping-bag"></i> Comprar Agora</a>
+      <button id="buyCloseBtn" class="btn-tv-secondary tv-focusable">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ASSINATURA PLUS+ & TOKEN -->
+<div id="plusModal" class="tv-modal">
+  <div class="tv-modal-box" style="max-width:680px; text-align:center;">
+    <img src="https://i.postimg.cc/yN37MSRy/P-ster-das-assinaturas-Plus.jpg" alt="Plus+" style="width:100%; max-height:200px; object-fit:cover; border-radius:12px; margin-bottom:16px;">
+    <h2 style="margin-bottom:8px;">Assinatura Plus+ VIP</h2>
+    <p style="color:#ccc; margin-bottom:18px;">Ative com sua Conta Google, insira seu Token Familiar ou assine um plano.</p>
+    <div style="display:flex; gap:12px; justify-content:center; margin-bottom:18px; flex-wrap:wrap;">
+      <button id="plusTabLogin" class="btn-tv-primary tv-focusable"><i class="fas fa-key"></i> Ativar Token / Google</button>
+      <button id="plusTabPlans" class="btn-tv-secondary tv-focusable"><i class="fas fa-crown"></i> Ver Planos</button>
+      <button id="plusCloseBtn" class="btn-tv-secondary tv-focusable">Fechar</button>
+    </div>
+    <div id="plusDynamicArea" style="text-align:left;"></div>
+  </div>
+</div>
+
+<!-- PESQUISA FULLSCREEN TV -->
+<div id="searchOverlay">
+  <div class="search-top-bar">
+    <input type="text" id="searchInput" class="search-input-tv tv-focusable" placeholder="Buscar filme, gênero, ano ou ID...">
+    <button id="closeSearchBtn" class="btn-tv-secondary tv-focusable"><i class="fas fa-times"></i> Fechar</button>
+  </div>
+  <div id="searchCount" style="color:var(--text-muted); margin-bottom:16px;">Digite para buscar em todo o catálogo</div>
+  <div id="searchGrid" class="search-grid-tv"></div>
+</div>
+
+<!-- PLAYER FULLSCREEN -->
+<div id="playerOverlay">
+  <button id="backBtn" class="tv-focusable"><i class="fas fa-arrow-left"></i> Voltar ao Catálogo</button>
+  <button class="plus-block-newtab-btn" id="blockNewTabBtn" title="Abertura externa bloqueada"><i class="fas fa-lock"></i></button>
+  <iframe id="playerFrame" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+</div>
+
+<script>
+/* ==========================================================================
+   1. BANCO DE DADOS COMPLETO (TODOS OS FILMES, CANAIS AO VIVO, LOJA E TOKENS)
+   ========================================================================== */
+const movieData = [
+  { id: 2, title: "A Antiga e a Moderna", year: "1929", description: "O jovem Komarovskis volta do exílio para sua aldeia na Sibéria, onde se depara com grandes mudanças em andamento. Entre elas, a jovem Marfa, que se rebela contra os costumes de uma família patriarcal e está determinada a viver de acordo com suas próprias regras.", poster: "https://a.imagem.app/BCs9X0.jpeg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1D7tr9aDjLJ2gGrdoYXGrKYqnJRu8Exjo/preview" },
+  { id: 4, title: "A Greve", year: "1925", description: "Na Rússia czarista de 1912, operários de uma fábrica realizam uma greve após o suicídio de um colega. A polícia secreta do governo reprime o protesto com violência.", poster: "https://a.imagem.app/BCsLCP.jpeg", genres: ["Drama", "História"], videoUrl: "https://drive.google.com/file/d/1vZXJeW3TwQg1L_tEowv5tC4KR5yiYTZt/preview" },
+  { id: 6, title: "A Paixão de Andy", year: "1973", description: "Um grupo de pessoas busca um tesouro de Andy Warbol na cidade de Los Angeles.", poster: "https://a.imagem.app/BCsE2S.jpeg", genres: ["Aventura"], videoUrl: "https://drive.google.com/file/d/17MS17ey-U9ns72OXoWImmFMW__oP86aP/preview" },
+  { id: 8, title: "Abraham Lincoln", year: "1930", description: "O filme acompanha a vida de Abraham Lincoln, desde sua infância até o momento de sua morte, e conta a história de sua luta pela igualdade.", poster: "https://a.imagem.app/BCsZG3.jpeg", genres: ["Biografia", "História"], videoUrl: "https://drive.google.com/file/d/1-T7K5M-c-s4q4g-k-2r8t5u6p_7h6w3h/preview" },
+  { id: 9, title: "Aconteceu em Havana", year: "1941", description: "Uma estrela de cinema e o seu empresário fogem para Cuba após serem perseguidos por uma gangue de gângsteres.", poster: "https://a.imagem.app/BCsdXZ.jpeg", genres: ["Musical", "Comédia"], videoUrl: "https://drive.google.com/file/d/1DFt1T6CykFsB_dOAH0M8MeQTRAZ2PykP/preview" },
+  { id: 10, title: "Adorável Vagabundo", year: "1939", description: "Em uma comédia romântica clássica, uma jovem rica se apaixona por um homem que a ajuda a escapar de sua casa de campo. Eles vivem aventuras em Londres, mas são perseguidos pela família da garota.", poster: "https://a.imagem.app/BCsmRi.jpeg", genres: ["Comédia", "Romance"], videoUrl: "https://drive.google.com/file/d/1Wxc64BX-Q5ZibaXQ9zGOieLyAxIdhxLK/preview" },
+  { id: 11, title: "Algie, the miner", year: "1912", description: "O jovem Algie decide viajar para o oeste dos Estados Unidos em busca de ouro e se aventura em uma cidade do interior.", poster: "https://a.imagem.app/BCsv88.jpeg", genres: ["Comédia", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1WWEwf9JxJ0OLxIf15NH_FALPP5ubdUUe/preview" },
+  { id: 12, title: "As Viagens de Gulliver", year: "1939", description: "O filme de animação conta a história de Gulliver, um marinheiro que, após um naufrágio, acorda em uma ilha habitada por pessoas minúsculas e por gigantes.", poster: "https://a.imagem.app/BCsMeE.jpeg", genres: ["Animação", "Aventura"], videoUrl: "https://drive.google.com/file/d/1xt47Ti7ALA3QAIMtmm8y4UqoNDjhkhNd/preview" },
+  { id: 13, title: "Bancando o Águia", year: "1924", description: "Em um filme mudo, um homem se aventura em uma série de situações hilárias enquanto tenta conquistar o coração de uma mulher.", poster: "https://a.imagem.app/BCsVLe.webp", genres: ["Comédia", "Aventura"], videoUrl: "https://drive.google.com/file/d/11jx9NWCKqolocN77DoSxwePqPhgDsrrU/preview" },
+  { id: 14, title: "Beco sem Saída", year: "1937", description: "Em Nova York, a vida de um grupo de amigos de rua e uma jovem da alta sociedade se entrelaçam.", poster: "https://a.imagem.app/BCsU2C.jpeg", genres: ["Drama", "Crime"], videoUrl: "https://drive.google.com/file/d/1y5ka0vdAir6r5nS7sCbvMqmwdWOmmm5S/preview" },
+  { id: 15, title: "Beast at Bay", year: "1912", description: "Em um filme mudo, uma jovem é salva de um homem perigoso por um homem corajoso, mas o homem que a salvou se revela um criminoso.", poster: "https://a.imagem.app/BCs4fN.png", genres: ["Suspense", "Crime"], videoUrl: "https://drive.google.com/file/d/1i24gxpJzqeq3jMOnbHKBU6s2TQuV9kGC/preview" },
+  { id: 16, title: "Buster Three Ages", year: "1923", description: "Buster Keaton interpreta três homens diferentes em três épocas diferentes: a Idade da Pedra, a Roma Antiga e a Idade Média. Ele tenta conquistar o amor de uma mulher em cada época.", poster: "https://a.imagem.app/BCsa5Y.jpeg", genres: ["Comédia", "Aventura"], videoUrl: "https://drive.google.com/file/d/1D7tr9aDjLJ2gGrdoYXGrKYqnJRu8Exjo/preview" },
+  { id: 17, title: "Carlitos Repórter", year: "1914", description: "Em um curta-metragem, Carlitos tenta roubar um jornal de um repórter e se envolve em uma série de confusões.", poster: "https://a.imagem.app/BCsfMa.jpeg", genres: ["Comédia", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1ZclkViqF_n4jceU9iHLSDkIgO3cJO0xW/preview" },
+  { id: 18, title: "Carnival of Souls", year: "1962", description: "Uma jovem pianista, que é a única sobrevivente de um acidente de carro, é perseguida por um fantasma misterioso.", poster: "https://a.imagem.app/BCsDG9.jpeg", genres: ["Terror", "Mistério"], videoUrl: "https://drive.google.com/file/d/1BNcWGAYs9sbtb1gBzqZ7v8qgMqsDaN4G/preview" },
+  { id: 19, title: "Casamento às Pressas", year: "1913", description: "Em um curta-metragem, um casal de amantes decide se casar, mas o casamento é interrompido por um grupo de pessoas que tentam impedir a união.", poster: "https://a.imagem.app/BCsNxk.jpeg", genres: ["Comédia", "Romance"], videoUrl: "https://drive.google.com/file/d/1iJ-wnzeu4AflOA0WZC_VJGKLPgoWZwzz/preview" },
+  { id: 20, title: "Charada", year: "1963", description: "Em Paris, uma mulher descobre que seu marido foi assassinado e que ela está sendo perseguida por um grupo de pessoas que buscam uma fortuna que ele escondeu.", poster: "https://a.imagem.app/BCsORV.jpeg", genres: ["Mistério", "Romance"], videoUrl: "https://drive.google.com/file/d/1lCChujgBKH0FKvy8plS0hze7xG2LT8sy/preview" },
+  { id: 21, title: "Copacabana", year: "1947", description: "Em um show de talentos em Copacabana, um artista de cabaré finge ser um agente de talentos e se apaixona por uma dançarina.", poster: "https://a.imagem.app/BCsp8J.jpeg", genres: ["Musical", "Comédia"], videoUrl: "https://drive.google.com/file/d/1QMbWdltYAbumd1NbdWqUZCdBbUD_e7Oq/preview" },
+  { id: 22, title: "Coração de Aço", year: "1934", description: "Um grupo de trabalhadores de uma usina de aço tenta lutar por melhores condições de trabalho, mas a greve é reprimida pelo governo.", poster: "https://a.imagem.app/BC18sG.jpeg", genres: ["Drama", "História"], videoUrl: "https://drive.google.com/file/d/1mv9bhe2X_F1P9FBbpWbEhpcuBUQfBHuG/preview" },
+  { id: 23, title: "Corrida para Automóveis", year: "1914", description: "Em um curta-metragem, Carlitos se envolve em uma série de confusões em uma corrida de carros.", poster: "https://a.imagem.app/BC1ALm.jpeg", genres: ["Comédia", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1SLpIZGjTbQNK2JFOYHjYj96nPE9WbCsi/preview" },
+  { id: 25, title: "Felines Folines", year: "1919", description: "Uma animação de um gato que tenta roubar a comida de um cachorro.", poster: "https://a.imagem.app/BC137b.jpeg", genres: ["Animação", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1e2sx1dEACbHAbtwFxWFzy-tQR4ojCsFg/preview" },
+  { id: 26, title: "Frankenstein", year: "1910", description: "Um cientista obcecado por criar vida a partir de partes de cadáveres, cria um monstro que se torna uma ameaça para a sociedade.", poster: "https://i.postimg.cc/Bn2nRGNj/frankenstein-1910.jpg", genres: ["Terror", "Ficção Científica"], videoUrl: "https://drive.google.com/file/d/1EZ-hfMhchDfjC-n--oG8KEf9i7vhEwdv/preview" },
+  { id: 27, title: "High and Dizzy", year: "1920", description: "Em um curta-metragem, Harold Lloyd interpreta um homem que é obrigado a passar a noite em um hotel de luxo, mas se envolve em uma série de situações hilárias.", poster: "https://a.imagem.app/BC1GV1.jpeg", genres: ["Comédia", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1jAGoWsdsOCvYdjYpPhXj7fTCRyfoLnXT/preview" },
+  { id: 28, title: "Hitler: Dead or Alive", year: "1942", description: "Durante a Segunda Guerra Mundial, um grupo de agentes americanos é enviado para a Alemanha para assassinar Hitler.", poster: "https://a.imagem.app/BC1SGW.jpeg", genres: ["Guerra", "História"], videoUrl: "https://drive.google.com/file/d/1imyqOxI5mMsIe_oAZ3F39jigHT5F2qFg/preview" },
+  { id: 29, title: "Inspector General", year: "1949", description: "Um mendigo é confundido com um inspetor do governo e se envolve em uma série de situações hilárias.", poster: "https://a.imagem.app/BC1hxt.jpeg", genres: ["Musical", "Comédia"], videoUrl: "https://drive.google.com/file/d/14qw5b86-Zqly3jfTx3u4r7zF2vP3MgmO/preview" },
+  { id: 34, title: "Lassie nas Planícies", year: "1943", description: "Em um faroeste, um menino e seu cão de estimação, Lassie, vivem aventuras em uma pequena cidade do interior.", poster: "https://a.imagem.app/BC1nyP.jpeg", genres: ["Aventura", "Faroeste"], videoUrl: "https://drive.google.com/file/d/16tF5PKg-0P9KelKOtTGk-vtvt0SpAewd/preview" },
+  { id: 35, title: "Levada de Breca", year: "1938", description: "Um paleontólogo e uma jovem se envolvem em uma série de situações hilárias enquanto procuram um esqueleto de dinossauro.", poster: "https://a.imagem.app/BC1K7l.jpeg", genres: ["Comédia", "Romance"], videoUrl: "https://drive.google.com/file/d/1-bbbr2ADoHnsQsCvHLYuFZ9WY6zBemiR/preview" },
+  { id: 39, title: "Making an American Citizen", year: "1912", description: "O filme de propaganda, dirigido por Alice Guy Blaché, retrata a história de um casal de imigrantes que se mudam para os Estados Unidos.", poster: "https://a.imagem.app/BC1iT3.jpeg", genres: ["Propaganda"], videoUrl: "https://drive.google.com/file/d/1Y330oH_E04WyjzKEH5e8zVKekW74HZD9/preview" },
+  { id: 40, title: "Manhattan Tower", year: "1932", description: "A história de um grupo de pessoas que vivem em um prédio de apartamentos em Nova York, e seus relacionamentos se entrelaçam.", poster: "https://a.imagem.app/BC1FZZ.jpeg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1n3_FD_1QMYqylxIPuH6YWncmcWIu0SUX/preview" },
+  { id: 44, title: "Núpcias Reais", year: "1951", description: "Em um musical, um casal de dançarinos se apresenta em Londres e se envolve em uma série de situações hilárias.", poster: "https://a.imagem.app/BC1JDe.jpeg", genres: ["Musical", "Comédia"], videoUrl: "https://drive.google.com/file/d/1yg44i8OfR8Uc45qxPSGktOkZL3RdOGuH/preview" },
+  { id: 45, title: "O Cair das Folhas", year: "1912", description: "Em um curta-metragem, o filme retrata o amor entre um homem e uma mulher, mas a vida de ambos é abalada por uma tragédia.", poster: "https://a.imagem.app/BC1l7N.jpeg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1b6FgKAv2JuRB6gjlCUIXy4oT0dxiQARK/preview" },
+  { id: 46, title: "O Circo", year: "1928", description: "Em um circo, o Vagabundo se envolve em uma série de situações hilárias enquanto tenta se tornar um artista de circo.", poster: "https://a.imagem.app/BC159C.jpeg", genres: ["Comédia", "Drama"], videoUrl: "https://drive.google.com/file/d/1YQJ0o50grrOIBV9ynkCp87ibc-plv6La/preview" },
+  { id: 48, title: "O Érbio", year: "1946", description: "Um drama de suspense com cenas de ação, dirigido por Jean-Pierre Melville, sobre o submundo de Paris, onde um policial corrupto e um ladrão de joias se enfrentam.", poster: "https://a.imagem.app/BC1rHa.jpeg", genres: ["Drama", "Suspense"], videoUrl: "https://drive.google.com/file/d/1Zgk6Y-w4k6mF1-h2X2I26Rotw1-_OEwp/preview" },
+  { id: 52, title: "O Gabinete do Dr. Caligari", year: "1920", description: "O filme de terror mudo alemão conta a história de um hipnotizador que usa um sonâmbulo para cometer assassinatos.", poster: "https://a.imagem.app/BC1u1J.jpeg", genres: ["Terror", "Expressionismo"], videoUrl: "https://drive.google.com/file/d/1Y_JXeDJ1QAK8a5pDne7JxkppnQTCq7GP/preview" },
+  { id: 53, title: "O Gângster", year: "1929", description: "Em um filme de gângsteres, um criminoso se torna um dos mais procurados pela polícia.", poster: "https://a.imagem.app/BC1EuG.jpeg", genres: ["Crime", "Drama"], videoUrl: "https://drive.google.com/file/d/1aAzGOGlnGbWyfPQA9Cqp9eNRUmi5_YBy/preview" },
+  { id: 54, title: "O Garoto", year: "1921", description: "O Vagabundo adota um menino abandonado e o cria como seu filho, mas as autoridades tentam separá-los.", poster: "https://a.imagem.app/BC1IDm.jpeg", genres: ["Comédia", "Drama"], videoUrl: "https://drive.google.com/file/d/1At2Abc9wNehQAbdyxPr3jeHghe4qdoRj/preview" },
+  { id: 56, title: "O Homem que Ri", year: "1928", description: "Em um drama romântico, um jovem com o rosto desfigurado por um sorriso fixo se apaixona por uma jovem cega e tenta viver uma vida normal.", poster: "https://a.imagem.app/BC1Zcb.jpeg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1tCa1gdZHMeuKgC8jZOwv45xAdY8hCR4C/preview" },
+  { id: 57, title: "Popeye encontra o Marinheiro Sindbad", year: "1936", description: "Popeye é desafiado por Sinbad a passar por diversos desafios e provar que é o maior marinheiro dos sete mares.", poster: "https://i.postimg.cc/1tYK2drj/Popeye-encontra-o-Marinheiro-Sindbad-1936.png", genres: ["Animação"], videoUrl: "https://drive.google.com/file/d/15YOipU7kdIS7We73-WVHMJiNy2dJgENr/preview" },
+  { id: 58, title: "O Netinho do Papai", year: "1936", description: "Um jovem casal se muda para a casa dos pais dela, mas a vida de ambos se torna um inferno por causa da teimosia dos pais dela.", poster: "https://a.imagem.app/BC1gS1.jpeg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/16jNZS90WV7q13I8mLDD5o_hhjh1NDtCi/preview" },
+  { id: 59, title: "O Novo Governo Paranaense", year: "1928", description: "Um curta-metragem brasileiro que mostra a posse do novo governador do Paraná.", poster: "https://a.imagem.app/BC1vTW.jpeg", genres: ["Documentário"], videoUrl: "https://drive.google.com/file/d/1W3OYjRfY8fiKlXZELru8rJZeWcjxfRHE/preview" },
+  { id: 61, title: "Bonanza", year: "1960", description: "Bonanza é uma série de TV, do gênero western, exibida originalmente na emissora de televisão americana NBC, de 12 de setembro de 1959 a 16 de janeiro de 1973.", poster: "https://i.postimg.cc/YSrf97XP/Bonanza.jpg", genres: ["Ação", "Comédia", "Suspense"], videoUrl: "https://drive.google.com/file/d/1hEsNvBKDdhex3roYDCuaViu_ho_FquZl/preview" },
+  { id: 62, title: "O Vaqueiro", year: "1928", description: "Buster Keaton interpreta um vaqueiro que se apaixona por uma jovem e tenta conquistar seu coração.", poster: "https://a.imagem.app/BC14b0.jpeg", genres: ["Faroeste", "Comédia"], videoUrl: "https://drive.google.com/file/d/1n7NME31VGHkBgkjflftULveiMMTQbws2/preview" },
+  { id: 64, title: "Outubro", year: "1927", description: "O filme épico conta a história da Revolução de Outubro de 1917, na Rússia, e a ascensão do Partido Comunista.", poster: "https://a.imagem.app/BC1Uur.jpeg", genres: ["Drama", "História"], videoUrl: "https://drive.google.com/file/d/14zDQxGTA3wANW1Y8YM8IY0DbsyoV9m1d/preview" },
+  { id: 66, title: "Rain", year: "1932", description: "Em um drama, uma prostituta e um reverendo se envolvem em uma história de amor e redenção em uma ilha isolada.", poster: "https://a.imagem.app/BC1yYP.jpeg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1tDRBE2wBM-8Xf22gvDYLSpk_CfIAC4-H/preview" },
+  { id: 69, title: "Sorte de Verdade", year: "1934", description: "Em um romance, uma jovem herdeira se apaixona por um homem que ela conhece em um hotel de luxo, mas a família dela desaprova o relacionamento.", poster: "https://a.imagem.app/BC1WSv.jpeg", genres: ["Romance", "Comédia"], videoUrl: "https://drive.google.com/file/d/1RDGDdHn3MZCRtw7PkLj-GFTOb_6YlQRR/preview" },
+  { id: 76, title: "The Nazi Titanic", year: "1943", description: "O filme de propaganda nazista conta a história do navio Titanic, mas a história é manipulada para mostrar os nazistas como heróis.", poster: "https://a.imagem.app/BC6Hne.jpeg", genres: ["Propaganda"], videoUrl: "https://drive.google.com/file/d/1Z1B5HmoBzDWnGB1QuHnNbDYIf9ThlG_a/preview" },
+  { id: 77, title: "The Nazis Strike", year: "1943", description: "Em um filme de propaganda americana, a história da Segunda Guerra Mundial é contada para mostrar a crueldade dos nazistas.", poster: "https://a.imagem.app/BC6ScN.jpeg", genres: ["Propaganda"], videoUrl: "https://drive.google.com/file/d/1h9JzEld1DdXv0PRJpVcDFB7uOKvNHtbl/preview" },
+  { id: 78, title: "The Ocean Waif", year: "1916", description: "Em um drama romântico, uma jovem é salva de um afogamento por um homem misterioso, mas a vida de ambos é abalada quando ela descobre que o homem é um criminoso.", poster: "https://a.imagem.app/BC6hPC.jpeg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1QsFB3AoEY_nDnNbonfxQSj6WuL2bNuMe/preview" },
+  { id: 80, title: "Viagem à Lua", year: "1902", description: "Em um curta-metragem, um grupo de astrônomos viaja à lua e se depara com uma série de situações hilárias.", poster: "https://a.imagem.app/BC67m9.jpeg", genres: ["Ficção Científica", "Aventura"], videoUrl: "https://drive.google.com/file/d/1yhSWXhOWhg5qjVtfc8_opog4R1z1u2ve/preview" },
+  { id: 81, title: "Zaroff, o Caçador de Vidas", year: "1932", description: "Em um filme de suspense, um caçador se aventura em uma ilha isolada e se depara com um caçador russo que caça humanos.", poster: "https://a.imagem.app/BC6nok.jpeg", genres: ["Suspense", "Aventura"], videoUrl: "https://drive.google.com/file/d/1Zerrenw5iWZx_AS7UwdCbNjdQ4S9j7nC/preview" },
+  { id: 82, title: "3 Caras Maus", year: "1926", description: "Em um faroeste mudo, três bandidos de coração de ouro se envolvem em uma série de situações hilárias e salvam uma jovem de um vilão.", poster: "https://a.imagem.app/BCscQy.jpeg", genres: ["Faroeste", "Comédia"], videoUrl: "https://drive.google.com/file/d/13RZtxkztcGThvzDgnf5226SRcUwcI04E/preview" },
+  { id: 83, title: "A Caldeira do Diabo", year: "1924", description: "Um filme de suspense que narra a história de um grupo de pessoas que tentam sobreviver em uma ilha isolada, mas a vida de todos é colocada em risco por uma criatura misteriosa.", poster: "https://a.imagem.app/BCsrpr.png", genres: ["Suspense", "Terror"], videoUrl: "https://drive.google.com/file/d/1jNu8V8IBd9OkdqywBBtotmIj0SELKIJz/preview" },
+  { id: 84, title: "O Vapor Willie", year: "1928", description: "A primeira aparição de Mickey Mouse em um filme de animação, onde ele trabalha em um barco a vapor.", poster: "https://a.imagem.app/BC62qa.jpeg", genres: ["Animação", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1FjE_sFPaGW5Kb9ICii_g9aFZ0CWzWQSo/preview" },
+  { id: 86, title: "Cruel Desengano", year: "1952", description: "Um filme com reviravoltas emocionais sobre um casamento conturbado e as dolorosas verdades que vêm à tona após anos de segredos.", poster: "https://i.postimg.cc/L62WgRBV/The-lembre-of-the-widding.jpg", genres: ["Drama", "Suspense"], videoUrl: "https://drive.google.com/file/d/1QgILs-ZvUG31lRs2aJIfyiCe3vtwafeq/preview" },
+  { id: 87, title: "Heróis Esquecidos", year: "1931", description: "A emocionante história de um grupo de soldados ou heróis anônimos cujos feitos e sacrifícios foram apagados pelo tempo, mas que são essenciais para a história.", poster: "https://i.postimg.cc/V6jSJ2XV/Her-is-esquecidos.jpg", genres: ["Aventura", "Guerra"], videoUrl: "https://drive.google.com/file/d/1sOWtmJhXHC2Nm_6AkpzYIFo6ph8v0hNJ/preview" },
+  { id: 89, title: "Oswald Trolley Troubles", year: "1927", description: "O coelho Oswald, em seu primeiro curta, tenta dirigir um bonde cheio de passageiros em uma viagem caótica e cheia de obstáculos.", poster: "https://i.postimg.cc/d187hg8c/Oswald-troulley-troubles.webp", genres: ["Animação", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/197BdDueenm2RhEnkQZ0UzALKyxcKP9g7/preview" },
+  { id: 90, title: "Plane Crazy Mickey Mouse", year: "1928", description: "O primeiro curta do Mickey Mouse (ainda mudo), onde ele tenta construir um avião para impressionar Minnie.", poster: "https://i.postimg.cc/85hF7xh8/Plane-crase-mickey-mouse.jpg", genres: ["Animação", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1BQn_rHX3wPtZI_2TuOsYIl0fcassBlr/preview" },
+  { id: 91, title: "Rabo de Foguete", year: "1950", description: "Uma aventura cheia de ação com um foguete, explorando o espaço ou os perigos da alta velocidade.", poster: "https://i.postimg.cc/hjFzPKQ5/Rabo-de-foguete.jpg", genres: ["Aventura", "Ficção Científica"], videoUrl: "https://drive.google.com/file/d/1mksv3t0aBrWA7Mz6K2C3ouDeJRlZytJR/preview" },
+  { id: 92, title: "Sonhos Dourados", year: "1946", description: "Um clássico que explora o poder da esperança e a busca por uma vida melhor, mesmo diante das adversidades.", poster: "https://i.postimg.cc/tTh1s8Fm/Sonhos-dourados.jpg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1BmwZtm39svuev-NVWv5uFmYgQaiWXfpL/preview" },
+  { id: 97, title: "Pato Donald – O Espírito de 43", year: "1943", description: "Produzido durante a Segunda Guerra, mostra Donald Duck dividido entre gastar seu dinheiro ou apoiar o esforço de guerra.", poster: "https://i.postimg.cc/KYYp13MP/Esp-rito-de-43.jpg", genres: ["Curta-metragem", "Propaganda"], videoUrl: "https://drive.google.com/file/d/1IUIKWf1yNJcxoMdlMJJDDRDsfirsT9Mu/preview" },
+  { id: 101, title: "Os Desgraçados Não Choram", year: "1950", description: "O assassinato do gângster Nick Prenta desencadeia uma investigação policial da misteriosa socialite Lorna Hansen Forbes.", poster: "https://i.postimg.cc/BQmL86sY/os-desgra-ados-n-o-choram.png", genres: ["Drama", "Noir"], videoUrl: "https://drive.google.com/file/d/1sYXnmYglhl6SH2POuJjuKV3BqtJukI0f/preview" },
+  { id: 102, title: "Passado Tenebroso", year: "1948", description: "O psiquiatra da polícia, Dr. Andrew Collins, diz a um detetive que acredita que pode ajudar a afastar um jovem suspeito do crime.", poster: "https://i.postimg.cc/4y8MctW1/the-dark-past.png", genres: ["Crime", "Noir"], videoUrl: "https://drive.google.com/file/d/1cn2GTt8IhpMNMSnebzMMcnQx7Soh5Fts/preview" },
+  { id: 104, title: "Um Conto de Natal", year: "1971", description: "O mais famoso e querido conto de natal de todos os tempos, da imortal obra de Charles Dickens.", poster: "https://i.postimg.cc/sXB9mN9Z/a-christmas-carol.png", genres: ["Animação", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1Ja2iNruC3XeThv_i2ngkK1b_lGNeiKv6/preview" },
+  { id: 105, title: "Interlúdio", year: "1946", description: "Após seu pai alemão ser condenado como espião, uma jovem mulher (Ingrid Bergman) concorda em ser espiã americana no Rio de Janeiro.", poster: "https://i.postimg.cc/BbKrrNsP/interludio.jpg", genres: ["Suspense", "Crime", "Noir", "Drama"], videoUrl: "https://drive.google.com/file/d/1Mwg03ZMdqkis0m1gdJ5h2uiNSLRWWeFk/preview" },
+  { id: 107, title: "A Nave da Revolta", year: "1954", description: "Durante a 2ª Guerra Mundial Willie Keith se incorpora à tripulação do Caine sob o comando do rígido capitão Queeg.", poster: "https://i.postimg.cc/d1YKhCh9/a-nave-da-revolta.jpg", genres: ["Guerra", "Ação"], videoUrl: "https://drive.google.com/file/d/170WaPyW_YiGzL9R4Z8VLhH_EojrWHST2/preview" },
+  { id: 113, title: "Rochedos da Morte", year: "1953", description: "Mike e Tony Petrakis mergulham à procura de esponjas na costa da Flórida.", poster: "https://i.postimg.cc/25nrzYz2/rochedos-da-morte-1953.png", genres: ["Ação", "Aventura"], videoUrl: "https://drive.google.com/file/d/103wHhFtD5ZnmVJJySUnO1mKRoK8I21xp/preview" },
+  { id: 114, title: "O Rio da Navalha", year: "1946", description: "Veterano da Primeira Guerra Mundial viaja para a Índia em busca de sentido para sua vida.", poster: "https://i.postimg.cc/767VsBnV/o-fio-da-navalha-1946.png", genres: ["Drama"], videoUrl: "https://drive.google.com/file/d/12tLW0YNqoeqGs3Om_V3t4oEbjlZiv0zQ/preview" },
+  { id: 117, title: "Sob o Signo de Capricórnio", year: "1949", description: "Em 1831 o irlandês Charles Adare viaja à Austrália para começar uma nova vida.", poster: "https://i.postimg.cc/wxcVCpsK/sob-o-signo-de-capric-rnio.png", genres: ["Suspense", "Romance", "Drama"], videoUrl: "https://drive.google.com/file/d/1T3Ocdh3JcU6g1qrM8ZSk0ijLxVQgQofJ/preview" },
+  { id: 118, title: "Terei o Direito de te Matar?", year: "1964", description: "Thomas, desertor da Legião Francesa, resgata o refém Dominique dos terroristas.", poster: "https://i.postimg.cc/wMVQLXdc/terei-o-direito-de-matar.jpg", genres: ["Suspense", "Ação", "Drama"], videoUrl: "https://drive.google.com/file/d/1p1JkaIm-zRx3C9Pjb87b730FGAf-Inrj/preview" },
+  { id: 119, title: "O Pássaro Azul", year: "1940", description: "A pequena Mytyl (Shirley Temple) e seu irmão partem numa viagem mágica para encontrar o Pássaro Azul da Felicidade.", poster: "https://i.postimg.cc/Zncxp8h9/o-passaro-azul.jpg", genres: ["Fantasia", "Aventura"], videoUrl: "https://drive.google.com/file/d/1s7jkuwV79ykVfYUnlM9tKVaC9A0C6KSf/preview" },
+  { id: 120, title: "As Três Faces de Eva", year: "1955", description: "Eva White (Joanne Woodward) revela duas outras personalidades durante tratamento psiquiátrico.", poster: "https://i.postimg.cc/tRt5KjVy/as-3-faces-de-eva.png", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1-52TkvOFSE2WkIeQmMEZlKqOBEvsVyxy/preview" },
+  { id: 122, title: "Amar Foi uma Ruína", year: "1945", description: "Um escritor se apaixona por uma jovem socialite cujo amor obsessivo ameaça destruí-los.", poster: "https://i.postimg.cc/Y03zY6wR/amar-foi-uma-ru-na.png", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1ubQeOK7w0Lr0vIDZz58lU7TAhmHCo51k/preview" },
+  { id: 123, title: "A Sombra da Morte", year: "1954", description: "Após assaltar o banco local, uma gangue se refugia em uma fazenda tomando reféns.", poster: "https://i.postimg.cc/zvjFKC1n/A-SOMBRA-DA-NOITE-1954.png", genres: ["Suspense", "Ação"], videoUrl: "https://drive.google.com/file/d/1ghJao_1Geqc-09ieZ24eSnnETilyNTn_/preview" },
+  { id: 124, title: "Nossa Vida com Papai", year: "1947", description: "Clarence luta para ser a autoridade máxima em casa, mas é sua esposa Vinnie quem mantém a ordem.", poster: "https://i.postimg.cc/SRrfC6pN/Life-with-Father.png", genres: ["Suspense", "Drama"], videoUrl: "https://drive.google.com/file/d/1k11YB9-DsLRGxhQYmw1NqedWzv4BdizL/preview" },
+  { id: 125, title: "Mistério na Casa de Bambu", year: "1955", description: "Em Tóquio, um investigador disfarçado se infiltra numa gangue que rouba munição americana.", poster: "https://i.postimg.cc/ryCJBktk/Mist-rio-na-Casa-de-Bambu-1955.png", genres: ["Suspense", "Ação"], videoUrl: "https://drive.google.com/file/d/1PkhW2vCjcMYx5UWx6gDZwjjgmbkf7Wd3/preview" },
+  { id: 126, title: "As Neves do Kilimanjaro", year: "1952", description: "Ferido durante um safári na África, o escritor Harry Street relembra sua vida e amores.", poster: "https://i.postimg.cc/5y3SLBMv/As-Neves-do-Kilimanjaro-1952.jpg", genres: ["Aventura", "Ação"], videoUrl: "https://drive.google.com/file/d/1HfH4PtCBV4dcLveqNj-XhXwnsa9V8lTH/preview" },
+  { id: 127, title: "O Anjo e o Bandido", year: "1947", description: "Após ser ferido em um tiroteio, o pistoleiro Quirt Evans (John Wayne) é acolhido por uma família de quacres.", poster: "https://i.postimg.cc/SK3tjyVR/o-anjo-e-o-bandido.png", genres: ["Faroeste", "Ação"], videoUrl: "https://drive.google.com/file/d/1eRlXsd6LMvOKpiQCjBjnGZXSVdq1T3kY/preview" },
+  { id: 130, title: "O Retrato de Jennie", year: "1948", description: "Um pintor conhece uma garota misteriosa que parece envelhecer a cada encontro.", poster: "https://i.postimg.cc/FRSCL2nm/o-retrato-de-jennie-1948.png", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1Kc4Isipv_3V_429UW_v04b5LE7iBVZYX/preview" },
+  { id: 133, title: "Missão Perigosa", year: "1948", description: "Durante o pós-guerra, um agente americano é enviado à América do Sul para investigar espiões nazistas.", poster: "https://i.postimg.cc/CKX6dFJh/miss-o-perigosa.jpg", genres: ["Drama", "Suspense"], videoUrl: "https://drive.google.com/file/d/1ZKKOe022V9vW0QvG-Jk9qTD2QTEpGtS6/preview" },
+  { id: 134, title: "Mickey Mouse – The Barn Dance", year: "1929", description: "Mickey convida Minnie para um baile no celeiro, mas precisa enfrentar Pete, seu rival.", poster: "https://i.postimg.cc/R0ybqMGv/Mickey-Mouse-The-Barn-Dance-1929.jpg", genres: ["Animação", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1nq9nTzRHUpqBeIozbdPiYLiOywnazZ8L/preview" },
+  { id: 139, title: "O Gordo e o Magro - Era uma Vez Dois Valentes", year: "1934", description: "Gordo e Magro são fabricantes de brinquedos que ajudam a viúva Peep contra Silas Barnaby.", poster: "https://i.postimg.cc/zvtHwNNS/O-Gordo-e-o-Magro-Era-Uma-Vez-Dois-Valentes.png", genres: ["Comédia"], videoUrl: "https://drive.google.com/file/d/1lPtIs64r9jrb9Cdnri-_9tmlzrLP4Dzm/preview" },
+  { id: 140, title: "4 Famous Studios Cartoons", year: "1920-1945", description: "As 4 melhores animações da Famous Studios em 1!", poster: "https://i.postimg.cc/sxDZZXkX/Famous-Studios-Cartoon.jpg", genres: ["Curta-metragem", "Animação"], videoUrl: "https://drive.google.com/file/d/1x9xzBU4u04lWWi_LlNKCWZzd4WLPA8Yt/preview" },
+  { id: 1, title: "A Última Vez que Vi Paris", year: "1954", description: "A história de um casal de americanos que decide viver em Paris logo após a Segunda Guerra Mundial.", poster: "https://a.imagem.app/BCsQMT.jpeg", genres: ["Romance", "Drama"], videoUrl: "https://drive.google.com/file/d/1WBzFajjbABNqIQgzVYh7qP0vqjtDHQYs/preview" },
+  { id: 3, title: "A Dama de Shanghai", year: "1948", description: "Um marinheiro irlandês se apaixona por uma mulher fatal casada com um advogado famoso.", poster: "https://a.imagem.app/BCsCe2.jpeg", genres: ["Suspense", "Noir", "Drama"], videoUrl: "https://drive.google.com/file/d/1Oitlgwtxh32WNDTQXze84Mad-PoyqH91/preview" },
+  { id: 5, title: "A Noite dos Mortos Vivos", year: "1958", description: "O professor universitário Zomborsky consegue ressuscitar pessoas recentemente falecidas.", poster: "https://a.imagem.app/BCstfl.jpeg", genres: ["Terror", "Ficção Científica"], videoUrl: "https://drive.google.com/file/d/1rybzCi4wgLMyRoKeM5M3vSTGu1lE1rHm/preview" },
+  { id: 7, title: "A Paixão de Joana d'Arc", year: "1928", description: "Em 1431, na França, Joana d'Arc é julgada por heresia por clérigos ingleses.", poster: "https://a.imagem.app/BCsIlv.jpeg", genres: ["Drama", "História"], videoUrl: "https://drive.google.com/file/d/1w3ZHVO5pqadeFwFs6Yhqg4uVV3qbPOOU/preview" },
+  { id: 24, title: "Encouraçado Potemkin", year: "1925", description: "O filme conta a história do motim da tripulação do Encouraçado Potemkin em 1905.", poster: "https://a.imagem.app/BC1byX.jpeg", genres: ["Drama", "História"], videoUrl: "https://drive.google.com/file/d/1pzsI9LLzWEBl4bCqdJe-3JrlUutE8WdK/preview" },
+  { id: 30, title: "Intolerância", year: "1916", description: "O filme conta quatro histórias diferentes em épocas diferentes sobre a intolerância humana.", poster: "https://a.imagem.app/BC1kZ0.jpeg", genres: ["Drama", "História"], videoUrl: "https://drive.google.com/file/d/1YnJY2gb1ggVt0GT7agKDVq6q90rplS_t/preview" },
+  { id: 31, title: "Irene, a Teimosa", year: "1936", description: "Uma jovem decide se casar com um homem que ela mal conhece.", poster: "https://a.imagem.app/BC128y.jpeg", genres: ["Comédia", "Romance"], videoUrl: "https://drive.google.com/file/d/1w_XSE7YGZZAw5ldHfiUGZaEwZ48XGT6D/preview" },
+  { id: 32, title: "Jejum de Amor", year: "1940", description: "Um jornalista e sua ex-mulher se envolvem em situações hilárias enquanto cobrem um caso de assassinato.", poster: "https://a.imagem.app/BC17sr.jpeg", genres: ["Comédia", "Romance"], videoUrl: "https://drive.google.com/file/d/17U243ssoae3O3LvikWM2GJLM_99uO2bV/preview" },
+  { id: 36, title: "Limite", year: "1931", description: "Acompanha a história de três pessoas perdidas em um barco à deriva.", poster: "https://a.imagem.app/BC1e9S.jpeg", genres: ["Drama", "Experimental"], videoUrl: "https://drive.google.com/file/d/1J8m0AcBKvLQO1mzBeuAR_SP7hkhwLHbE/preview" },
+  { id: 37, title: "Little Shop of Horrors", year: "1960", description: "Um jovem florista cultiva uma planta carnívora que se alimenta de sangue humano.", poster: "https://a.imagem.app/BC1sVv.jpeg", genres: ["Terror", "Comédia"], videoUrl: "https://drive.google.com/file/d/1KwUjD2dhiS2o1JEQ3kWAFZYQhCym9Qmq/preview" },
+  { id: 38, title: "Luzes da Cidade", year: "1931", description: "O Vagabundo se apaixona por uma florista cega e tenta arrecadar dinheiro para sua cirurgia.", poster: "https://a.imagem.app/BC16HT.jpeg", genres: ["Comédia", "Drama"], videoUrl: "https://drive.google.com/file/d/1DTjc5EmA77YY9h7n7Rtm3CU7gwGgOvWJ/preview" },
+  { id: 41, title: "Metropolis", year: "1927", description: "Em um futuro distópico, a cidade de Metropolis é dividida entre os ricos e os trabalhadores.", poster: "https://a.imagem.app/BC1xAi.jpeg", genres: ["Ficção Científica", "Drama"], videoUrl: "https://drive.google.com/file/d/1MjZTOZUVRsEZMrapkSw_-t8pMk3LTcPC/preview" },
+  { id: 42, title: "Nasce uma Estrela", year: "1937", description: "Uma jovem aspirante a atriz conhece um ator famoso que a ajuda a se tornar uma estrela.", poster: "https://a.imagem.app/BC1T18.jpeg", genres: ["Musical", "Drama"], videoUrl: "https://drive.google.com/file/d/1Vihxx2NlT-waOFYFSP0irjdLr5PruKKi/preview" },
+  { id: 43, title: "Nosferatu", year: "1922", description: "O filme de terror mudo inspirado em Drácula sobre o conde vampiro Orlok.", poster: "https://a.imagem.app/BC1qtE.jpeg", genres: ["Terror", "Vampiro"], videoUrl: "https://drive.google.com/file/d/1GwpAvXgx6T4rElCskORyMM1bZCyLFfws/preview" },
+  { id: 47, title: "O Cisne Negro", year: "1942", description: "Um pirata se une a rebeldes para lutar contra um governador tirano.", poster: "https://a.imagem.app/BC194Y.jpeg", genres: ["Ação", "Aventura"], videoUrl: "https://drive.google.com/file/d/1kvY_fI6NgFSyNqahbnu55RdGXDNC9Sh3/preview" },
+  { id: 49, title: "O Fantasma da Ópera", year: "1925", description: "Em uma ópera, um fantasma mascarado se apaixona por uma cantora.", poster: "https://a.imagem.app/BC1wT9.jpeg", genres: ["Terror", "Romance"], videoUrl: "https://drive.google.com/file/d/1lJ5bELpKudWIFlAst0osD1zDLlibYsb4/preview" },
+  { id: 50, title: "O Flautista de Hamelin", year: "1933", description: "Animação musical baseada no conto sobre o flautista que salva uma cidade.", poster: "https://a.imagem.app/BC1Cdk.jpeg", genres: ["Animação", "Musical"], videoUrl: "https://drive.google.com/file/d/1nwkPmASN8f2wLuZIyH7PClkCvBUJ8t7V/preview" },
+  { id: 51, title: "O Foguete Errante", year: "1959", description: "Um grupo de cientistas se aventura em uma viagem espacial.", poster: "https://a.imagem.app/BC1tAV.jpeg", genres: ["Ficção Científica", "Aventura"], videoUrl: "https://drive.google.com/file/d/1NoNBmjh9DDEgLLLldvzNyEqUIaprIO4N/preview" },
+  { id: 55, title: "O Grande Ditador", year: "1940", description: "O barbeiro judeu e o ditador Adenoid Hynkel na sátira clássica de Charlie Chaplin.", poster: "https://a.imagem.app/BC1RYX.jpeg", genres: ["Comédia", "Drama"], videoUrl: "https://drive.google.com/file/d/1xHwYNzqojd4imMIDhezSgYsq_f5Li0Hv/preview" },
+  { id: 60, title: "O Segredo dos Quatro", year: "1932", description: "Um grupo de pessoas se une para desvendar um crime em uma mansão.", poster: "https://a.imagem.app/BC1Mdt.jpeg", genres: ["Mistério", "Suspense"], videoUrl: "https://drive.google.com/file/d/1aYm6Mor4-4lw9nz1nAk15L4JY2Qpdd3q/preview" },
+  { id: 63, title: "Os 39 Degraus", year: "1935", description: "Um homem acusado injustamente tenta provar sua inocência enquanto foge da polícia.", poster: "https://a.imagem.app/BC1P1y.jpeg", genres: ["Suspense", "Mistério"], videoUrl: "https://drive.google.com/file/d/15QmfMjBfYETQ0DfxlUx0507r9TKHQBzh/preview" },
+  { id: 65, title: "Plan 9 from Outer Space", year: "1959", description: "Alienígenas invadem a Terra e ressuscitam os mortos.", poster: "https://a.imagem.app/BC1aN2.jpeg", genres: ["Ficção Científica", "Terror"], videoUrl: "https://drive.google.com/file/d/1IUme022GHjlFH4b-tgb07Dhn-LxWy_nK/preview" },
+  { id: 67, title: "Rebecca", year: "1940", description: "Uma jovem recém-casada se muda para a mansão Manderley e enfrenta a sombra de Rebecca.", poster: "https://a.imagem.app/BC1Dcl.jpeg", genres: ["Mistério", "Romance"], videoUrl: "https://drive.google.com/file/d/1hxRrUroipbJTop9KyM7jU_I_l9Vrn3fn/preview" },
+  { id: 68, title: "Sherlock Holmes", year: "1922", description: "Sherlock Holmes é contratado para desvendar uma trama criminosa.", poster: "https://a.imagem.app/BC1NPS.jpeg", genres: ["Mistério", "Aventura"], videoUrl: "https://drive.google.com/file/d/1OFjCHLtm2IQIwQy00Gm22T4gkPUKVxEc/preview" },
+  { id: 70, title: "Suspense", year: "1913", description: "Uma mulher e seu filho são cercados em casa por invasores.", poster: "https://a.imagem.app/BC1pqT.jpeg", genres: ["Suspense"], videoUrl: "https://drive.google.com/file/d/1W47UPbDmJbllj49zs8bp7ILsGRvggJrf/preview" },
+  { id: 71, title: "Tarzan", year: "1933", description: "Tarzan protege a selva e a mulher que ama de caçadores.", poster: "https://a.imagem.app/BC68m3.jpeg", genres: ["Aventura", "Romance"], videoUrl: "https://drive.google.com/file/d/1RkYy0JuZRqXisLi8wt9W_mJGI_gnJSwE/preview" },
+  { id: 72, title: "Tempos Modernos", year: "1936", description: "O Vagabundo luta para sobreviver na era industrial.", poster: "https://a.imagem.app/BC6bbZ.jpeg", genres: ["Comédia", "Drama"], videoUrl: "https://drive.google.com/file/d/1GZZ9MpBvcBvmp5VTeQNmLuITi4e_nax1/preview" },
+  { id: 73, title: "The Brain That Wouldn't Die", year: "1962", description: "Um cientista mantém viva a cabeça de sua noiva após um acidente.", poster: "https://a.imagem.app/BC6o6i.jpeg", genres: ["Terror", "Ficção Científica"], videoUrl: "https://drive.google.com/file/d/1C049HKnvyvPWr3qQjd3fOxuxDIUWJWrg/preview" },
+  { id: 74, title: "The General", year: "1926", description: "Buster Keaton tenta recuperar sua locomotiva roubada.", poster: "https://a.imagem.app/BC63E8.jpeg", genres: ["Comédia", "Aventura"], videoUrl: "https://drive.google.com/file/d/1NCENVQO-vzi5L9TIUAlQ6RGRUPC11tCj/preview" },
+  { id: 75, title: "The Lost World", year: "1925", description: "Exploradores encontram um platô isolado habitado por dinossauros.", poster: "https://a.imagem.app/BC6BNE.jpeg", genres: ["Aventura", "Ficção Científica"], videoUrl: "https://drive.google.com/file/d/1C049HKnvyvPWr3qQjd3fOxuxDIUWJWrg/preview" },
+  { id: 79, title: "Two Soldiers", year: "1943", description: "A amizade de dois soldados durante a Segunda Guerra Mundial.", poster: "https://a.imagem.app/BC6zhY.jpeg", genres: ["Propaganda"], videoUrl: "https://drive.google.com/file/d/1EJmweWw1NFcMwrUci-AugFgrrYKWGxOd/preview" },
+  { id: 85, title: "O Inventor da Mocidade", year: "1952", description: "Um químico cria uma fórmula de rejuvenescimento com efeitos hilários.", poster: "https://i.postimg.cc/BZxyvtDj/O-inventor-da-mocidade.jpg", genres: ["Comédia", "Romance"], videoUrl: "https://drive.google.com/file/d/1Q-K3n4BdPIZTG4biPdF0zJQDGlkAWy-W/preview" },
+  { id: 88, title: "Minha Secretária Brasileira", year: "1942", description: "Comédia romântica leve com charme brasileiro.", poster: "https://i.postimg.cc/cHQKvPfj/Minha-secret-ria-brasileira.jpg", genres: ["Comédia", "Romance"], videoUrl: "https://drive.google.com/file/d/1zafS5WweTnWE48sKOlMK6XtOGRv5umD3/preview" },
+  { id: 93, title: "The Skeleton Dance", year: "1929", description: "Silly Symphony da Disney onde esqueletos dançam à meia-noite.", poster: "https://i.postimg.cc/tTh1s8hp/The-skeleton-dance.jpg", genres: ["Animação", "Terror", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1DhttoqopOAtX0b83X7eS-vvseVn07wFj/preview" },
+  { id: 94, title: "Wizard of Oz", year: "1925", description: "Versão muda do clássico conto de Dorothy na Terra de Oz.", poster: "https://i.postimg.cc/FRjfYw06/Wizard-of-oz-1925.jpg", genres: ["Fantasia", "Aventura"], videoUrl: "https://drive.google.com/file/d/1A7WUSFjgHXpSNHmNbGPxwigQTt7aV_8s/preview" },
+  { id: 95, title: "Susie, o Pequeno Coupé Azul", year: "1952", description: "Curta animado da Disney sobre um pequeno carro azul.", poster: "https://i.postimg.cc/cJJkvtnX/Susie-o-pequeno-cupe-azul.jpg", genres: ["Curta-metragem", "Animação"], videoUrl: "https://drive.google.com/file/d/1AOMeF8_fWHfrnbCk6e_gAXNLLI21t72/preview" },
+  { id: 96, title: "The Mad Doctor Mickey Mouse", year: "1933", description: "Mickey entra em um castelo sombrio para resgatar Pluto.", poster: "https://i.postimg.cc/wBB41RmF/The-mad-doctor.jpg", genres: ["Curta-metragem", "Animação"], videoUrl: "https://drive.google.com/file/d/1RcSJSP3oPksUTdnrT8K7VDhSc82nVQan/preview" },
+  { id: 98, title: "Superman (1941–1943)", year: "1941-1943", description: "Série animada clássica dos irmãos Fleischer.", poster: "https://i.postimg.cc/tggvsnxP/Superman-1941-1943.jpg", genres: ["Aventura", "Animação"], videoUrl: "https://drive.google.com/file/d/1yL-rpp5K9r5Z6Oqw7EWNMSq2cZ2c2ifz/preview" },
+  { id: 99, title: "O Filho de Kong", year: "1933", description: "Continuação direta de King Kong na Ilha da Caveira.", poster: "https://i.postimg.cc/tggvsnxv/O-filho-de-Kong.jpg", genres: ["Aventura", "Fantasia"], videoUrl: "https://drive.google.com/file/d/1vFevLHDYzlKu-7PYj3rQVu8Id6OXfHJH/preview" },
+  { id: 100, title: "Dançando nas Nuvens", year: "1955", description: "Três ex-combatentes se reencontram dez anos após a guerra.", poster: "https://i.postimg.cc/NfgPxNTs/dan-ando-nas-nuvens-1955.png", genres: ["Comédia", "Musical"], videoUrl: "https://drive.google.com/file/d/1NiihyBGlp9C2qjd72Ow4RXCy1LXrLC7Y/preview" },
+  { id: 103, title: "Velozes e Furiosos 1955", year: "1955", description: "Fugitivo dirige um carro esporte em uma corrida transfronteiriça rumo ao México.", poster: "https://i.postimg.cc/8PDx0p2H/the-fast-and-the-furious.png", genres: ["Corrida", "Aventura"], videoUrl: "https://drive.google.com/file/d/1HBY3oVhkzC2HKTIz3EmpOogiNlJ-1T55/preview" },
+  { id: 106, title: "Nada de Novo no Front", year: "1979", description: "Jovens soldados enfrentam os horrores da Primeira Guerra Mundial.", poster: "https://i.postimg.cc/g2CC7hH2/nada-de-novo-no-front-1979.jpg", genres: ["Guerra", "Ação"], videoUrl: "https://drive.google.com/file/d/1P92pQNTEQ4j6zruBgzMdMCxFhU6i51va/preview" },
+  { id: 108, title: "Cidade Nua", year: "1948", description: "Detetives investigam o assassinato de uma modelo em Nova York.", poster: "https://i.postimg.cc/QtcsxbS6/cidade-nua-1948.png", genres: ["Drama", "Noir"], videoUrl: "https://drive.google.com/file/d/1dV0oe_jOO4k6BN5r00QYO81_adVETDS2/preview" },
+  { id: 109, title: "Em Busca do Ouro", year: "1925", description: "Carlitos enfrenta o frio extremo do Alasca em busca de ouro.", poster: "https://i.postimg.cc/zGpF4Yrb/em-busca-do-ouro-chaplin.png", genres: ["Comédia", "Aventura"], videoUrl: "https://drive.google.com/file/d/1gv472pDcDYDmP2Z9XGGma_djmSTbXaWC/preview" },
+  { id: 110, title: "A Invasão dos Discos Voadores", year: "1956", description: "Extraterrestres em discos voadores ameaçam a Terra.", poster: "https://i.postimg.cc/LXGcfZQP/a-invas-o-dos-discos-voadores-1956.jpg", genres: ["Ação", "Terror", "Ficção Científica"], videoUrl: "https://drive.google.com/file/d/1ImFr3VWpRS2BsiUrZ9RmdGsHsLtVEC72/preview" },
+  { id: 111, title: "Farrapo Humano", year: "1945", description: "Um escritor luta contra o alcoolismo em Nova York.", poster: "https://i.postimg.cc/MK1nn732/farrapo-humano.jpg", genres: ["Drama"], videoUrl: "https://drive.google.com/file/d/1DO4XqHAY4hBGpRnoUfNxb4fNFb_zJeDM/preview" },
+  { id: 112, title: "O Tesouro do Condor de Ouro", year: "1953", description: "Aventura nas montanhas maias da Guatemala em busca de um tesouro.", poster: "https://i.postimg.cc/Y2s66zxx/o-tesouro-do-condor-de-ouro-1953.png", genres: ["Ação", "Aventura"], videoUrl: "https://drive.google.com/file/d/1PBshbXFBJmNSSNIMpb-pGb1LLp35Emau/preview" },
+  { id: 115, title: "Até as Nuvens Passarem", year: "1946", description: "Biografia musical do compositor Jerome Kern.", poster: "https://i.postimg.cc/BQDGsN73/Till-the-Clouds-Roll-By-1946.png", genres: ["Musical"], videoUrl: "https://drive.google.com/file/d/1w5xLbPk3VRkQYzLqOq37EyQQDx_khl_V/preview" },
+  { id: 116, title: "Sete Dias de Maio", year: "1964", description: "Um coronel descobre uma conspiração militar contra o presidente dos EUA.", poster: "https://i.postimg.cc/5y3SLBMC/sete-dias-de-maio.png", genres: ["Suspense", "Drama"], videoUrl: "https://drive.google.com/file/d/16ePlKqAR7fgI-bKXi78_Oxv66eZhUAtD/preview" },
+  { id: 121, title: "Aconteceu num Apartamento", year: "1962", description: "Um diplomata em Londres subloca um quarto da misteriosa Carlyle.", poster: "https://i.postimg.cc/PJ4QYWk1/aconteceu-num-apartamento.png", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/15CM8LoVUsbSishuTYKuL4bccYGD8QHQv/preview" },
+  { id: 128, title: "Os Dez Mandamentos", year: "1956", description: "A épica jornada de Moisés para libertar os hebreus.", poster: "https://i.postimg.cc/0QSXwLHk/Os-10-Mandamentos.jpg", genres: ["Bíblico", "Drama"], videoUrl: "https://drive.google.com/file/d/1X1rFI59rqPfwKomSfM-VkyrHjJSxuaqy/preview" },
+  { id: 129, title: "O Homem que Eu Deveria Odiar", year: "1961", description: "Pistoleiros escoltam uma mulher e seu filho através do território Apache.", poster: "https://i.postimg.cc/CKX6dFJK/o-homem-que-eu-deveria-odiar-1961.png", genres: ["Faroeste", "Ação"], videoUrl: "https://drive.google.com/file/d/1L6zycEQYRj5XaRllyym0Y8VrXb6mQh3S/preview" },
+  { id: 131, title: "O Terceiro Tiro", year: "1955", description: "Um homem testemunha um assassinato e ouve um terceiro tiro decisivo.", poster: "https://i.postimg.cc/hjmZdH34/o-terceiro-tiro-1955.png", genres: ["Drama", "Suspense"], videoUrl: "https://drive.google.com/file/d/1uZ4nRFgKXXFBkEZ9QprwgzkbJtBtEled/preview" },
+  { id: 132, title: "Mickey Mouse – The Gallopin’ Gaucho", year: "1928", description: "Mickey como um gaúcho aventureiro resgatando Minnie.", poster: "https://i.postimg.cc/nLgwMHTV/mickey-mouse-the-gallopin-gaucho.png", genres: ["Animação", "Curta-metragem"], videoUrl: "https://drive.google.com/file/d/1kBZcdpzbdvctVqkXG7M7rJRCrWccLKvW/preview" },
+  { id: 135, title: "João e o Pé de Feijão", year: "1952", description: "Jack sobe pelo pé de feijão mágico até o castelo do gigante.", poster: "https://i.postimg.cc/YSZyjp8p/joao-e-o-p-de-feij-o.jpg", genres: ["Aventura", "Fantasia"], videoUrl: "https://drive.google.com/file/d/1OEbBx_4Vye_Ql2d5PfM0SgrvC6SZ5Mig/preview" },
+  { id: 136, title: "A Vila dos Insetos", year: "1941", description: "Insetos lutam para salvar seu pequeno lar da destruição urbana.", poster: "https://i.postimg.cc/bvWFdzg7/A-Vila-dos-Insetos-1941.jpg", genres: ["Aventura", "Fantasia", "Animação"], videoUrl: "https://drive.google.com/file/d/1rbny6QmVfXHEsqmHbyL64WKtyL02N66X/preview" },
+  { id: 137, title: "A Rainha Tirana", year: "1955", description: "A rainha Elizabeth I disputa o afeto de Sir Walter Raleigh.", poster: "https://i.postimg.cc/RFTHFfDH/A-Rainha-Tirana-1955.png", genres: ["Romance", "Drama"], videoUrl: "https://drive.google.com/file/d/1k1qew32_l-x7NKG8eIXZDZJKuP9N9k4t/preview" },
+  { id: 138, title: "Looney Tunes Bosko", year: "1920", description: "As melhores animações clássicas de Bosko.", poster: "https://i.postimg.cc/cC488HpL/Looney-Tunes-Bosko.jpg", genres: ["Curta-metragem", "Animação"], videoUrl: "https://drive.google.com/file/d/1J3ciWl9ljeg8pYBBSCXOyuiX0YeQQuHR/preview" },
+  { id: 141, title: "O Gordo e o Magro - Os Boêmios do Céu", year: "1939", description: "Stan e Ollie se alistam na Legião Estrangeira em Paris.", poster: "https://i.postimg.cc/Kjvggz6Q/Os-Boemios-do-Ceu-1939.jpg", genres: ["Comédia"], videoUrl: "https://drive.google.com/file/d/1UNNAtMC47IVurjFy-xTsEhkwMRYE_SGY/preview" },
+  { id: 142, title: "Fleischer Studios Cartoons", year: "1920-1950", description: "Coletânea das melhores animações da Fleischer Studios.", poster: "https://i.postimg.cc/kGXtt40B/Fleischer-Studios.png", genres: ["Curta-metragem", "Animação"], videoUrl: "https://drive.google.com/file/d/1wtW-8puSPFzczkigmlJceGU6KlO0ZJ_p/preview" },
+  { id: 143, title: "Mulher Cobra", year: "1944", description: "Aventura exótica em uma ilha governada pela maligna Naja.", poster: "https://i.postimg.cc/wMH8dkfJ/mulher-cobra.jpg", genres: ["Aventura", "Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/197j__-v25JdaPUwhfePmyoZ0FKRJl06k/preview" },
+  { id: 144, title: "A Morada da Sexta Felicidade", year: "1958", description: "A missionária Gladys Aylward guia crianças chinesas para um local seguro.", poster: "https://i.postimg.cc/sxcFfZq5/A-Morada-da-Sexta-Felicidade.jpg", genres: ["Drama"], videoUrl: "https://drive.google.com/file/d/121We7va2ZWAbNxDMgxSG4DAwlHQOii7C/preview" },
+  { id: 145, title: "A Raposa do Mar", year: "1957", description: "Duelo estratégico entre um contratorpedeiro americano e um submarino alemão.", poster: "https://i.postimg.cc/Y03c2mZN/The-Enemy-Below.png", genres: ["Ação", "Aventura", "Guerra"], videoUrl: "https://drive.google.com/file/d/19QEVb4YLLiqhWHz3WBFiR6GCfUYGUBMM/preview" },
+  { id: 146, title: "Mulheres e Luzes", year: "1950", description: "Companhia de teatro de variedades viaja pela Itália em busca de fama.", poster: "https://i.postimg.cc/MZbJmhHj/Luci-del-varieta-1951.png", genres: ["Romance", "Drama"], videoUrl: "https://drive.google.com/file/d/1dAo7IAjyoMhYZ2hmf67CslNefawnV1jt/preview" },
+  { id: 147, title: "Até o Último Homem", year: "1951", description: "Esquadrão avança em ilha fortificada durante a Segunda Guerra.", poster: "https://i.postimg.cc/BbgWZ1kk/ate-o-ultimo-homem.jpg", genres: ["Guerra", "Ação"], videoUrl: "https://drive.google.com/file/d/1cWKCDsbgO2D4VD8I2loNNHU2ItU_bKbT/preview" },
+  { id: 148, title: "Príncipe Valente", year: "1954", description: "O jovem príncipe viking viaja a Camelot para se tornar Cavaleiro da Távola Redonda.", poster: "https://i.postimg.cc/WznRpJC7/principe-valente-1954.png", genres: ["Aventura", "Ação"], videoUrl: "https://drive.google.com/file/d/1392gqNw-CHys3aQiTjrH3OjmbQ8x2XoE/preview" },
+  { id: 149, title: "A Trapaça", year: "1955", description: "Três vigaristas aplicam pequenos golpes na Itália do pós-guerra.", poster: "https://i.postimg.cc/zvjmDR6c/A-Trapaca-1955.jpg", genres: ["Comédia", "Drama"], videoUrl: "https://drive.google.com/file/d/19s-jdPqNLxNuc0bV-nIZrcA4ZVcFPgn1/preview" },
+  { id: 150, title: "Raízes do Céu", year: "1958", description: "Idealista luta para proteger os elefantes africanos da caça predatória.", poster: "https://i.postimg.cc/mkwxZFJQ/Raizes-do-Ceu-1958.png", genres: ["Aventura", "Drama"], videoUrl: "https://drive.google.com/file/d/1qUfXc73uBByVUsAijn_9LKTnY2-lKCiB/preview" },
+  { id: 151, title: "Uma Noite no Rio", year: "1941", description: "Comédia musical repleta de confusões românticas no Rio de Janeiro.", poster: "https://i.postimg.cc/jjvC2B2y/uma-noite-no-rio.jpg", genres: ["Comédia", "Musical"], videoUrl: "https://drive.google.com/file/d/1kKb3IVM7bJ6aHZlb-R7sx63aXy6tsrIQ/preview" },
+  { id: 152, title: "Stagecoach", year: "1939", description: "Clássico faroeste de John Ford sobre uma diligência cruzando território Apache.", poster: "https://i.postimg.cc/k5wDGLGx/Stagecoach.jpg", genres: ["Faroeste", "Aventura"], videoUrl: "https://drive.google.com/file/d/1QDvl9bs0a9nTUzMwwFD9o3zIi4F1DmNc/preview" },
+  { id: 153, title: "Sangue no Rio", year: "1953", description: "Disputas violentas colocam à prova a honra de um homem no Oeste.", poster: "https://i.postimg.cc/g04rj1jL/sangue-no-rio.jpg", genres: ["Faroeste", "Drama"], videoUrl: "https://drive.google.com/file/d/1yQXBUWv_H-EJwUZUpLvnAEPt7yL4rX97/preview" },
+  { id: 154, title: "Rio Sem Regresso", year: "1954", description: "Jornada perigosa por um rio selvagem estrelada por Robert Mitchum e Marilyn Monroe.", poster: "https://i.postimg.cc/3w9WNzNy/Rio-Sem-Regresso.jpg", genres: ["Faroeste", "Aventura"], videoUrl: "https://drive.google.com/file/d/1VTloQSBVGSpu84-4ATeDecprNGDeqR4L/preview" },
+  { id: 155, title: "Querida Brigitte", year: "1965", description: "Um garoto prodígio desenvolve uma paixão por Brigitte Bardot.", poster: "https://i.postimg.cc/q7QgqWqg/Querida-Brigitte.jpg", genres: ["Comédia", "Família"], videoUrl: "https://drive.google.com/file/d/1jTNH_PMtsmU2xJIhPOxt268bjsIX5vHE/preview" },
+  { id: 156, title: "Primavera nas Montanhas", year: "1942", description: "Dilemas emocionais e romance em meio às montanhas.", poster: "https://i.postimg.cc/2S9hXqds/Primavera-nas-montanhas.jpg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1ZXTuWDx__6Lg1mbQhr18mU1CoYTrcIc0/preview" },
+  { id: 157, title: "Os Sinos de San Angelo", year: "1947", description: "Um fora da lei busca redenção ao proteger uma comunidade.", poster: "https://i.postimg.cc/bvLdr4rs/os-sinos-de-sao-angelo.jpg", genres: ["Faroeste", "Drama"], videoUrl: "https://drive.google.com/file/d/1fB_wrXF1FGgbfr2Q6pBYm1hxZafcnxuQ/preview" },
+  { id: 158, title: "Os Fabulosos Dorsey", year: "1947", description: "A trajetória musical dos irmãos Tommy e Jimmy Dorsey.", poster: "https://i.postimg.cc/jjvC2B2x/Os-Fabulosos-Dorsey.jpg", genres: ["Drama", "Musical"], videoUrl: "https://drive.google.com/file/d/193F9nxYfIR_uO7wc1YqFrgV3p1MUKTN1/preview" },
+  { id: 159, title: "O Homem de Fato Cinzento", year: "1955", description: "Criminoso elegante desafia a polícia com golpes ousados.", poster: "https://i.postimg.cc/43wnyjyJ/o-homem-de-fato-cinzento.jpg", genres: ["Crime", "Drama"], videoUrl: "https://drive.google.com/file/d/1-ycFBMLpoC-L76gSo9SRwaAdLB62Rlh7/preview" },
+  { id: 160, title: "O Conde de Monte Cristo", year: "1934", description: "Traído e preso injustamente, Edmond Dantès retorna para sua vingança.", poster: "https://i.postimg.cc/0NZrjhjx/o-conde-de-monte-cristo.jpg", genres: ["Aventura", "Drama"], videoUrl: "https://drive.google.com/file/d/1jLAt8Xhvl9vkJ5UMLu1eDP73O6QtgNtF/preview" },
+  { id: 161, title: "Nascida para o Mal", year: "1934", description: "Mulher ambiciosa manipula todos ao seu redor para alcançar poder.", poster: "https://i.postimg.cc/MGzvWz6p/nascida-para-o-mal.jpg", genres: ["Drama", "Crime"], videoUrl: "https://drive.google.com/file/d/1C-JQUO92HR2gbRh3YnvEKjcPRAMEGVbS/preview" },
+  { id: 162, title: "Moon of the Wolf", year: "1972", description: "Assassinatos misteriosos ligados a uma antiga lenda de lobisomem.", poster: "https://i.postimg.cc/fbMJwMzw/a-noite-do-lobo-1972.png", genres: ["Terror", "Suspense"], videoUrl: "https://drive.google.com/file/d/1OSROjy_rVYOtQmTE70epgPDC4VHUyi9N/preview" },
+  { id: 163, title: "Minha Garota Sal", year: "1942", description: "Romance musical cheio de mal-entendidos e humor.", poster: "https://i.postimg.cc/PqdPtdXr/Minha-Garota-Sal.jpg", genres: ["Comédia", "Romance"], videoUrl: "https://drive.google.com/file/d/1qngXTnhUtyCUbnRBV4S649ijrF-iCyNW/preview" },
+  { id: 164, title: "Massacre de Chicago", year: "1967", description: "A ascensão do crime organizado durante a Lei Seca nos EUA.", poster: "https://i.postimg.cc/Gpz9t6t3/o-massacre-de-chicago.jpg", genres: ["Crime", "Drama"], videoUrl: "https://drive.google.com/file/d/11hZEnTwMcmkAmXGxOez8U3bdITe4HZ5_/preview" },
+  { id: 165, title: "Dono D'Amore", year: "1958", description: "Conflitos emocionais entre amor, desejo e responsabilidade.", poster: "https://i.postimg.cc/BvJXqJSZ/Dono-D-Amore.jpg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1wD3WHQ0SIhPhShGURx6vZu3CSInBDEOB/preview" },
+  { id: 166, title: "Assim Morrem os Valentes", year: "1958", description: "Coragem e honra colocadas à prova no Velho Oeste.", poster: "https://i.postimg.cc/9fcrWcm2/Assim-Morrem-Os-Valentes.jpg", genres: ["Faroeste", "Drama"], videoUrl: "https://drive.google.com/file/d/1bG-Vqd7pgmXoPtqPMsn2ERIbZWcMgpxn/preview" },
+  { id: 167, title: "Amada Infiel", year: "1959", description: "Relacionamento abalado por segredos e decisões difíceis.", poster: "https://i.postimg.cc/nLnCHnFb/amada-infiel.jpg", genres: ["Drama", "Romance"], videoUrl: "https://drive.google.com/file/d/1KC5dvvFlIs8m19GUeTMwREOIrXpUtUqr/preview" },
+  { id: 168, title: "A Terra dos Homens Perdidos", year: "1954", description: "Homens marcados pelo passado buscam redenção na fronteira.", poster: "https://i.postimg.cc/s23vV3jr/A-Terra-Dos-Homens-Perdidos.jpg", genres: ["Faroeste", "Drama"], videoUrl: "https://drive.google.com/file/d/1Aez_YKIwAYyQZ50Wn0SKTBv_UpTWTANS/preview" },
+  { id: 169, title: "A Lotaria do Amor", year: "1954", description: "Reviravolta inesperada mistura sorte, amor e humor.", poster: "https://i.postimg.cc/N0Q5gQgJ/A-Lotaria-Do-Amor.jpg", genres: ["Comédia", "Romance"], videoUrl: "https://drive.google.com/file/d/17l3pvkJYvOxtI8iSTdes36ZMiUTju-yz/preview" }
+];
+
+const liveChannels = [
+  { id: 'live-1', title: "Sherlock Holmes TV", poster: "https://i.postimg.cc/8kh3CsWs/Sherlock-holmes.jpg", playlistId: "PLi5s3-YiYzfeeWaEnMipyO_V0wMNI_voF" },
+  { id: 'live-2', title: "Betty Boop 24h", poster: "https://i.postimg.cc/HWQKLj5J/Betty-boop.jpg", playlistId: "SI702KkWrD8" },
+  { id: 'live-3', title: "The Lucy Show", poster: "https://i.postimg.cc/HWQKLj5V/The-lucy-show.jpg", playlistId: "PLFcTeSnrf5sheVQA7KnpPjtqd901-MWIc" },
+  { id: 'live-4', title: "Familia Buscapé TV", poster: "https://i.postimg.cc/4ybF2FZj/The-beverly-hillbillies.jpg", playlistId: "PLUA9kG1DciUxRvbTCTuW83ghFA8il51t4" },
+  { id: 'live-5', title: "Bonanza Canal", poster: "https://i.postimg.cc/LXPWL8W4/Bonanza.jpg", playlistId: "PLGiPygaAhaIKve5seNM4vgfU0Owjz6VoY" }
+];
+
+const storeCatalog = [
+  {
+    id: "sessao-899",
+    title: "Clássicos a partir de R$ 8,99",
+    price: 8.99,
+    items: [
+      { id: 51, title: "O Foguete Errante", year: "1959", description: "Um grupo de cientistas se aventura em uma viagem espacial.", poster: "https://a.imagem.app/BC1tAV.jpeg", genres: ["Ficção Científica", "Aventura"], checkoutUrl: "https://mpago.la/24iqHVX" },
+      { id: 70, title: "Suspense", year: "1913", description: "Uma mulher e seu filho são atacados por bandidos.", poster: "https://a.imagem.app/BC1pqT.jpeg", genres: ["Suspense"], checkoutUrl: "https://mpago.la/2x39QF8" },
+      { id: 156, title: "Primavera nas Montanhas", year: "1942", description: "Dilemas emocionais e romance nas montanhas.", poster: "https://i.postimg.cc/2S9hXqds/Primavera-nas-montanhas.jpg", genres: ["Drama", "Romance"], checkoutUrl: "https://mpago.la/2va4y2e" },
+      { id: 163, title: "Minha Garota Sal", year: "1942", description: "Romance leve em meio a situações cômicas.", poster: "https://i.postimg.cc/PqdPtdXr/Minha-Garota-Sal.jpg", genres: ["Comédia", "Romance"], checkoutUrl: "https://mpago.la/1xd9HrM" },
+      { id: 167, title: "Amada Infiel", year: "1959", description: "Relacionamento abalado por segredos.", poster: "https://i.postimg.cc/nLnCHnFb/amada-infiel.jpg", genres: ["Drama", "Romance"], checkoutUrl: "https://mpago.la/1Nz2UPP" },
+      { id: 169, title: "A Lotaria do Amor", year: "1954", description: "Sorte, amor e humor mudam o destino de um casal.", poster: "https://i.postimg.cc/N0Q5gQgJ/A-Lotaria-Do-Amor.jpg", genres: ["Comédia", "Romance"], checkoutUrl: "https://mpago.la/1BY4fbW" }
+    ]
+  },
+  {
+    id: "sessao-1299",
+    title: "Coleção Especial R$ 12,99",
+    price: 12.99,
+    items: [
+      { id: 1, title: "A Última Vez que Vi Paris", year: "1954", description: "Casal americano em Paris no pós-guerra.", poster: "https://a.imagem.app/BCsQMT.jpeg", genres: ["Romance", "Drama"], checkoutUrl: "https://mpago.la/1G1Wvtn" },
+      { id: 65, title: "Plan 9 from Outer Space", year: "1959", description: "Alienígenas invadem a Terra.", poster: "https://a.imagem.app/BC1aN2.jpeg", genres: ["Ficção Científica", "Terror"], checkoutUrl: "https://mpago.la/2psrUhJ" },
+      { id: 106, title: "Nada de Novo no Front", year: "1979", description: "Jovens soldados na Primeira Guerra Mundial.", poster: "https://i.postimg.cc/g2CC7hH2/nada-de-novo-no-front-1979.jpg", genres: ["Guerra", "Ação"], checkoutUrl: "https://mpago.la/1JokeLN" },
+      { id: 143, title: "Mulher Cobra", year: "1944", description: "Aventura em ilha governada pela deusa cobra.", poster: "https://i.postimg.cc/wMH8dkfJ/mulher-cobra.jpg", genres: ["Aventura", "Drama", "Romance"], checkoutUrl: "https://mpago.la/2jCEeC3" },
+      { id: 145, title: "A Raposa do Mar", year: "1957", description: "Combate naval no Atlântico Sul.", poster: "https://i.postimg.cc/Y03c2mZN/The-Enemy-Below.png", genres: ["Ação", "Aventura", "Guerra"], checkoutUrl: "https://mpago.la/2GRptmm" },
+      { id: 146, title: "Mulheres e Luzes", year: "1950", description: "Companhia de espetáculos viaja para Roma.", poster: "https://i.postimg.cc/MZbJmhHj/Luci-del-varieta-1951.png", genres: ["Romance", "Drama"], checkoutUrl: "https://mpago.la/1YQsZTi" },
+      { id: 149, title: "A Trapaça", year: "1955", description: "Três trapaceiros aplicam golpes na Itália.", poster: "https://i.postimg.cc/zvjmDR6c/A-Trapaca-1955.jpg", genres: ["Comédia", "Drama"], checkoutUrl: "https://mpago.la/2Tc2Bjv" },
+      { id: 151, title: "Uma Noite no Rio", year: "1941", description: "Confusões românticas e musicais no Rio.", poster: "https://i.postimg.cc/jjvC2B2y/uma-noite-no-rio.jpg", genres: ["Comédia", "Musical"], checkoutUrl: "https://mpago.la/1mJ1KfJ" },
+      { id: 153, title: "Sangue no Rio", year: "1953", description: "Disputas violentas no Oeste americano.", poster: "https://i.postimg.cc/g04rj1jL/sangue-no-rio.jpg", genres: ["Faroeste", "Drama"], checkoutUrl: "https://mpago.la/2p9Jd8Q" },
+      { id: 155, title: "Querida Brigitte", year: "1965", description: "Garoto desenvolve paixão por Brigitte Bardot.", poster: "https://i.postimg.cc/q7QgqWqg/Querida-Brigitte.jpg", genres: ["Comédia", "Família"], checkoutUrl: "https://mpago.la/24wWX21" },
+      { id: 158, title: "Os Fabulosos Dorsey", year: "1947", description: "A história dos irmãos músicos Dorsey.", poster: "https://i.postimg.cc/jjvC2B2x/Os-Fabulosos-Dorsey.jpg", genres: ["Drama", "Musical"], checkoutUrl: "https://mpago.la/2YTufJC" }
+    ]
+  },
+  {
+    id: "sessao-1999",
+    title: "Obras-Primas R$ 19,99",
+    price: 19.99,
+    items: [
+      { id: 121, title: "Aconteceu num Apartamento", year: "1962", description: "Mistério policial em Londres.", poster: "https://i.postimg.cc/PJ4QYWk1/aconteceu-num-apartamento.png", genres: ["Drama", "Romance"], checkoutUrl: "https://mpago.la/1YcGSHW" },
+      { id: 129, title: "O Homem que Eu Deveria Odiar", year: "1961", description: "Escolta perigosa pelo território Apache.", poster: "https://i.postimg.cc/CKX6dFJK/o-homem-que-eu-deveria-odiar-1961.png", genres: ["Faroeste", "Ação"], checkoutUrl: "https://mpago.la/1LJLRcE" },
+      { id: 30, title: "Intolerância", year: "1916", description: "Épico histórico de D.W. Griffith.", poster: "https://a.imagem.app/BC1kZ0.jpeg", genres: ["Drama", "História"], checkoutUrl: "https://mpago.la/32pLkiz" },
+      { id: 67, title: "Rebecca", year: "1940", description: "Suspense gótico dirigido por Alfred Hitchcock.", poster: "https://a.imagem.app/BC1Dcl.jpeg", genres: ["Mistério", "Romance"], checkoutUrl: "https://mpago.la/2ZzAVvS" },
+      { id: 100, title: "Dançando nas Nuvens", year: "1955", description: "Musical estrelado por Gene Kelly.", poster: "https://i.postimg.cc/NfgPxNTs/dan-ando-nas-nuvens-1955.png", genres: ["Comédia", "Musical"], checkoutUrl: "https://mpago.la/1ajUQSE" },
+      { id: 72, title: "Tempos Modernos", year: "1936", description: "Obra-prima de Charlie Chaplin.", poster: "https://a.imagem.app/BC6bbZ.jpeg", genres: ["Comédia", "Drama"], checkoutUrl: "https://mpago.la/2qGqDpc" },
+      { id: 116, title: "Sete Dias de Maio", year: "1964", description: "Thriller político na Casa Branca.", poster: "https://i.postimg.cc/5y3SLBMC/sete-dias-de-maio.png", genres: ["Suspense", "Drama"], checkoutUrl: "https://mpago.la/2CznASD" },
+      { id: 142, title: "Fleischer Studios Cartoons", year: "1920-1950", description: "Coletânea clássica de animações.", poster: "https://i.postimg.cc/kGXtt40B/Fleischer-Studios.png", genres: ["Curta-metragem", "Animação"], checkoutUrl: "https://mpago.la/2ZCYU7U" },
+      { id: 144, title: "A Morada da Sexta Felicidade", year: "1958", description: "Drama histórico estrelado por Ingrid Bergman.", poster: "https://i.postimg.cc/sxcFfZq5/A-Morada-da-Sexta-Felicidade.jpg", genres: ["Drama"], checkoutUrl: "https://mpago.la/26yuYNy" },
+      { id: 152, title: "Stagecoach", year: "1939", description: "O faroeste que consagrou John Wayne.", poster: "https://i.postimg.cc/k5wDGLGx/Stagecoach.jpg", genres: ["Faroeste", "Aventura"], checkoutUrl: "https://mpago.la/16Bv9wK" },
+      { id: 154, title: "Rio Sem Regresso", year: "1954", description: "Aventura no oeste com Marilyn Monroe.", poster: "https://i.postimg.cc/3w9WNzNy/Rio-Sem-Regresso.jpg", genres: ["Faroeste", "Aventura"], checkoutUrl: "https://mpago.la/1Q7yojp" }
+    ]
+  },
+  {
+    id: "sessao-2499",
+    title: "Obras-Primas R$ 24,99",
+    price: 24.99,
+    items: [
+      { id: 32, title: "Jejum de Amor", year: "1940", description: "Comédia clássica de Howard Hawks.", poster: "https://a.imagem.app/BC17sr.jpeg", genres: ["Comédia", "Romance"], checkoutUrl: "https://mpago.la/27fLyXH" },
+      { id: 85, title: "O Inventor da Mocidade", year: "1952", description: "Comédia com Cary Grant e Marilyn Monroe.", poster: "https://i.postimg.cc/BZxyvtDj/O-inventor-da-mocidade.jpg", genres: ["Comédia", "Romance"], checkoutUrl: "https://mpago.la/21t6Dzi" },
+      { id: 88, title: "Minha Secretária Brasileira", year: "1942", description: "Comédia romântica musical.", poster: "https://i.postimg.cc/cHQKvPfj/Minha-secret-ria-brasileira.jpg", genres: ["Comédia", "Romance"], checkoutUrl: "https://mpago.la/2Bo5DZk" },
+      { id: 7, title: "A Paixão de Joana d'Arc", year: "1928", description: "Clássico absoluto do cinema mudo.", poster: "https://a.imagem.app/BCsIlv.jpeg", genres: ["Drama", "História"], checkoutUrl: "https://mpago.la/1z9nAZ8" },
+      { id: 99, title: "O Filho de Kong", year: "1933", description: "Aventura clássica na Ilha da Caveira.", poster: "https://i.postimg.cc/tggvsnxv/O-filho-de-Kong.jpg", genres: ["Aventura", "Fantasia"], checkoutUrl: "https://mpago.la/2oMsvP7" },
+      { id: 24, title: "Encouraçado Potemkin", year: "1925", description: "Obra-prima de Sergei Eisenstein.", poster: "https://a.imagem.app/BC1byX.jpeg", genres: ["Drama", "História"], checkoutUrl: "https://mpago.la/2VSB7b6" },
+      { id: 55, title: "O Grande Ditador", year: "1940", description: "Obra-prima de Charlie Chaplin.", poster: "https://a.imagem.app/BC1RYX.jpeg", genres: ["Comédia", "Drama"], checkoutUrl: "https://mpago.la/1hpZ25i" },
+      { id: 157, title: "Os Sinos de San Angelo", year: "1947", description: "Faroeste clássico com Roy Rogers.", poster: "https://i.postimg.cc/bvLdr4rs/os-sinos-de-sao-angelo.jpg", genres: ["Faroeste", "Drama"], checkoutUrl: "https://mpago.la/31YrWPa" }
+    ]
+  }
+];
+
+const storeParceiros = [
+  {
+    titulo: "Visual National",
+    meta: "Publicidade • Apoie o Plus+",
+    descricao: "Estilo, conforto e qualidade em todas as peças.",
+    imagem: "https://i.postimg.cc/dVLGLhCg/IMG-9654.jpg",
+    textoBotao: "Saiba Mais",
+    icone: "fas fa-external-link-alt",
+    url: "https://reserva.ink/glvisualnational"
+  },
+  {
+    titulo: "Loja de Eletrônicos Parceira",
+    meta: "Desconto Exclusivo • TV Box e Acessórios",
+    descricao: "Compre equipamentos com frete grátis usando o cupom oficial do aplicativo Plus+.",
+    imagem: "https://a.imagem.app/BC1RYX.jpeg",
+    textoBotao: "Ver Ofertas",
+    icone: "fas fa-shopping-cart",
+    url: "https://wa.me/5551999999999?text=Olá!%20Vim%20pelo%20Plus%2B%20e%20quero%20o%20desconto"
+  },
+  {
+    titulo: "Açaí & Lanches Novo Hamburgo",
+    meta: "Gastronomia • Sabor e Qualidade",
+    descricao: "Peça o melhor açaí da região direto pelo WhatsApp com entrega rápida na sua casa.",
+    imagem: "https://i.postimg.cc/yN37MSRy/P-ster-das-assinaturas-Plus.jpg",
+    textoBotao: "Pedir Agora",
+    icone: "fab fa-whatsapp",
+    url: "https://wa.me/5551999999999?text=Olá!%20Quero%20pedir%20pelo%20anúncio%20do%20Plus%2B"
+  }
+];
+
+const VALID_TOKENS = {
+  "GLM-X9T4P7K2LJ": { type: "mensal" }, "GLM-8Q2W1E5R9T": { type: "mensal" },
+  "GLM-A7Z6S3C4V8": { type: "mensal" }, "GLM-9N1M2B5H7J": { type: "mensal" },
+  "GLM-T5Y8U2I1O6": { type: "mensal" }, "GLA-Z5X1C9V3B7": { type: "anual" },
+  "GLA-N3M2J6K8L1": { type: "anual" }, "GLA-T8R4E5W9Q2": { type: "anual" },
+  "GLA-Y7U3I1O2P9": { type: "anual" }, "GLA-F9D4S5A3G7": { type: "anual" }
+};
+
+const LINK_PAGAMENTO_MENSAL = 'https://mpago.la/2SRyqam';
+const LINK_PAGAMENTO_ANUAL  = 'https://mpago.la/2SRyqam';
+const GOOGLE_CLIENT_ID = "467099082704-bbqe4ble2u63mbpgv0mkdars78pigi6i.apps.googleusercontent.com";
+
+// API YouTube Classix
+const YT_API_KEY = "AIzaSyBV8Ps8L0grv5yT-tDOFO41dC7kLDpVm_Y";
+const YT_CHANNEL_HANDLE = "classixapp";
+const YT_API_BASE = "https://www.googleapis.com/youtube/v3";
+
+/* ==========================================================================
+   2. LIMPADOR DE TÍTULOS & ESTADO GLOBAL
+   ========================================================================== */
+function limparStringTitulo(texto) {
+  if (!texto) return '';
+  return texto
+    .replace(/classix/gi, '')
+    .replace(/full\s*movie/gi, '')
+    .replace(/\bhd\b/gi, '')
+    .replace(/\[\s*\]|\(\s*\)/g, '')
+    .replace(/[\|\-\–\—]\s*$/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+movieData.forEach(m => { m.title = limparStringTitulo(m.title); });
+
+let isKidsMode = localStorage.getItem('GL_KIDS_MODE') === 'true';
+let currentHeroMovie = null;
+let roletaTimer = null;
+let roletaIndex = 0;
+
+// Estado YouTube Classix
+let ytUploadsPlaylist = "";
+let ytNextPageToken = "";
+let ytLoading = false;
+let ytLoadedVideos = [];
+let ytLoadedIds = new Set();
+
+function getActiveCatalog() {
+  if (isKidsMode) {
+    return movieData.filter(m => m.genres.includes("Kids") || m.genres.includes("Animação"));
+  }
+  return movieData;
+}
+
+function getMyList() {
+  return JSON.parse(localStorage.getItem('myList') || '[]');
+}
+
+function toggleMyList(movieId) {
+  let list = getMyList();
+  const idx = list.indexOf(movieId);
+  if (idx > -1) list.splice(idx, 1);
+  else list.push(movieId);
+  localStorage.setItem('myList', JSON.stringify(list));
+  updateHeroListButton();
+  buildCatalogTV();
+}
+
+function isSubscriptionActive() {
+  const exp = localStorage.getItem('GLPLUS_EXPIRA');
+  if (!exp) return false;
+  if (new Date() > new Date(exp)) {
+    localStorage.removeItem('GLPLUS_EXPIRA');
+    localStorage.removeItem('GLPLUS_PREMIUM');
+    localStorage.removeItem('GLPLUS_TOKEN');
+    return false;
+  }
+  return true;
+}
+
+/* ==========================================================================
+   3. SISTEMA CONTINUAR ASSISTINDO (EXPIRA EM 3 DIAS)
+   ========================================================================== */
+const EXPIRACAO_MS = 3 * 24 * 60 * 60 * 1000;
+
+function salvarNoContinuarAssistindo(movieId) {
+  if (!movieId) return;
+  const hist = JSON.parse(localStorage.getItem('plus_continuar') || '{}');
+  hist[String(movieId)] = Date.now();
+  localStorage.setItem('plus_continuar', JSON.stringify(hist));
+}
+
+function getContinuarAssistindo() {
+  const hist = JSON.parse(localStorage.getItem('plus_continuar') || '{}');
+  const agora = Date.now();
+  const validos = [];
+  Object.keys(hist).forEach(id => {
+    if (agora - hist[id] > EXPIRACAO_MS) {
+      delete hist[id];
+    } else {
+      const filme = movieData.find(m => String(m.id) === String(id));
+      if (filme) validos.push({ filme, time: hist[id] });
+    }
+  });
+  localStorage.setItem('plus_continuar', JSON.stringify(hist));
+  validos.sort((a, b) => b.time - a.time);
+  return validos.map(v => v.filme);
+}
+
+/* ==========================================================================
+   4. PLAYER MULTIFONTE UNIFICADO (GOOGLE DRIVE + YOUTUBE VÍDEO/PLAYLIST)
+   ========================================================================== */
+function getYouTubeInfo(url) {
+  if (!url) return null;
+  try {
+    const value = String(url).trim();
+    if (/^[a-zA-Z0-9_-]{11}$/.test(value)) return { type: "video", id: value };
+    const parsed = new URL(value);
+    const host = parsed.hostname.replace(/^www\./, "");
+    const path = parsed.pathname;
+    if (host === "youtu.be" || host.endsWith("youtube.com") || host === "youtube-nocookie.com") {
+      const playlist = parsed.searchParams.get("list");
+      if (playlist && path.includes("playlist")) return { type: "playlist", id: playlist };
+      const videoId =
+        parsed.searchParams.get("v") ||
+        path.match(/\/(?:embed|shorts|live)\/([a-zA-Z0-9_-]{11})/)?.[1] ||
+        (host === "youtu.be" ? path.slice(1).split("/")[0] : null);
+      if (videoId && /^[a-zA-Z0-9_-]{11}$/.test(videoId)) return { type: "video", id: videoId };
+      if (playlist) return { type: "playlist", id: playlist };
+    }
+  } catch (e) {}
+  return null;
+}
+
+function launchPlayerTV(videoUrl, movieId = null) {
+  const overlay = document.getElementById('playerOverlay');
+  const frame = document.getElementById('playerFrame');
+  if (!overlay || !frame || !videoUrl) return;
+
+  if (movieId) {
+    salvarNoContinuarAssistindo(movieId);
+  }
+
+  const yt = getYouTubeInfo(videoUrl);
+  let finalUrl = videoUrl;
+
+  if (yt) {
+    if (yt.type === "playlist") {
+      finalUrl = `https://www.youtube.com/embed/videoseries?list=${encodeURIComponent(yt.id)}&autoplay=1&rel=0&playsinline=1&loop=1`;
+    } else {
+      finalUrl = `https://www.youtube.com/embed/${encodeURIComponent(yt.id)}?autoplay=1&rel=0&playsinline=1`;
+    }
+  } else if (finalUrl.includes('drive.google.com')) {
+    if (!finalUrl.includes('preview')) {
+      finalUrl = finalUrl.replace(/\/view.*$/, '/preview').replace(/\/edit.*$/, '/preview');
+    }
+    if (!finalUrl.includes('autoplay=1')) {
+      finalUrl += (finalUrl.includes('?') ? '&' : '?') + 'autoplay=1&rm=minimal';
+    }
+  }
+
+  frame.src = finalUrl;
+  overlay.style.display = 'block';
+  document.getElementById('backBtn').focus();
+}
+
+function closePlayerTV() {
+  const overlay = document.getElementById('playerOverlay');
+  const frame = document.getElementById('playerFrame');
+  frame.src = '';
+  overlay.style.display = 'none';
+  buildCatalogTV();
+}
+
+document.getElementById('backBtn').onclick = closePlayerTV;
+document.getElementById('blockNewTabBtn').onclick = () => {
+  const btn = document.getElementById('blockNewTabBtn');
+  btn.style.borderColor = '#48c948';
+  setTimeout(() => { btn.style.borderColor = 'rgba(255,255,255,0.12)'; }, 1000);
+};
+
+function openLiveChannelTV(channel) {
+  const isSingle = channel.playlistId.length < 24;
+  const ytUrl = isSingle
+    ? `https://www.youtube.com/embed/${channel.playlistId}?autoplay=1&modestbranding=1&rel=0&controls=0&loop=1&playlist=${channel.playlistId}`
+    : `https://www.youtube.com/embed/videoseries?list=${channel.playlistId}&autoplay=1&modestbranding=1&rel=0&controls=0&loop=1`;
+  launchPlayerTV(ytUrl, null);
+}
+
+/* ==========================================================================
+   5. HERO SHOWCASE & ROLETA 4 SLOTS (CATÁLOGO / LOJA / ANUNCIE / PARCEIRO)
+   ========================================================================== */
+function updateHeroListButton() {
+  const btn = document.getElementById('heroListBtn');
+  if (!currentHeroMovie) {
+    btn.style.display = 'none';
+    return;
+  }
+  btn.style.display = 'inline-flex';
+  const inList = getMyList().includes(currentHeroMovie.id);
+  btn.innerHTML = inList ? '<i class="fas fa-check"></i> Na Lista' : '<i class="fas fa-plus"></i> Minha Lista';
+  btn.onclick = () => toggleMyList(currentHeroMovie.id);
+}
+
+function initRoletaHero() {
+  const catalog = getActiveCatalog();
+  if (!catalog.length) return;
+
+  let filmesLoja = [];
+  storeCatalog.forEach(sessao => {
+    sessao.items.forEach(item => {
+      filmesLoja.push({ ...item, precoSessao: sessao.price });
+    });
+  });
+
+  const idsPagos = new Set(filmesLoja.map(f => String(f.id)));
+  const filmesGratis = catalog.filter(m => !idsPagos.has(String(m.id)));
+  const listaGratis = filmesGratis.length ? filmesGratis : catalog;
+
+  const filmeGratis = listaGratis[Math.floor(Math.random() * listaGratis.length)];
+  const filmeCompra = filmesLoja[Math.floor(Math.random() * filmesLoja.length)] || catalog[0];
+  const precoTexto = 'R$ ' + Number(filmeCompra.precoSessao || 19.99).toFixed(2).replace('.', ',');
+  const parceiro = storeParceiros[Math.floor(Math.random() * storeParceiros.length)];
+
+  const slots = [
+    {
+      tag: "DESTAQUE DO CATÁLOGO",
+      titulo: filmeGratis.title,
+      meta: `${filmeGratis.year} • ${filmeGratis.genres.join(' • ')}`,
+      descricao: filmeGratis.description,
+      imagem: filmeGratis.poster,
+      textoBotao: "Assistir Agora",
+      icone: "fas fa-play",
+      tipo: "filme",
+      filme: filmeGratis
+    },
+    {
+      tag: `LOJA DIGITAL • ${precoTexto}`,
+      titulo: filmeCompra.title,
+      meta: `${filmeCompra.year} • Compra Avulsa`,
+      descricao: filmeCompra.description,
+      imagem: filmeCompra.poster,
+      textoBotao: `Comprar por ${precoTexto}`,
+      icone: "fas fa-shopping-bag",
+      tipo: "compra",
+      item: filmeCompra,
+      price: filmeCompra.precoSessao || 19.99
+    },
+    {
+      tag: "ESPAÇO DISPONÍVEL",
+      titulo: "Anuncie sua Marca no Plus+",
+      meta: "Alcance milhares de telas • Smart TV, Android e iOS",
+      descricao: "Coloque sua empresa ou produto na tela inicial do Plus+ com planos semanais e mensais.",
+      imagem: "https://i.postimg.cc/yN37MSRy/P-ster-das-assinaturas-Plus.jpg",
+      textoBotao: "Anunciar Aqui",
+      icone: "fab fa-whatsapp",
+      tipo: "link",
+      url: "https://wa.me/5551999999999?text=Olá!%20Quero%20anunciar%20na%20roleta%20do%20Plus%2B"
+    },
+    {
+      tag: "PATROCINADOR OFICIAL",
+      titulo: parceiro.titulo,
+      meta: parceiro.meta,
+      descricao: parceiro.descricao,
+      imagem: parceiro.imagem,
+      textoBotao: parceiro.textoBotao,
+      icone: parceiro.icone,
+      tipo: "link",
+      url: parceiro.url
+    }
+  ];
+
+  const dotsContainer = document.getElementById('roletaDots');
+  dotsContainer.innerHTML = '';
+  slots.forEach((_, idx) => {
+    const d = document.createElement('button');
+    d.className = 'roleta-dot tv-focusable';
+    d.onclick = () => applySlot(idx);
+    dotsContainer.appendChild(d);
+  });
+
+  function applySlot(idx) {
+    roletaIndex = (idx + slots.length) % slots.length;
+    const s = slots[roletaIndex];
+    const hero = document.getElementById('hero');
+    hero.style.backgroundImage = `url('${s.imagem}')`;
+    document.getElementById('heroTag').innerHTML = `<i class="fas fa-bolt"></i> ${s.tag}`;
+    document.getElementById('title').textContent = s.titulo;
+    document.getElementById('meta').textContent = s.meta;
+    document.getElementById('desc').textContent = s.descricao;
+
+    const playBtn = document.getElementById('playBtn');
+    playBtn.innerHTML = `<i class="${s.icone}"></i> ${s.textoBotao}`;
+
+    if (s.tipo === "filme") {
+      currentHeroMovie = s.filme;
+      playBtn.onclick = () => openDetailModal(s.filme);
+    } else if (s.tipo === "compra") {
+      currentHeroMovie = null;
+      playBtn.onclick = () => openBuyModal(s.item, s.price);
+    } else {
+      currentHeroMovie = null;
+      playBtn.onclick = () => window.open(s.url, '_blank');
+    }
+    updateHeroListButton();
+
+    dotsContainer.querySelectorAll('.roleta-dot').forEach((dot, i) => {
+      dot.style.background = i === roletaIndex ? '#48c948' : 'rgba(255,255,255,0.35)';
+      dot.style.width = i === roletaIndex ? '26px' : '10px';
+      dot.style.borderRadius = i === roletaIndex ? '6px' : '50%';
+    });
+  }
+
+  document.getElementById('roletaPrev').onclick = () => {
+    applySlot(roletaIndex - 1);
+    resetRoletaTimer();
+  };
+  document.getElementById('roletaNext').onclick = () => {
+    applySlot(roletaIndex + 1);
+    resetRoletaTimer();
+  };
+
+  function resetRoletaTimer() {
+    clearInterval(roletaTimer);
+    roletaTimer = setInterval(() => applySlot(roletaIndex + 1), 7000);
+  }
+
+  applySlot(0);
+  resetRoletaTimer();
+}
+
+/* ==========================================================================
+   6. CONSTRUÇÃO DO CATÁLOGO TV (FILEIRAS, CATEGORIAS, AO VIVO, LOJA, YOUTUBE)
+   ========================================================================== */
+function createMovieCardTV(movie) {
+  const card = document.createElement('div');
+  card.className = 'card tv-focusable';
+  card.tabIndex = 0;
+  card.style.backgroundImage = `url('${movie.poster}')`;
+
+  const inList = getMyList().includes(movie.id);
+  card.innerHTML = `
+    <span class="badge-list ${inList ? 'active' : ''}"><i class="fas ${inList ? 'fa-check' : 'fa-plus'}"></i></span>
+    <div class="card-overlay">
+      <div class="card-title">${movie.title}</div>
+      <div class="card-sub">${movie.year} • ${movie.genres[0] || ''}</div>
+    </div>
+  `;
+
+  card.onclick = () => openDetailModal(movie);
+  card.onfocus = () => {
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  };
+  return card;
+}
+
+function appendRowSection(container, titleText, items, renderer, isGrid = false) {
+  if (!items || items.length === 0) return;
+  const sec = document.createElement('section');
+  sec.className = 'section';
+  sec.innerHTML = `
+    <div class="section-header">
+      <h2 class="section-title">${titleText}</h2>
+    </div>
+    <div class="row ${isGrid ? 'grid-mode' : ''}"></div>
+  `;
+  const row = sec.querySelector('.row');
+  items.forEach(item => row.appendChild(renderer(item)));
+  container.appendChild(sec);
+}
+
+let activeGenreFilter = 'Todos';
+
+function buildCatalogTV(viewMode = 'home') {
+  const catalogEl = document.getElementById('catalog');
+  const heroEl = document.getElementById('hero');
+  catalogEl.innerHTML = '';
+
+  const catalog = getActiveCatalog();
+
+  if (viewMode === 'list') {
+    heroEl.style.display = 'none';
+    catalogEl.classList.add('full-height');
+    const listIds = getMyList();
+    const myMovies = catalog.filter(m => listIds.includes(m.id));
+    if (myMovies.length === 0) {
+      catalogEl.innerHTML = `<div style="padding:48px; color:var(--text-muted); font-size:20px;">Sua lista está vazia. Selecione um filme e clique em "Minha Lista".</div>`;
+    } else {
+      appendRowSection(catalogEl, 'Minha Lista Salva', myMovies, createMovieCardTV, true);
+    }
+    return;
+  }
+
+  if (viewMode === 'plus') {
+    if (!isSubscriptionActive()) {
+      openPlusModal();
+      return;
+    }
+    heroEl.style.display = 'none';
+    catalogEl.classList.add('full-height');
+    appendRowSection(catalogEl, 'Catálogo Plus+ VIP Exclusivo', catalog, createMovieCardTV, true);
+    return;
+  }
+
+  if (viewMode === 'classix') {
+    heroEl.style.display = 'none';
+    catalogEl.classList.add('full-height');
+    renderClassixYouTubeSection(catalogEl, true);
+    return;
+  }
+
+  if (viewMode === 'live') {
+    heroEl.style.display = 'none';
+    catalogEl.classList.add('full-height');
+    appendRowSection(catalogEl, 'Canais ao Vivo 24h', liveChannels, (ch) => {
+      const card = document.createElement('div');
+      card.className = 'card tv-focusable';
+      card.tabIndex = 0;
+      card.style.backgroundImage = `url('${ch.poster}')`;
+      card.innerHTML = `
+        <span class="badge-live"><i class="fas fa-circle" style="font-size:8px;"></i> AO VIVO</span>
+        <div class="card-overlay">
+          <div class="card-title">${ch.title}</div>
+          <div class="card-sub">Transmissão Contínua</div>
+        </div>
+      `;
+      card.onclick = () => openLiveChannelTV(ch);
+      return card;
+    }, true);
+    return;
+  }
+
+  // MODO HOME PADRÃO TV
+  heroEl.style.display = 'flex';
+  catalogEl.classList.remove('full-height');
+
+  // Barra de Filtro Rápido por Gênero
+  const genres = ['Todos', ...new Set(catalog.flatMap(m => m.genres.filter(g => g !== 'Kids')))].sort((a, b) => a === 'Todos' ? -1 : a.localeCompare(b));
+  const genreBar = document.createElement('div');
+  genreBar.className = 'tv-genre-bar';
+  genres.forEach(g => {
+    const btn = document.createElement('button');
+    btn.className = `genre-pill tv-focusable ${activeGenreFilter === g ? 'active' : ''}`;
+    btn.textContent = g;
+    btn.onclick = () => {
+      activeGenreFilter = g;
+      buildCatalogTV('home');
+    };
+    genreBar.appendChild(btn);
+  });
+  catalogEl.appendChild(genreBar);
+
+  if (activeGenreFilter !== 'Todos') {
+    const filtered = catalog.filter(m => m.genres.includes(activeGenreFilter));
+    appendRowSection(catalogEl, `Gênero: ${activeGenreFilter} (${filtered.length})`, filtered, createMovieCardTV, true);
+    return;
+  }
+
+  // 1. Continuar Assistindo
+  const continuar = getContinuarAssistindo();
+  if (continuar.length > 0) {
+    appendRowSection(catalogEl, 'Continuar Assistindo', continuar, createMovieCardTV);
+  }
+
+  // 2. Canais ao Vivo
+  appendRowSection(catalogEl, 'Canais ao Vivo', liveChannels, (ch) => {
+    const card = document.createElement('div');
+    card.className = 'card tv-focusable';
+    card.tabIndex = 0;
+    card.style.backgroundImage = `url('${ch.poster}')`;
+    card.innerHTML = `
+      <span class="badge-live"><i class="fas fa-circle" style="font-size:8px;"></i> AO VIVO</span>
+      <div class="card-overlay">
+        <div class="card-title">${ch.title}</div>
+        <div class="card-sub">Transmissão Contínua</div>
+      </div>
+    `;
+    card.onclick = () => openLiveChannelTV(ch);
+    card.onfocus = () => card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    return card;
+  });
+
+  // 3. Fileiras Curadas
+  appendRowSection(catalogEl, 'Sugestões para Você', catalog.slice(0, 10), createMovieCardTV);
+  appendRowSection(catalogEl, 'Nossa Recomendação', catalog.slice(10, 20), createMovieCardTV);
+  appendRowSection(catalogEl, 'Os 10 Melhores', catalog.slice(20, 30), createMovieCardTV);
+
+  // 4. Filmes Clássicos YouTube (@classixapp)
+  renderClassixYouTubeSection(catalogEl, false);
+
+  // 5. Todas as Categorias / Gêneros
+  const allGenres = [...new Set(catalog.flatMap(m => m.genres.filter(g => g !== 'Kids')))].sort();
+  allGenres.forEach(genre => {
+    const moviesInGenre = catalog.filter(m => m.genres.includes(genre));
+    if (moviesInGenre.length >= 2) {
+      appendRowSection(catalogEl, genre, moviesInGenre, createMovieCardTV);
+    }
+  });
+
+  // 6. Loja Digital (Compra Avulsa)
+  if (!isKidsMode) {
+    storeCatalog.forEach(group => {
+      appendRowSection(catalogEl, group.title, group.items, (item) => {
+        const card = document.createElement('div');
+        card.className = 'card tv-focusable';
+        card.tabIndex = 0;
+        card.style.backgroundImage = `url('${item.poster}')`;
+        const priceStr = 'R$ ' + group.price.toFixed(2).replace('.', ',');
+        card.innerHTML = `
+          <span class="badge-price">${priceStr}</span>
+          <div class="card-overlay">
+            <div class="card-title">${limparStringTitulo(item.title)}</div>
+            <div class="card-sub">${item.year} • Compra Digital</div>
+          </div>
+        `;
+        card.onclick = () => openBuyModal(item, group.price);
+        card.onfocus = () => card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        return card;
+      });
+    });
+  }
+
+  // 7. Catálogo Completo
+  appendRowSection(catalogEl, isKidsMode ? 'Catálogo Infantil Completo' : 'Catálogo Completo', catalog, createMovieCardTV);
+}
+
+/* ==========================================================================
+   7. INTEGRAÇÃO YOUTUBE API (@classixapp >= 10 MINUTOS)
+   ========================================================================== */
+function durationInSeconds(duration) {
+  const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!match) return 0;
+  return Number(match[1] || 0) * 3600 + Number(match[2] || 0) * 60 + Number(match[3] || 0);
+}
+
+async function fetchClassixBatch(rowEl, statusEl, loadMoreBtn) {
+  if (ytLoading) return;
+  ytLoading = true;
+  if (loadMoreBtn) loadMoreBtn.disabled = true;
+
+  try {
+    if (!ytUploadsPlaylist) {
+      const p = new URLSearchParams({ part: "contentDetails", forHandle: YT_CHANNEL_HANDLE, key: YT_API_KEY });
+      const res = await fetch(`${YT_API_BASE}/channels?${p}`);
+      const data = await res.json();
+      if (!res.ok || !data.items?.length) throw new Error(data.error?.message || "Canal não encontrado");
+      ytUploadsPlaylist = data.items[0].contentDetails.relatedPlaylists.uploads;
+    }
+
+    const p = new URLSearchParams({
+      part: "snippet",
+      playlistId: ytUploadsPlaylist,
+      maxResults: "50",
+      key: YT_API_KEY
+    });
+    if (ytNextPageToken) p.set("pageToken", ytNextPageToken);
+
+    const res = await fetch(`${YT_API_BASE}/playlistItems?${p}`);
+    const pData = await res.json();
+    if (!res.ok) throw new Error(pData.error?.message || "Erro na playlist");
+
+    ytNextPageToken = pData.nextPageToken || "";
+    const ids = (pData.items || []).map(i => i.snippet?.resourceId?.videoId).filter(Boolean);
+
+    if (ids.length) {
+      const vParams = new URLSearchParams({
+        part: "snippet,contentDetails,status",
+        id: ids.join(","),
+        key: YT_API_KEY
+      });
+      const vRes = await fetch(`${YT_API_BASE}/videos?${vParams}`);
+      const vData = await vRes.json();
+
+      (vData.items || []).forEach(v => {
+        const secs = durationInSeconds(v.contentDetails?.duration || "");
+        if (secs < 600 || v.status?.privacyStatus !== "public") return;
+        if (ytLoadedIds.has(v.id)) return;
+        ytLoadedIds.add(v.id);
+
+        const thumbs = v.snippet.thumbnails || {};
+        const thumb = thumbs.high?.url || thumbs.medium?.url || `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`;
+        const cleanTitle = limparStringTitulo(v.snippet.title || "Filme Clássico");
+        const vidObj = { id: v.id, title: cleanTitle, thumbnail: thumb };
+        ytLoadedVideos.push(vidObj);
+        rowEl.appendChild(createYouTubeCardTV(vidObj));
+      });
+    }
+
+    if (statusEl) statusEl.textContent = ytLoadedVideos.length ? "" : "Nenhum vídeo encontrado.";
+    if (loadMoreBtn) {
+      loadMoreBtn.hidden = !ytNextPageToken;
+      loadMoreBtn.disabled = false;
+    }
+  } catch (err) {
+    if (statusEl) statusEl.textContent = "Erro YouTube: " + err.message;
+  } finally {
+    ytLoading = false;
+  }
+}
+
+  function createYouTubeCardTV(vid) {
+  const card = document.createElement('div');
+  card.className = 'card tv-focusable';
+  card.tabIndex = 0;
+  card.style.backgroundImage = `url('${vid.thumbnail}')`;
+  card.innerHTML = `
+    <span class="badge-live" style="background:#ff0000; color:#fff;"><i class="fab fa-youtube"></i> YOUTUBE</span>
+    <div class="card-overlay">
+      <div class="card-title">${vid.title}</div>
+      <div class="card-sub">Acervo Clássico Completo</div>
+    </div>
+  `;
+  card.onclick = () => launchPlayerTV(`https://www.youtube.com/watch?v=${vid.id}`, null);
+  card.onfocus = () => card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  return card;
+}
+
+function renderClassixYouTubeSection(container, isGrid) {
+  const sec = document.createElement('section');
+  sec.className = 'section';
+  sec.innerHTML = `
+    <div class="section-header">
+      <h2 class="section-title">Filmes Clássicos </h2>
+      <button class="btn-tv-secondary tv-focusable" id="ytLoadMoreBtn" style="padding:8px 16px; font-size:13px;" hidden>Carregar Mais</button>
+    </div>
+    <div id="ytStatusMsg" style="padding:0 48px 10px; color:var(--text-muted); font-size:14px;">Carregando filmes do YouTube...</div>
+    <div class="row ${isGrid ? 'grid-mode' : ''}" id="ytClassixRow"></div>
+  `;
+  container.appendChild(sec);
+
+  const rowEl = sec.querySelector('#ytClassixRow');
+  const statusEl = sec.querySelector('#ytStatusMsg');
+  const moreBtn = sec.querySelector('#ytLoadMoreBtn');
+
+  if (ytLoadedVideos.length > 0) {
+    statusEl.textContent = "";
+    ytLoadedVideos.forEach(v => rowEl.appendChild(createYouTubeCardTV(v)));
+    moreBtn.hidden = !ytNextPageToken;
+  } else {
+    fetchClassixBatch(rowEl, statusEl, moreBtn);
+  }
+
+  moreBtn.onclick = () => fetchClassixBatch(rowEl, statusEl, moreBtn);
+}
+
+/* ==========================================================================
+   8. MODAIS DE DETALHES, COMPRA E ASSINATURA PLUS+
+   ========================================================================== */
+function openDetailModal(movie) {
+  const modal = document.getElementById('detailModal');
+  document.getElementById('modalPoster').src = movie.poster;
+  document.getElementById('modalTitle').textContent = movie.title;
+  document.getElementById('modalMeta').textContent = `${movie.year} • ${movie.genres.filter(g => g !== 'Kids').join(' • ')}`;
+  document.getElementById('modalDesc').textContent = movie.description;
+
+  const watchBtn = document.getElementById('modalWatchBtn');
+  watchBtn.onclick = () => {
+    modal.style.display = 'none';
+    launchPlayerTV(movie.videoUrl, movie.id);
+  };
+
+  const listBtn = document.getElementById('modalListBtn');
+  const syncListLabel = () => {
+    const added = getMyList().includes(movie.id);
+    listBtn.innerHTML = added ? '<i class="fas fa-check"></i> Salvo na Lista' : '<i class="fas fa-plus"></i> Minha Lista';
+  };
+  syncListLabel();
+  listBtn.onclick = () => {
+    toggleMyList(movie.id);
+    syncListLabel();
+  };
+
+  const recGrid = document.getElementById('modalRecGrid');
+  recGrid.innerHTML = '';
+  getActiveCatalog()
+    .filter(m => m.id !== movie.id && m.genres.some(g => movie.genres.includes(g)))
+    .slice(0, 4)
+    .forEach(r => {
+      const div = document.createElement('div');
+      div.className = 'rec-card-tv tv-focusable';
+      div.tabIndex = 0;
+      div.innerHTML = `<img src="${r.poster}" alt="${r.title}">`;
+      div.onclick = () => openDetailModal(r);
+      recGrid.appendChild(div);
+    });
+
+  modal.style.display = 'flex';
+  watchBtn.focus();
+}
+
+document.getElementById('modalCloseBtn').onclick = () => {
+  document.getElementById('detailModal').style.display = 'none';
+};
+
+function openBuyModal(item, price) {
+  const formatted = 'R$ ' + Number(price).toFixed(2).replace('.', ',');
+  document.getElementById('buyPoster').src = item.poster;
+  document.getElementById('buyTitle').textContent = limparStringTitulo(item.title);
+  document.getElementById('buyMeta').textContent = `${item.year} • ${item.genres.join(', ')}`;
+  document.getElementById('buyQuestion').innerHTML = `Adquira acesso permanente a este título por <strong>${formatted}</strong>.`;
+  const linkBtn = document.getElementById('buyLinkBtn');
+  linkBtn.href = item.checkoutUrl;
+  linkBtn.innerHTML = `<i class="fas fa-shopping-bag"></i> Comprar Agora (${formatted})`;
+  document.getElementById('buyModal').style.display = 'flex';
+  linkBtn.focus();
+}
+
+document.getElementById('buyCloseBtn').onclick = () => {
+  document.getElementById('buyModal').style.display = 'none';
+};
+
+/* Assinatura Plus+ */
+function openPlusModal() {
+  const modal = document.getElementById('plusModal');
+  modal.style.display = 'flex';
+  renderPlusTokenTab();
+  document.getElementById('plusTabLogin').focus();
+}
+
+function renderPlusTokenTab() {
+  document.getElementById('plusDynamicArea').innerHTML = `
+    <div style="display:flex; gap:10px; margin-bottom:14px;">
+      <input type="text" id="tvTokenInput" class="search-input-tv tv-focusable" style="font-size:16px; padding:12px;" placeholder="Digite seu Token (ex: GLM-XXXXXX)">
+      <button id="tvActivateTokenBtn" class="btn-tv-primary tv-focusable">Ativar</button>
+    </div>
+    <button id="tvGooglePlusBtn" class="btn-tv-secondary tv-focusable" style="width:100%; justify-content:center;">
+      <i class="fab fa-google" style="color:var(--accent-green);"></i> Conectar com Conta Google
+    </button>
+  `;
+
+  document.getElementById('tvActivateTokenBtn').onclick = () => {
+    const code = document.getElementById('tvTokenInput').value.trim().toUpperCase();
+    const info = VALID_TOKENS[code];
+    if (!info) {
+      alert('Token inválido. Verifique o código.');
+      return;
+    }
+    const exp = new Date();
+    if (info.type === 'anual') exp.setFullYear(exp.getFullYear() + 1);
+    else exp.setDate(exp.getDate() + 30);
+
+    localStorage.setItem('GLPLUS_TOKEN', code);
+    localStorage.setItem('GLPLUS_PREMIUM', 'true');
+    localStorage.setItem('GLPLUS_EXPIRA', exp.toISOString());
+
+    updateAccountUI();
+    document.getElementById('plusModal').style.display = 'none';
+    buildCatalogTV('plus');
+  };
+
+  document.getElementById('tvGooglePlusBtn').onclick = () => {
+    const gBtn = document.querySelector('#hiddenGoogleBtn div[role="button"]');
+    if (gBtn) gBtn.click();
+  };
+}
+
+function renderPlusPlansTab() {
+  document.getElementById('plusDynamicArea').innerHTML = `
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+      <div class="tv-focusable" tabindex="0" onclick="window.open('${LINK_PAGAMENTO_MENSAL}', '_blank')" style="background:#0a0c0e; border:1px solid var(--border-subtle); border-radius:12px; padding:14px; cursor:pointer;">
+        <img src="https://i.postimg.cc/XJ3Pgkwv/Plano-Mensal.jpg" style="width:100%; border-radius:8px; margin-bottom:8px;">
+        <strong>Básico - R$ 9,90/mês</strong>
+        <p style="font-size:13px; color:#aaa; margin-top:4px;">Catálogo Plus+ completo e canais ao vivo.</p>
+      </div>
+      <div class="tv-focusable" tabindex="0" onclick="window.open('${LINK_PAGAMENTO_ANUAL}', '_blank')" style="background:#0a0c0e; border:1px solid var(--accent-green); border-radius:12px; padding:14px; cursor:pointer;">
+        <img src="https://i.postimg.cc/W3jy7wMd/Plano-Anual.jpg" style="width:100%; border-radius:8px; margin-bottom:8px;">
+        <strong style="color:var(--accent-green);">Premium - R$ 99,90/ano</strong>
+        <p style="font-size:13px; color:#aaa; margin-top:4px;">Full HD, até 3 telas e 2 convidados.</p>
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('plusTabLogin').onclick = renderPlusTokenTab;
+document.getElementById('plusTabPlans').onclick = renderPlusPlansTab;
+document.getElementById('plusCloseBtn').onclick = () => {
+  document.getElementById('plusModal').style.display = 'none';
+};
+
+/* ==========================================================================
+   9. PESQUISA, CONTA GOOGLE & NAVEGAÇÃO D-PAD
+   ========================================================================== */
+const searchOverlay = document.getElementById('searchOverlay');
+const searchInput = document.getElementById('searchInput');
+const searchGrid = document.getElementById('searchGrid');
+
+function openSearchTV() {
+  searchOverlay.style.display = 'flex';
+  searchInput.value = '';
+  searchGrid.innerHTML = '';
+  document.getElementById('searchCount').textContent = 'Digite para buscar em todo o catálogo';
+  setTimeout(() => searchInput.focus(), 80);
+}
+
+function closeSearchTV() {
+  searchOverlay.style.display = 'none';
+}
+
+document.getElementById('closeSearchBtn').onclick = closeSearchTV;
+
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  searchGrid.innerHTML = '';
+  if (!q) {
+    document.getElementById('searchCount').textContent = 'Digite para buscar em todo o catálogo';
+    return;
+  }
+
+  const matches = getActiveCatalog().filter(m =>
+    m.title.toLowerCase().includes(q) ||
+    m.year.includes(q) ||
+    String(m.id) === q ||
+    m.genres.some(g => g.toLowerCase().includes(q))
+  );
+
+  const ytMatches = ytLoadedVideos.filter(v => v.title.toLowerCase().includes(q));
+  document.getElementById('searchCount').textContent = `${matches.length + ytMatches.length} resultado(s) encontrado(s)`;
+
+  matches.forEach(m => {
+    const card = createMovieCardTV(m);
+    card.style.width = '100%';
+    card.style.minWidth = 'unset';
+    card.onclick = () => {
+      closeSearchTV();
+      openDetailModal(m);
+    };
+    searchGrid.appendChild(card);
+  });
+
+  ytMatches.forEach(v => {
+    const card = createYouTubeCardTV(v);
+    card.style.width = '100%';
+    card.style.minWidth = 'unset';
+    card.onclick = () => {
+      closeSearchTV();
+      launchPlayerTV(`https://www.youtube.com/watch?v=${v.id}`, null);
+    };
+    searchGrid.appendChild(card);
+  });
+});
+
+function updateAccountUI() {
+  const user = JSON.parse(localStorage.getItem('glplus_user') || 'null');
+  const isPlus = isSubscriptionActive();
+
+  if (user) {
+    document.getElementById('tvAvatarImg').src = user.picture;
+    document.getElementById('tvUserName').textContent = user.name;
+  } else {
+    document.getElementById('tvAvatarImg').src = 'https://i.postimg.cc/mrQ0R1LV/Plus-Avatar-icon.jpg';
+    document.getElementById('tvUserName').textContent = 'Visitante GL+';
+  }
+
+  document.getElementById('tvUserStatus').textContent = isPlus ? 'Assinante Plus+ Ativo' : 'Conta Gratuita';
+  document.getElementById('kidsBadgeTv').classList.toggle('active', isKidsMode);
+  document.getElementById('kidsNavLabel').textContent = isKidsMode ? 'Sair Modo Kids' : 'Modo Kids';
+}
+
+function handleGoogleCredential(res) {
+  const payload = JSON.parse(atob(res.credential.split('.')[1]));
+  const user = { name: payload.name, email: payload.email, picture: payload.picture };
+  localStorage.setItem('glplus_user', JSON.stringify(user));
+
+  const exp = new Date();
+  exp.setDate(exp.getDate() + 30);
+  localStorage.setItem('GLPLUS_PREMIUM', 'true');
+  localStorage.setItem('GLPLUS_EXPIRA', exp.toISOString());
+
+  updateAccountUI();
+  document.getElementById('plusModal').style.display = 'none';
+  buildCatalogTV('plus');
+}
+
+document.querySelectorAll('.tv-nav-btn').forEach(btn => {
+  btn.onclick = () => {
+    const nav = btn.getAttribute('data-nav');
+    if (nav === 'search') {
+      openSearchTV();
+      return;
+    }
+    if (nav === 'kids') {
+      isKidsMode = !isKidsMode;
+      localStorage.setItem('GL_KIDS_MODE', isKidsMode);
+      activeGenreFilter = 'Todos';
+      updateAccountUI();
+      initRoletaHero();
+      buildCatalogTV('home');
+      return;
+    }
+    if (nav === 'plus' && !isSubscriptionActive()) {
+      openPlusModal();
+      return;
+    }
+
+    document.querySelectorAll('.tv-nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeGenreFilter = 'Todos';
+    buildCatalogTV(nav);
+  };
+});
+
+/* Teclas de Controle Remoto TV (Back / Escape / Enter / Setas) */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' || e.key === 'Backspace') {
+    if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+    if (document.getElementById('playerOverlay').style.display === 'block') {
+      e.preventDefault();
+      closePlayerTV();
+      return;
+    }
+    if (searchOverlay.style.display === 'flex') {
+      e.preventDefault();
+      closeSearchTV();
+      return;
+    }
+    if (document.getElementById('detailModal').style.display === 'flex') {
+      e.preventDefault();
+      document.getElementById('detailModal').style.display = 'none';
+      return;
+    }
+    if (document.getElementById('buyModal').style.display === 'flex') {
+      e.preventDefault();
+      document.getElementById('buyModal').style.display = 'none';
+      return;
+    }
+    if (document.getElementById('plusModal').style.display === 'flex') {
+      e.preventDefault();
+      document.getElementById('plusModal').style.display = 'none';
+      return;
+    }
+  }
+});
+
+/* ==========================================================================
+   10. INICIALIZAÇÃO GERAL
+   ========================================================================== */
+window.addEventListener('DOMContentLoaded', () => {
+  updateAccountUI();
+  initRoletaHero();
+  buildCatalogTV('home');
+  document.getElementById('playBtn').focus();
+});
+
+window.onload = () => {
+  if (window.google && google.accounts) {
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleGoogleCredential
+    });
+    google.accounts.id.renderButton(document.getElementById('hiddenGoogleBtn'), {
+      theme: 'outline',
+      size: 'large'
+    });
+  }
+};
+</script>
+<script>
+  (function() {
+    'use strict';
+
+    // Palavras-chave para identificar conteúdo infantil (ajuste conforme as categorias/tags do seu catálogo)
+    const KIDS_KEYWORDS = ['kids', 'infantil', 'desenho', 'criança', 'animação', 'turma', 'bob esponja', 'peppa', 'patrulha'];
+
+    function isKidsContent(element) {
+        const text = (element.innerText || element.textContent || '').toLowerCase();
+        const dataCategory = (element.getAttribute('data-category') || element.getAttribute('data-genre') || '').toLowerCase();
+        const isKidsAttr = element.hasAttribute('data-kids') || element.classList.contains('is-kids');
+        
+        return isKidsAttr || KIDS_KEYWORDS.some(kw => text.includes(kw) || dataCategory.includes(kw));
+    }
+
+    function isKidsModeActive() {
+        // Verifica flags comuns no localStorage, URL ou classes no body/html
+        const userFlag = localStorage.getItem('glplus_user') || '';
+        const kidsFlag = localStorage.getItem('glplus_kids_mode') || localStorage.getItem('kids_mode');
+        return kidsFlag === 'true' || 
+               userFlag.toLowerCase().includes('kids') || 
+               document.body.classList.contains('kids-mode') ||
+               window.location.hash.includes('kids') ||
+               window.location.search.includes('kids=true');
+    }
+
+    function applyFixes() {
+        const kidsMode = isKidsModeActive();
+
+        // 1. Renomear aba "Clássicos YT" para "Clássicos" e remover menções/logos do YouTube
+        document.querySelectorAll('a, button, li, span, h1, h2, h3, div').forEach(el => {
+            // Evita alterar containers grandes que tenham muitos filhos
+            if (el.children.length === 0 && el.textContent) {
+                if (el.textContent.trim() === 'Clássicos YT') {
+                    el.textContent = 'Clássicos';
+                }
+                if (el.textContent.includes('YouTube direto')) {
+                    el.textContent = el.textContent.replace(/YouTube direto/gi, '').trim();
+                    if (el.textContent === '') el.style.display = 'none';
+                }
+            }
+        });
+
+        // Remover ícones/logos do YouTube nos cards de clássicos
+        document.querySelectorAll('img[src*="youtube"], svg[class*="youtube"], .yt-logo, .youtube-badge, [title*="YouTube"]').forEach(logo => {
+            logo.style.display = 'none';
+        });
+
+        // 2. Regras estritas para o Modo Kids
+        // Seleciona abas/menus de "Clássicos" e "Ao Vivo"
+        const navItems = document.querySelectorAll('nav a, nav button, .menu-item, .tab-item, [role="tab"]');
+        navItems.forEach(tab => {
+            const label = (tab.textContent || '').toLowerCase().trim();
+            if (label === 'clássicos' || label === 'clássicos yt' || label.includes('vivo') || label.includes('live')) {
+                tab.style.display = kidsMode ? 'none' : '';
+            }
+        });
+
+        // Ocultar seções inteiras de Clássicos, Ao Vivo e Continue Assistindo (se não tiverem itens Kids)
+        const sections = document.querySelectorAll('section, .row, .carousel-container, .category-section');
+        sections.forEach(section => {
+            const titleEl = section.querySelector('h1, h2, h3, .section-title, .row-title');
+            const titleText = titleEl ? titleEl.textContent.toLowerCase() : '';
+
+            if (kidsMode) {
+                // Esconde diretamente seções de Clássicos ou Ao Vivo
+                if (titleText.includes('clássico') || titleText.includes('vivo') || titleText.includes('live')) {
+                    section.style.display = 'none';
+                    return;
+                }
+
+                // Filtra cards individuais dentro de "Continue Assistindo" e outras fileiras
+                const cards = section.querySelectorAll('.card, .movie-card, .item, [data-id]');
+                let visibleCards = 0;
+
+                cards.forEach(card => {
+                    if (isKidsContent(card)) {
+                        card.style.display = '';
+                        visibleCards++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Se for "Continue Assistindo" (ou qualquer outra seção) e não sobrou nenhum card Kids, esconde a fileira toda
+                if (cards.length > 0 && visibleCards === 0) {
+                    section.style.display = 'none';
+                } else if (cards.length > 0) {
+                    section.style.display = '';
+                }
+            } else {
+                // Restaura a visibilidade fora do Modo Kids
+                section.style.display = '';
+                section.querySelectorAll('.card, .movie-card, .item, [data-id]').forEach(card => {
+                    card.style.display = '';
+                });
+            }
+        });
+    }
+
+    // Executa imediatamente ao carregar
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', applyFixes);
+    } else {
+        applyFixes();
+    }
+
+    // Observa mudanças no DOM (troca de abas, carregamento dinâmico de cards, ativação do modo kids)
+    const observer = new MutationObserver(() => {
+        // Desconecta temporariamente para evitar loop infinito ao alterar estilos
+        observer.disconnect();
+        applyFixes();
+        observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+})();
+</script>
+
+</body>
+</html>
