@@ -10,6 +10,16 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <style>
+ 
+  /* Oculta qualquer imagem, svg ou badge do YouTube dentro dos cards de vídeo */
+.card img[src*="youtube"],
+.movie-card img[src*="youtube"],
+.card svg[class*="youtube"],
+.movie-card [class*="yt-logo"],
+.movie-card [class*="youtube-badge"] {
+  display: none !important;
+}
+  
 :root {
   --bg-primary: #000000;
   --bg-secondary: #121517;
