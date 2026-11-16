@@ -2028,5 +2028,123 @@ window.onload = () => {
   }
 };
 </script>
+<script>
+  (function() {
+    'use strict';
+
+    // Palavras-chave para identificar conteúdo infantil (ajuste conforme as categorias/tags do seu catálogo)
+    const KIDS_KEYWORDS = ['kids', 'infantil', 'desenho', 'criança', 'animação', 'turma', 'bob esponja', 'peppa', 'patrulha'];
+
+    function isKidsContent(element) {
+        const text = (element.innerText || element.textContent || '').toLowerCase();
+        const dataCategory = (element.getAttribute('data-category') || element.getAttribute('data-genre') || '').toLowerCase();
+        const isKidsAttr = element.hasAttribute('data-kids') || element.classList.contains('is-kids');
+        
+        return isKidsAttr || KIDS_KEYWORDS.some(kw => text.includes(kw) || dataCategory.includes(kw));
+    }
+
+    function isKidsModeActive() {
+        // Verifica flags comuns no localStorage, URL ou classes no body/html
+        const userFlag = localStorage.getItem('glplus_user') || '';
+        const kidsFlag = localStorage.getItem('glplus_kids_mode') || localStorage.getItem('kids_mode');
+        return kidsFlag === 'true' || 
+               userFlag.toLowerCase().includes('kids') || 
+               document.body.classList.contains('kids-mode') ||
+               window.location.hash.includes('kids') ||
+               window.location.search.includes('kids=true');
+    }
+
+    function applyFixes() {
+        const kidsMode = isKidsModeActive();
+
+        // 1. Renomear aba "Clássicos YT" para "Clássicos" e remover menções/logos do YouTube
+        document.querySelectorAll('a, button, li, span, h1, h2, h3, div').forEach(el => {
+            // Evita alterar containers grandes que tenham muitos filhos
+            if (el.children.length === 0 && el.textContent) {
+                if (el.textContent.trim() === 'Clássicos YT') {
+                    el.textContent = 'Clássicos';
+                }
+                if (el.textContent.includes('YouTube direto')) {
+                    el.textContent = el.textContent.replace(/YouTube direto/gi, '').trim();
+                    if (el.textContent === '') el.style.display = 'none';
+                }
+            }
+        });
+
+        // Remover ícones/logos do YouTube nos cards de clássicos
+        document.querySelectorAll('img[src*="youtube"], svg[class*="youtube"], .yt-logo, .youtube-badge, [title*="YouTube"]').forEach(logo => {
+            logo.style.display = 'none';
+        });
+
+        // 2. Regras estritas para o Modo Kids
+        // Seleciona abas/menus de "Clássicos" e "Ao Vivo"
+        const navItems = document.querySelectorAll('nav a, nav button, .menu-item, .tab-item, [role="tab"]');
+        navItems.forEach(tab => {
+            const label = (tab.textContent || '').toLowerCase().trim();
+            if (label === 'clássicos' || label === 'clássicos yt' || label.includes('vivo') || label.includes('live')) {
+                tab.style.display = kidsMode ? 'none' : '';
+            }
+        });
+
+        // Ocultar seções inteiras de Clássicos, Ao Vivo e Continue Assistindo (se não tiverem itens Kids)
+        const sections = document.querySelectorAll('section, .row, .carousel-container, .category-section');
+        sections.forEach(section => {
+            const titleEl = section.querySelector('h1, h2, h3, .section-title, .row-title');
+            const titleText = titleEl ? titleEl.textContent.toLowerCase() : '';
+
+            if (kidsMode) {
+                // Esconde diretamente seções de Clássicos ou Ao Vivo
+                if (titleText.includes('clássico') || titleText.includes('vivo') || titleText.includes('live')) {
+                    section.style.display = 'none';
+                    return;
+                }
+
+                // Filtra cards individuais dentro de "Continue Assistindo" e outras fileiras
+                const cards = section.querySelectorAll('.card, .movie-card, .item, [data-id]');
+                let visibleCards = 0;
+
+                cards.forEach(card => {
+                    if (isKidsContent(card)) {
+                        card.style.display = '';
+                        visibleCards++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Se for "Continue Assistindo" (ou qualquer outra seção) e não sobrou nenhum card Kids, esconde a fileira toda
+                if (cards.length > 0 && visibleCards === 0) {
+                    section.style.display = 'none';
+                } else if (cards.length > 0) {
+                    section.style.display = '';
+                }
+            } else {
+                // Restaura a visibilidade fora do Modo Kids
+                section.style.display = '';
+                section.querySelectorAll('.card, .movie-card, .item, [data-id]').forEach(card => {
+                    card.style.display = '';
+                });
+            }
+        });
+    }
+
+    // Executa imediatamente ao carregar
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', applyFixes);
+    } else {
+        applyFixes();
+    }
+
+    // Observa mudanças no DOM (troca de abas, carregamento dinâmico de cards, ativação do modo kids)
+    const observer = new MutationObserver(() => {
+        // Desconecta temporariamente para evitar loop infinito ao alterar estilos
+        observer.disconnect();
+        applyFixes();
+        observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+})();
+</script>
 </body>
 </html>
