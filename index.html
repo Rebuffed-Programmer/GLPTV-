@@ -690,7 +690,7 @@ a:focus {
     <div class="tv-avatar-wrap tv-focusable" tabindex="0" id="tvProfileTrigger">
       <img id="tvAvatarImg" src="https://i.postimg.cc/mrQ0R1LV/Plus-Avatar-icon.jpg" alt="Perfil">
       <div style="overflow:hidden;">
-        <div id="tvUserName" style="font-size:13px; font-weight:700; white-space:nowrap;">Visitante GL+</div>
+        <div id="tvUserName" style="font-size:13px; font-weight:700; white-space:nowrap;">Visitante Plus+</div>
         <div id="tvUserStatus" style="font-size:11px; color:var(--accent-green);">Conta Gratuita</div>
       </div>
       <div id="hiddenGoogleBtn"></div>
@@ -1672,18 +1672,7 @@ async function fetchClassixBatch(rowEl, statusEl, loadMoreBtn) {
   }
 }
 
-function createYouTubeCardTV(vid) {
-  const card = document.createElement('div');
-  card.className = 'card tv-focusable';
-  card.tabIndex = 0;
-  card.style.backgroundImage = `url('${vid.thumbnail}')`;
-  card.innerHTML = `
-    <span class="badge-live" style="background:#ff0000; color:#fff;"><i class="fab fa-youtube"></i> YOUTUBE</span>
-    <div class="card-overlay">
-      <div class="card-title">${vid.title}</div>
-      <div class="card-sub">Acervo Clássico Completo</div>
-    </div>
-  `;
+  
   card.onclick = () => launchPlayerTV(`https://www.youtube.com/watch?v=${vid.id}`, null);
   card.onfocus = () => card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
   return card;
@@ -1694,7 +1683,7 @@ function renderClassixYouTubeSection(container, isGrid) {
   sec.className = 'section';
   sec.innerHTML = `
     <div class="section-header">
-      <h2 class="section-title">Filmes Clássicos (YouTube Direto)</h2>
+      <h2 class="section-title">Filmes Clássicos </h2>
       <button class="btn-tv-secondary tv-focusable" id="ytLoadMoreBtn" style="padding:8px 16px; font-size:13px;" hidden>Carregar Mais</button>
     </div>
     <div id="ytStatusMsg" style="padding:0 48px 10px; color:var(--text-muted); font-size:14px;">Carregando filmes do YouTube...</div>
@@ -2146,72 +2135,6 @@ window.onload = () => {
     observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
 })();
 </script>
-  <script>
-  (function () {
-  'use strict';
 
-  function corrigirFilmes क्लासicosYT() {
-    // 1. Corrige o título da seção/aba "filmes clássicos (YouTube direto)" para apenas "Clássicos" ou "Filmes Clássicos"
-    document.querySelectorAll('h1, h2, h3, h4, h5, span, a, div, p').forEach((el) => {
-      if (el.children.length === 0 && el.textContent) {
-        let txt = el.textContent.trim();
-        // Verifica se contém "filmes clássicos" e "youtube" no mesmo texto
-        if (/filmes\s*clássicos/i.test(txt) && /youtube/i.test(txt)) {
-          el.textContent = 'Filmes Clássicos';
-        } else if (txt === 'Clássicos YT') {
-          el.textContent = 'Clássicos';
-        }
-      }
-    });
-
-    // 2. Remove especificamente as logos/badges do YouTube que aparecem nos pôsteres/cards
-    const selectors = [
-      'img[src*="youtube"]',
-      'img[alt*="YouTube"]',
-      'svg[class*="youtube"]',
-      '[class*="yt-logo"]',
-      '[class*="youtube-badge"]',
-      '[class*="youtube-icon"]',
-      // Se houver algum elemento flutuante de marca d'água do YouTube nos cards
-      '.card img[src*="youtube"]',
-      '.movie-card img[src*="youtube"]'
-    ];
-
-    document.querySelectorAll(selectors.join(', ')).forEach((el) => {
-      // Garante que é realmente uma logo/badge e não o pôster do filme em si
-      if (el.naturalWidth < 100 || el.classList.contains('yt') || el.classList.contains('youtube') || el.closest('.badge, .watermark, .icon')) {
-        el.style.display = 'none';
-      }
-    });
-
-    // Varredura extra em imagens que tenham "youtube" na URL para sumir com os selos indesejados nos cards
-    document.querySelectorAll('img').forEach((img) => {
-      if (img.src && (img.src.includes('youtube.com/img') || img.src.includes('yt3.ggpht') || img.src.includes('youtube_logo'))) {
-        // Se a imagem for pequena (badge/selo), remove
-        if (img.width < 80 || img.height < 80 || img.classList.contains('badge')) {
-          img.style.display = 'none';
-        }
-      }
-    });
-  }
-
-  // Executa ao carregar
-  corrigirFilmesलासicosYT();
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', corrigirFilmesलासicosYT);
-  }
-
-  // Observador para pegar conteúdos que carregam dinamicamente (Ajax / API)
-  const observer = new MutationObserver(() => {
-    observer.disconnect();
-    corrigirFilmesलासicosYT();
-    observer.observe(document.body, { childList: true, subtree: true });
-  });
-
-  if (document.body) {
-    observer.observe(document.body, { childList: true, subtree: true });
-  }
-})();
-</script>
 </body>
 </html>
