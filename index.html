@@ -1660,18 +1660,6 @@ async function fetchClassixBatch(rowEl, statusEl, loadMoreBtn) {
       });
     }
 
-    function createYouTubeCardTV(vid) {
-  const card = document.createElement('div');
-  card.className = 'card tv-focusable';
-  card.tabIndex = 0;
-  card.style.backgroundImage = `url('${vid.thumbnail}')`;
-  card.innerHTML = `
-    <span class="badge-live" style="background:#ff0000; color:#fff;"><i class="fab fa-youtube"></i> YOUTUBE</span>
-    <div class="card-overlay">
-      <div class="card-title">${vid.title}</div>
-      <div class="card-sub">Acervo Clássico Completo</div>
-    </div>
-  `;
     if (statusEl) statusEl.textContent = ytLoadedVideos.length ? "" : "Nenhum vídeo encontrado.";
     if (loadMoreBtn) {
       loadMoreBtn.hidden = !ytNextPageToken;
@@ -1684,6 +1672,22 @@ async function fetchClassixBatch(rowEl, statusEl, loadMoreBtn) {
   }
 }
 
+  function createYouTubeCardTV(vid) {
+  const card = document.createElement('div');
+  card.className = 'card tv-focusable';
+  card.tabIndex = 0;
+  card.style.backgroundImage = `url('${vid.thumbnail}')`;
+  card.innerHTML = `
+    <span class="badge-live" style="background:#ff0000; color:#fff;"><i class="fab fa-youtube"></i> YOUTUBE</span>
+    <div class="card-overlay">
+      <div class="card-title">${vid.title}</div>
+      <div class="card-sub">Acervo Clássico Completo</div>
+    </div>
+  `;
+  card.onclick = () => launchPlayerTV(`https://www.youtube.com/watch?v=${vid.id}`, null);
+  card.onfocus = () => card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  return card;
+}
 
 function renderClassixYouTubeSection(container, isGrid) {
   const sec = document.createElement('section');
