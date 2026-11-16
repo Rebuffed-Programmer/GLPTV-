@@ -9,6 +9,253 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
+ <!-- ================= INTRO PLUS+ (VERSÃO OTIMIZADA PARA TV & CONTROLE REMOTO) ================= -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Plus+Jakarta+Sans:wght@700&display=swap" rel="stylesheet">
+
+<style>
+  #plus-hulu-intro {
+    position: fixed;
+    inset: 0;
+    background: #000000;
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: pointer;
+    user-select: none;
+    outline: none;
+  }
+
+  /* Transição de Zoom Final das letras abrindo para o menu */
+  #plus-hulu-intro.intro-zoom-out {
+    pointer-events: none;
+  }
+
+  #plus-hulu-intro.intro-zoom-out #logo-text {
+    animation: zoomOutTransition 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  #plus-hulu-intro.intro-zoom-out #green-filter,
+  #plus-hulu-intro.intro-zoom-out .gradient {
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+
+  @keyframes zoomOutTransition {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+      filter: blur(0);
+    }
+    100% {
+      transform: scale(5);
+      opacity: 0;
+      filter: blur(14px);
+    }
+  }
+
+  /* Filtro Verde e Gradientes */
+  #green-filter {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(72, 201, 72, 0.22) 0%, transparent 70%);
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    animation: fadeInFilter 0.8s ease 5.2s forwards;
+  }
+
+  .gradient {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 35vh;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  #top-gradient {
+    top: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95), transparent);
+  }
+
+  #bottom-gradient {
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.95), transparent);
+  }
+
+  /* Wrapper e Logo */
+  #logo-wrapper {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #logo {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 48px;
+  }
+
+  .absolute-centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* Anéis de pulso suaves */
+  #logo-border {
+    width: 140px;
+    height: 140px;
+    border: 2px solid rgba(72, 201, 72, 0.45);
+    opacity: 0;
+    animation: pulseRing 2.4s cubic-bezier(0.16, 1, 0.3, 1) 5.2s forwards;
+  }
+
+  #logo-border-inner {
+    width: 90px;
+    height: 90px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    opacity: 0;
+    animation: pulseRingInner 2.2s cubic-bezier(0.16, 1, 0.3, 1) 5.35s forwards;
+  }
+
+  /* Texto da Logo */
+  #logo-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    transform: scale(0.85);
+    filter: blur(6px);
+    animation: logoTextReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) 5.8s forwards;
+  }
+
+  #hulu-text {
+    font-family: 'Great Vibes', cursive, sans-serif;
+    font-size: clamp(72px, 11vw, 116px);
+    font-weight: 400;
+    color: #ffffff;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 25px rgba(72, 201, 72, 0.7), 0 0 50px rgba(138, 43, 226, 0.4);
+    margin: 0;
+  }
+
+  #hulu-text .plus-symbol {
+    color: #48c948;
+    text-shadow: 0 0 30px rgba(72, 201, 72, 0.9);
+  }
+
+  #originals-text {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: clamp(11px, 1.5vw, 13px);
+    font-weight: 700;
+    letter-spacing: 0.42em;
+    color: #a5b4fc;
+    margin-top: 8px;
+    text-transform: uppercase;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+  }
+
+  @keyframes fadeInFilter {
+    to { opacity: 1; }
+  }
+
+  @keyframes pulseRing {
+    0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(4); opacity: 0; }
+  }
+
+  @keyframes pulseRingInner {
+    0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0; }
+    50% { opacity: 0.85; }
+    100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+  }
+
+  @keyframes logoTextReveal {
+    0% { opacity: 0; transform: scale(0.85); filter: blur(6px); }
+    100% { opacity: 1; transform: scale(1); filter: blur(0); }
+  }
+</style>
+
+<!-- Adicionado tabindex="0" para focar automaticamente na TV -->
+<div id="plus-hulu-intro" tabindex="0" aria-hidden="true">
+  <div id="green-filter"></div>
+  <div id="top-gradient" class="gradient"></div>
+  <div id="bottom-gradient" class="gradient"></div>
+  <div id="logo-wrapper">
+    <div id="logo">
+      <div id="logo-border" class="absolute-centered"></div>
+      <div id="logo-border-inner" class="absolute-centered"></div>
+      <div id="logo-text">
+        <div id="hulu-text">Plus<span class="plus-symbol">+</span></div>
+        <div id="originals-text">ORIGINALS</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const intro = document.getElementById('plus-hulu-intro');
+    if (!intro) return;
+
+    // Foca automaticamente no elemento ao carregar (essencial para Smart TV / Controle Remoto)
+    intro.focus();
+
+    // Roda apenas uma vez por sessão
+    if (sessionStorage.getItem('plus_intro_played') === '1') {
+      intro.remove();
+      return;
+    }
+
+    let closed = false;
+    function finishIntro() {
+      if (closed) return;
+      closed = true;
+      sessionStorage.setItem('plus_intro_played', '1');
+      
+      // Aciona o zoom final das letras
+      intro.classList.add('intro-zoom-out');
+      
+      setTimeout(() => {
+        intro.remove();
+        window.dispatchEvent(new CustomEvent('plusIntroFinished'));
+      }, 800);
+    }
+
+    // Duração total: ~5s de tela preta + animação + zoom (~9.2 segundos)
+    const timer = setTimeout(finishIntro, 9200);
+
+    // Suporte total para pular com toque, clique ou qualquer botão do controle remoto da TV (Enter, OK, Espaço, Setas)
+    intro.addEventListener('click', () => {
+      clearTimeout(timer);
+      finishIntro();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      // Códigos comuns de teclas "OK" / "Enter" / "Select" em controles remotos de TV
+      const tvKeys = ['Enter', ' ', 'Digit0', 'MediaPlayPause', 'Select'];
+      if (tvKeys.includes(e.key) || e.keyCode === 13 || e.keyCode === 32 || e.keyCode === 23) {
+        e.preventDefault();
+        clearTimeout(timer);
+        finishIntro();
+      }
+    });
+  })();
+</script>
 <style>
  
   /* Oculta qualquer imagem, svg ou badge do YouTube dentro dos cards de vídeo */
